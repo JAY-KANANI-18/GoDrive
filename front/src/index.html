@@ -17,6 +17,7 @@
 -->
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <base href="/">
@@ -32,11 +33,19 @@
   <link href="./assets/vendor/nucleo/css/nucleo.css" rel="stylesheet">
   <link href="./assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+  <!-- <script async src="/socket.io/socket.io.js"></script> -->
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE"></script>
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE"></script> -->
 
 </head>
+
 <body>
   <app-root></app-root>
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?v=beta&key=AIzaSyAND9gjTjS1OGvKl9hLn4OzmOzQY7xND4s&libraries=drawing,places,geometry">
+
+    </script>
+
 </body>
+
 </html>

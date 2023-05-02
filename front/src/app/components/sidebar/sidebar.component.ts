@@ -22,10 +22,13 @@ export const ROUTES: RouteInfo[] = [
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {   
+export class SidebarComponent implements OnInit {
   submenu1: boolean = false;
   submenu2: boolean = false;
   sidebarOpen: boolean = false;
+  drop =false
+  drop2 =false
+  drop3 =false
 
   toggleSubmenu(submenu: string) {
     if (submenu === 'submenu1') {
@@ -49,4 +52,7 @@ export class SidebarComponent implements OnInit {
       this.isCollapsed = false;
    });
   }
+  show(){this.drop=!this.drop}
+  show2(){this.drop2=!this.drop2}
+  show3(){this.drop3=!this.drop3}
 }

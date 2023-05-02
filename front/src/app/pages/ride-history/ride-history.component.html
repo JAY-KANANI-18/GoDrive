@@ -1,0 +1,114 @@
+<p>ride-history works!</p>
+<div class="header bg-gradient-skyblue pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header-body">
+      <!-- Card stats -->
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label for="status" class="form-label">Filter by status:</label>
+          <select id="status" class="form-select">
+            <option value="">All</option>
+            <option value="accepted">Accepted</option>
+            <option value="arrived">Arrived</option>
+            <option value="picked">Picked</option>
+            <option value="started">Started</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="vehicle" class="form-label">Filter by vehicle:</label>
+          <select id="vehicle" class="form-select">
+            <option value="">All</option>
+            <option value="car">Car</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="scooter">Scooter</option>
+            <option value="bicycle">Bicycle</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="search" class="form-label">Search:</label>
+          <input type="text" id="search" class="form-control" placeholder="Username, phone number, request ID...">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="from-date" class="form-label">From:</label>
+          <input type="date" id="from-date" class="form-control">
+          <label for="to-date" class="form-label">To:</label>
+          <input type="date" id="to-date" class="form-control">
+          <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+  <!-- Table -->
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Users List</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th>Request ID</th>
+                <th>User Name</th>
+                <th>User ID</th>
+                <th>Pickup Time</th>
+                <th>Pickup Address</th>
+                <th>Drop Off Address</th>
+                <th>Service Type</th>
+                <th>Driver</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ride of allConfirmedrides">
+
+
+                <td>{{ride._id}}</td>
+                <td>{{ride.name}}</td>
+                <td>1234</td>
+                <td>2023-04-21 09:00:00</td>
+                <td>{{ride.pickup}}</td>
+                <td>{{ride.dropoff}}</td>
+                <td>{{ride.vehicle}}</td>
+                <td>Driver</td>
+                <td>{{ride.status}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer py-4">
+          <nav aria-label="...">
+            <ul class="pagination justify-content-end mb-0">
+              <li class="page-item disabled">
+                <a class="page-link" href="javascript:void(0)" tabindex="-1">
+                  <i class="fas fa-angle-left"></i>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="javascript:void(0)">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="javascript:void(0)">2 <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="javascript:void(0)">
+                  <i class="fas fa-angle-right"></i>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Dark table -->
+
+</div>

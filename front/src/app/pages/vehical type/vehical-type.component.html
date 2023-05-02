@@ -1,0 +1,65 @@
+
+
+
+<div class="header bg-gradient-skyblue pb-8 pt-5 pt-md-8" >
+
+  <div class="container-fluid text-center" >
+    <h1>{{title}}</h1>
+    <div>
+
+        <form role="form" #AddVehicleForm="ngForm" (ngSubmit)="onAdd(AddVehicleForm.value);AddVehicleForm.reset()" name="newForm" >
+          <div class="form-group mb-3">
+            <div class="input-group input-group-alternative">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+              </div>
+              <input class="form-control" placeholder="Vehicle type" type="name"   required
+              [ngModel]="vehicleName"
+              name="name">
+            </div>
+            <span class="errors" *ngIf="AddVehicleForm.controls['name'].errors?.required && AddVehicleForm.controls['name'].touched">*Please enter a value</span>
+            <span class="errors" *ngIf="errorMsg">*{{errorMsg}}</span>
+          </div>
+          <div class="form-group">
+            <div class="input-group input-group-alternative">
+              <div class="input-group-prepend">
+                <input class="form-control" name="file" type="file"   required
+                ngModel
+                 #fileInput>
+              </div>
+              <span class="errors" *ngIf="AddVehicleForm.controls['file'].errors?.required && AddVehicleForm.controls['file'].touched">*Please enter a value</span>
+              <span class="errors" *ngIf="errorMsg2">*File should less then 1MB</span>
+
+            </div>
+          </div>
+
+          <div class="text-center">
+           <button *ngIf="SubmitActivate" type="submit" class="btn btn-primary my-4" [disabled]="AddVehicleForm.invalid">Add Vehicle</button>
+            <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4" (click)="onSave(AddVehicleForm.value);AddVehicleForm.reset();">Update Vehicle</button>
+            <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4" (click)="onCancel(AddVehicleForm.value);AddVehicleForm.reset();">cancel</button>
+          </div>
+
+
+
+
+      </form>
+    </div>
+
+  </div>
+</div>
+<!-- Page content -->
+<!-- <div class="container-fluid mt--7"> -->
+
+
+  <div class="d-flex flex-wrap mt-5" >
+  <div class="flex-item vehicle p-4 text-center"  *ngFor="let vehicle of Vehicles" >
+
+      <img  src="http://localhost:3000/avatars/{{vehicle.file}}" alt="image" width="100%" height="75%">
+      <div class="mt-3">{{vehicle.name}}</div>
+      <button  class="btn btn-success  mt-3 mr-2" (click)="onUpdate(vehicle._id);scrollToTop()">Update</button>
+      <button   class="btn btn-danger mt-3" (click)="onDelete(vehicle._id)">Delete</button>
+
+    </div>
+  </div>
+
+<!-- </div> -->

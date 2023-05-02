@@ -1,0 +1,77 @@
+<div class="header bg-gradient-skyblue pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header pb-8 pt-5 pt-md-8">
+
+      <div class="container-fluid text-center">
+        <h1>Country</h1>
+
+        <form #searchForm="ngForm" (ngSubmit)="searchCountry(searchForm.value);searchForm.reset()" name="newForm">
+          <input type="search" name="search" id="search" placeholder="Search country here..." ngModel required>
+
+          <button class="btn btn-secondary" type="submit">Search</button>
+          <button class="btn btn-danger" type="button" (click)="onReset()">Reset</button>
+        </form>
+        <!-- <span class="errors" *ngIf="searchForm.controls['search'].errors?.required && searchForm.controls['search'].touched">*Please enter a value</span> -->
+
+        <div class="pt-5">
+
+          <label for="country-select">Select Country:</label>
+          <select id="country-select" [(ngModel)]="selectedCountry" (change)="onSelect();">
+            <option *ngFor="let country of countriesArray" [value]="country">{{ country}}</option>
+          </select>
+
+
+
+
+          <p *ngIf="nullData">Does not add due to insufficient data</p>
+          <form *ngIf="selectedCountry" #addCountryForm="ngForm" (blur)="addedCountry.reset()"
+            (ngSubmit)="onAdd(addCountryForm.value);addCountryForm.reset()" name="newForm">
+
+
+            <label for="name">Name:</label>
+            <input id="name" name="name" type="text" readonly placeholder="name" [ngModel]="selectedCountry.name">
+
+            <label for="currency">Currency:</label>
+            <input id="currency" name="currency" readonly type="text" placeholder="Currency"
+              [ngModel]="selectedCountry.currency">
+
+            <label for="flag">Flag:</label>
+            <input readonly id="flag" name="flag" type="text" placeholder="Flag" [ngModel]="selectedCountry.flag">
+
+            <label for="callingcode">Calling Code:</label>
+            <input id="callingcode" name="callingcode" readonly type="Calling Code" placeholder="name"
+              [ngModel]="selectedCountry.callingcode">
+            <label for="timezone">Time Zones:</label>
+            <input id="timezone" name="timezone" type="text" readonly placeholder="timeZone"
+              [ngModel]="selectedCountry.timezone">
+            <label for="countrycode">Country code</label>
+            <input id="countrycode" name="countrycode" type="text" readonly placeholder="Countrycode"
+              [ngModel]="selectedCountry.countrycode">
+            <button type="submit" class="btn btn-primary">ADD Country</button>
+
+          </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+
+  <div class="d-flex flex-wrap mt-5">
+    <div class="flex-item country p-4" *ngFor="let country of addedCountry">
+
+      <!-- <img src="https://restcountries.com/data/US.svg" alt="Flag of {COUNTRY_NAME}"> -->
+      <div class="mt-1" style="font-size: 180px;">{{country.flag}}</div>
+      <div class="mt-1">Name : {{country.name}}</div>
+      <div class="mt-1">Currency : {{country.currency}}</div>
+      <div class="mt-1">Calling Code : {{country.callingcode}}</div>
+      <div class="mt-1">Time Zone : {{country.timezone}}</div>
+      <button class="btn btn-danger mt-3" (click)="onDelete(country._id)">Delete</button>
+
+    </div>
+  </div>
+
+

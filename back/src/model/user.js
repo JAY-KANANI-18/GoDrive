@@ -1,52 +1,60 @@
-// const mongoose = require("mongoose")
-// const validator = require('validator')
+const mongoose = require("mongoose")
+const validator = require('validator')
 
-// const userSchema = new mongoose.Schema({
-//     name: {
-//         type: String,
-//         // required: true,
-//         // trim: true,
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true, 
+        trim: true,
+                lowercase: true,
 
-//     },
+        
 
-//     mobile: {
-//         type: String,
-//         // required: true,
-//         // trim: true,
-//         // unique:true,
+    },
 
+   
 
-//     },
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+        unique:true,
+        // validate(value) {
 
-//     email: {
-//         type: String,
-//         // required: true,
-//         // trim: true,
-//         // lowercase: true,
-//         // unique: true,
-//         // validate(value) {
+        //     if (!validator.isEmail(value)) {
+        //         throw new Error("Email is not valid")
+        //     }
 
-//         //     if (!validator.isEmail(value)) {
-//         //         throw new Error("Email is not valid")
-//         //     }
+        // }
 
-//         // }
-
-//     },
-//     country: {
-//         type: String,
-
-//     },
-//     avatar: {
-//         type: String,
-//         // default: 'default.jpeg'
-//     }
-
-// });
+    },
+    mobile: {
+        type: String,
+        required: true,
+        trim: true,
+        unique:true,
 
 
-// const User = mongoose.model('User', userSchema)
+    },
+    country: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
 
-// module.exports = User;
+
+    },
+    avatar: {
+        type: String,
+        default: 'default.jpeg'
+    }
+
+});
+
+
+const User = mongoose.model('User', userSchema)
+
+module.exports = User;
 
 

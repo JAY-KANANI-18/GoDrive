@@ -1,0 +1,11 @@
+.show-element {
+  opacity: 1;
+  height: auto;
+  transition: all 0.3s ease-in-out;
+}
+.hide-element {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}

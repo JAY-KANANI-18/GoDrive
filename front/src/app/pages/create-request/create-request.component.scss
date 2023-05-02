@@ -1,0 +1,79 @@
+#map{
+  width: 100%;
+  height:100%
+}
+#maindiv{
+
+  display: flex;
+  box-sizing: border-box;
+  background-color: #a8d0e0;
+  color: rgb(0, 0, 0);
+
+}
+#mapdiv{
+  margin-top: 25px;
+
+  width: 80%;
+  height: 80vh;
+  padding: 25px;
+  margin-left: 20px;
+  margin-right: 20px;
+  background-color:aliceblue ;
+  border-radius: 12px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  background: linear-gradient(to bottom, aliceblue, inherit);
+
+
+
+
+}
+#form-div{
+  background: linear-gradient(to bottom, aliceblue, inherit);
+
+// background-color: rgb(218, 218, 218);  margin: 20px;
+  margin-top: 25px;
+  width:20%;
+  padding: 25px;
+  // background: linear-gradient(to right, #a8d0e0, #49afd7);
+  margin-left: 20px;
+  background-color:aliceblue ;
+  border-radius: 12px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+
+
+
+
+}
+input{
+  width: 90%;
+  height: 30px;
+  border-radius: 15px;
+  // border: none;
+  background-color: inherit;
+  border: 1px solid gray;
+  padding: 10px;
+
+}
+label{
+  margin-top: 20px;
+}
+select{
+  height: 30px;
+  border-radius: 15px;
+  background-color: inherit;
+
+
+}
+.form-field{
+  box-sizing: border-box;
+}
+.bg-gradient-skyblue {
+  background: linear-gradient(to right, #a8d0e0, #49afd7);
+}
+.error{
+  color: red;
+  font-size: 12px;
+}
+

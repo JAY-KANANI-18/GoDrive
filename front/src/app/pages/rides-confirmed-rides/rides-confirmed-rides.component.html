@@ -1,0 +1,201 @@
+<div class="m-5 py-4">
+  <h1 class="mb-4">Admin Requests</h1>
+  <form class="mb-4">
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <label for="status" class="form-label">Filter by status:</label>
+        <select id="status" class="form-select">
+          <option value="">All</option>
+          <option value="accepted">Accepted</option>
+          <option value="arrived">Arrived</option>
+          <option value="picked">Picked</option>
+          <option value="started">Started</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label for="vehicle" class="form-label">Filter by vehicle:</label>
+        <select id="vehicle" class="form-select">
+          <option value="">All</option>
+          <option value="car">Car</option>
+          <option value="motorcycle">Motorcycle</option>
+          <option value="scooter">Scooter</option>
+          <option value="bicycle">Bicycle</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label for="search" class="form-label">Search:</label>
+        <input type="text" id="search" class="form-control" placeholder="Username, phone number, request ID...">
+      </div>
+      <div class="col-md-3 mb-3">
+        <label for="from-date" class="form-label">From:</label>
+        <input type="date" id="from-date" class="form-control">
+        <label for="to-date" class="form-label">To:</label>
+        <input type="date" id="to-date" class="form-control">
+        <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
+      </div>
+    </div>
+  </form>
+  <div class="table">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Request ID</th>
+          <th>User Name</th>
+          <th>User ID</th>
+          <th>Pickup Time</th>
+          <th>Pickup Address</th>
+          <th>Drop Off Address</th>
+          <th>Service Type</th>
+          <th>Driver</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Use a loop to display all the requests with their details -->
+        <tr *ngFor="let ride of ridesArray">
+          <td>{{ride._id}}</td>
+          <td>{{ride.name}}</td>
+          <td>1234</td>
+          <td>2023-04-21 09:00:00</td>
+          <td>{{ride.pickup}}</td>
+          <td>{{ride.dropoff}}</td>
+          <td>{{ride.vehicle}}</td>
+          <td>Driver</td>
+          <td>{{ride.status}}</td>
+          <td>
+
+            <!-- If a driver is not assigned, show a button to assign one -->
+            <button class="btn btn		btn-primary" *ngIf="ride.status!=='cancelled'" (click)="openAssignDialog(ride._id)">Assign</button>
+            <div class="modal" id="{{ride._id}}">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Assign Driver</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    (click)="closeAssignDialog(ride._id)">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Trip Details:</strong></p>
+
+                  <div>Pick Up : {{ride.pickup}}</div>
+                  <div>Drop Off : {{ride.dropoff}}</div>
+                  <div>Vehicle : {{ride.vehicle}}</div>
+
+                  <p><strong>Booking Time:</strong> {{ride.bookingtime}}</p>
+                  <p><strong>Schedule Time:</strong> [insert schedule time here]</p>
+                  <p><strong>Available Drivers:</strong></p>
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Driver ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let driver of OnlineDrivers">
+                        <td>{{driver._id}}</td>
+                        <td>{{driver.name}}</td>
+                        <td>{{driver.mobile}}</td>
+                        <td>{{driver.email}}</td>
+
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="assign-selected-driver"
+                  (click)="onSelectAssign(ride);closeAssignDialog(ride._id)">Assign Selected Driver</button>
+                  <button type="button" class="btn btn-secondary" id="assign-nearest-driver">Assign Nearest
+                    Driver</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <!-- If the request is not accepted, show a button to cancel it -->
+            <button class="btn btn-danger" *ngIf="ride.status !=='cancelled'" (click)="onCancel(ride._id)">Cancel</button>
+          </td>
+
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+
+
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" (click)="openAssignDialog()">
+  Open Assign Driver Modal
+</button> -->
+
+<!-- Assign Driver Modal -->
+<!-- <div class="modal" id="assign-dialog" #assignDialog>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign Driver</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeAssignDialog()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Trip Details:</strong></p>
+        <ul>
+          <li>Location 1</li>
+          <li>Location 2</li>
+          <li>Location 3</li>
+        </ul>
+        <p><strong>Booking Time:</strong> [insert booking time here]</p>
+        <p><strong>Schedule Time:</strong> [insert schedule time here]</p>
+        <p><strong>Available Drivers:</strong></p>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Driver ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>John Doe</td>
+              <td>555-555-5555</td>
+              <td>johndoe@example.com</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Jane Smith</td>
+              <td>555-555-5555</td>
+              <td>janesmith@example.com</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Bob Johnson</td>
+              <td>555-555-5555</td>
+              <td>bobjohnson@example.com</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="assign-selected-driver">Assign Selected Driver</button>
+        <button type="button" class="btn btn-secondary" id="assign-nearest-driver">Assign Nearest Driver</button>
+      </div>
+    </div>
+  </div>
+</div> -->

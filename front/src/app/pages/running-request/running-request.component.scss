@@ -1,0 +1,138 @@
+body {
+  background-color: rgb(255, 255, 255);
+  text-align: center;
+  position: relative;
+  padding: 20px;
+
+}
+
+table {
+  text-align: center;
+  border-radius: 50px;
+  /* visibility: hidden; */
+
+}
+
+#search-btn{
+  position: absolute;
+  top:5%;
+  right: 5%;
+
+}
+
+.td {
+  vertical-align: middle;
+  height: 100px;
+  width: 100vw;
+}
+
+img {
+  padding: 10px;
+  width: 100px;
+  height: 100px;
+}
+label {
+  display: inline-block;
+  width: 25%;
+}
+
+input {
+  color: grey;
+  padding: 10px;
+  margin-top: 20px;
+  width: 70%;
+  border-radius: 15px;
+  background: transparent;
+  border: 1.5px solid grey;
+
+
+
+}
+option{
+  background-color: inherit;
+}
+select{
+  color: grey;
+  padding: 10px;
+  margin-top: 20px;
+  width: 20%;
+  border-radius: 12px;
+  background: transparent;
+  border: 1.5px solid grey;
+
+
+}
+
+#sub-btn{
+  padding: 5px;
+  margin: 30px 10px 10px 100px;
+  width: 20%;
+  height: 2%
+}
+.form-field{
+  width: 80%;
+  margin: 5px;
+}
+
+
+
+
+#formdiv {
+  // background: #e2e0e038;
+  width: 100%;
+  padding: 50px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+}
+
+
+
+.error-message {
+  position:relative;
+  top: 0;
+  left: 9%;
+  color: red;
+  font-size: 12px;
+  margin-left: 10%;
+}
+.error {
+  color: red;
+  font-size: 12px;
+}
+
+/* .activeepage {
+  background-color: white;
+  border: none;
+  border-bottom: 1px solid rgb(167, 165, 165);
+
+} */
+
+button {
+  margin: 10px;
+}
+
+
+.vh {
+  visibility: hidden;
+}
+#form2{
+  display: none;
+}
+.userlist{
+  background-color:  #e2e0e0;
+  border-radius: 50px;
+  border: 1px solid black;
+  padding: 10px;
+
+}
+#ulhead{
+  padding: 25px;
+}
+.bg-gradient-skyblue {
+  background: linear-gradient(to right, #a8d0e0, #49afd7);
+}
+
+#map{
+  width: 50vw;
+  height:50vh
+}
