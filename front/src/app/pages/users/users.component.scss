@@ -1,130 +1,98 @@
-body {
-  background-color: rgb(255, 255, 255);
-  text-align: center;
-  position: relative;
-  padding: 20px;
 
-}
 
-table {
-  text-align: center;
-  border-radius: 50px;
-  /* visibility: hidden; */
-
-}
-
-#search-btn{
-  position: absolute;
-  top:5%;
-  right: 5%;
-
-}
-
-.td {
-  vertical-align: middle;
-  height: 100px;
-  width: 100vw;
-}
-
-img {
+table img {
   padding: 10px;
   width: 100px;
   height: 100px;
 }
-label {
-  display: inline-block;
-  width: 25%;
-}
 
-input {
-  color: white;
-  padding: 10px;
-  margin-top: 20px;
-  width: 70%;
-  border-radius: 15px;
-  background: transparent;
-  border: 1.5px solid rgb(255, 255, 255);
-
-
-
-}
-select{
-  padding: 10px;
-  margin-top: 20px;
-  width: 20%;
-  border-radius: 12px;
-  background: transparent;
-  border: 1.5px solid rgb(255, 255, 255);
-
-
-}
-
-#sub-btn{
-  padding: 5px;
-  margin: 30px 10px 10px 100px;
-  width: 20%;
-  height: 2%
-}
-.form-field{
-  width: 80%;
-  margin: 5px;
+// .file-div{
+//   padding: 0px;
+//   padding-left: 10px;
+//   height: 40px;
+//   }
+.active{
+  text-decoration: underline;
 }
 
 
+.navbar{
+  background-color: transparent;
+}
+::ng-deep .modal-backdrop {
+  z-index: 1020 !important;
+}
 
-
-#formdiv {
-  color: white;
-  // background: #e2e0e038;
+.dcard{
+  // border: 1px solid grey;
   width: 100%;
-  padding: 50px;
-  border-radius: 50px;
-  margin-bottom: 20px;
+  padding-left: 1rem;
+  display: flex;
+  align-items: center;
+  // border-radius: 0.8rem;
+  margin-top: 1rem;
+}
+.util{
+  width:90%;
+  border: 1px solid grey;
+  padding-left: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0.8rem;
+  margin-right: 1rem;
+  // margin-top: 1rem;
+
+}
+.default-btn{
+  display: inline-block;
+  margin: 0;
+  height: 100%;
+  background-color: transparent;
+// width: 10%;
+}
+#payment-element {
+  // border: none !important;
+  // background-color: red;
+  border: 1px solid grey !important;
+  margin-top: 3rem;
+
 }
 
 
+// .text-center.profile {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content:center;
+// }
 
-.error-message {
-  position:relative;
-  top: 0;
-  left: 9%;
-  color: red;
-  font-size: 12px;
-  margin-left: 10%;
-}
-.error {
-  color: red;
-  font-size: 13px;
-}
+// .file-div {
+//   display: inline-block;
+//   margin-top: 10px; /* Adjust as needed */
+//   position: relative;
+//   left: 23%;
+//   // display: flex;
+//   // align-items: center;
+// }
 
-/* .activeepage {
-  background-color: white;
-  border: none;
-  border-bottom: 1px solid rgb(167, 165, 165);
+// .custom-file-label {
+//   display: flex;
+//   justify-content:space-between;
+//   align-items: center;
+//   width: 35%;
+//   height: 100%;
+// }
 
-} */
-
-button {
-  margin: 10px;
-}
-
-
-.vh {
+// .custom-file-input {
+//   opacity: 0;
+//   // position: absolute;
+//   // top: 0;
+//   // left: 0;
+//   // width: 100%;
+//   // height: 100%;
+//   cursor: pointer;
+// }
+.vh{
   visibility: hidden;
-}
-#form2{
-  display: none;
-}
-.userlist{
-  background-color:  #e2e0e0;
-  border-radius: 50px;
-  border: 1px solid black;
-  padding: 10px;
-
-}
-#ulhead{
-  padding: 25px;
-}
-.bg-gradient-skyblue {
-  background: linear-gradient(to right, #a8d0e0, #49afd7);
 }

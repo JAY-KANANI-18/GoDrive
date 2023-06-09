@@ -1,161 +1,180 @@
-<div class="header bg-gradient-skyblue  pb-8 pt-5 pt-md-8">
+<div class="header bg-gradient-skyblue p-3 pt-5 pb-7 pt-7">
   <div class="container-fluid">
-    <div class="header-body">
-
-      <div class="row">
-
-        <div id="formdiv">
-          <div id="form2div">
-            <h1 id="formhead">Insert Vehicle Pricing</h1>
-
-            <form id="form2">
-              <input id="search" type="search" placeholder="Seach here...">
-              <input id="b" type="submit" value="search">
-            </form>
-
-          </div>
+    <div class="header">
+      <h1>Vehicle Pricing</h1>
 
 
 
-          <form role="form" #AddVehiclepricingForm="ngForm"
-            (ngSubmit)="onAdd(AddVehiclepricingForm.value);AddVehiclepricingForm.reset()" name="newForm">
-
-
-            <div class="form-field">
-
-              <label for="country">Select Country:</label>&nbsp;&nbsp;&nbsp;
-              <select id="country" name="country" (change)="onselect(country.value)" #country required ngModel >
-                <!-- <option value="" disabled selected> Select Country</option> -->
-                <option *ngFor="let country of countriesArray" [value]="country">{{ country }}</option>
-              </select>
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['country']?.invalid && AddVehiclepricingForm.controls['country']?.touched">
-                *Please select a country</div>
-
-
-
-            </div>
-            <div class="form-field" *ngIf="citiesArray.length >=1 ">
-
-              <label for="city">Select City : </label>&nbsp;&nbsp;&nbsp;
-              <select id="city" name="city">
-                <!-- <option selected disabled hidden>Select City</option> -->
-                <option *ngFor="let city of citiesArray" [value]="city">{{ city}}</option>
-              </select>
-
-
-
-            </div>
-            <div class="form-field">
-
-              <label for="vehicle">Select Vehicle Type : </label>&nbsp;&nbsp;&nbsp;
-              <select id="vehicle" name="vehicle" ngModel required>
-                <option *ngFor="let vehicle of vehicleTypesArray" [value]="vehicle">{{ vehicle}}</option>
-              </select>
-              <div class="error"
-              *ngIf="AddVehiclepricingForm.controls['vehicle']?.invalid && AddVehiclepricingForm.controls['vehicle']?.touched">
-              *Please select a vehicle</div>
-
-
-            </div>
-            <div class="form-field">
-
-              <label for="driverprofit">Drivers Profit : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="driverprofit" ngModel name="driverprofit" required>
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['driverprofit']?.invalid  && AddVehiclepricingForm.controls['driverprofit'].touched">
-                *Please enter a value</div>
-
-
-
-            </div>
-            <div class="form-field">
-
-              <label for="minfare">Min. Fare : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="minfare" ngModel name="minfare" required>
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['minfare']?.invalid  && AddVehiclepricingForm.controls['minfare'].touched">
-                *Please enter a value</div>
-
-
-            </div>
-            <div class="form-field">
-
-              <label for="distanceforbaseprice">Distance for Base Price : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="distanceforbaseprice" ngModel name="distanceforbaseprice" required>
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['distanceforbaseprice']?.invalid  && AddVehiclepricingForm.controls['distanceforbaseprice'].touched">
-                *Please enter a value</div>
-
-
-            </div>
-            <div class="form-field">
-
-              <label for="baseprice">Base Price : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="baseprice" ngModel name="baseprice" required>
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['baseprice']?.invalid  && AddVehiclepricingForm.controls['baseprice'].touched">
-                *Please enter a value</div>
-
-            </div>
-            <div class="form-field">
-
-              <label for="priceperunitdistance">Price Per Unit Distance : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="priceperunitdistance" ngModel name="priceperunitdistance" required>
-
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['priceperunitdistance']?.invalid  && AddVehiclepricingForm.controls['priceperunitdistance'].touched">
-                *Please enter a value</div>
-            </div>
-            <div class="form-field">
-
-              <label for="priceperunittime">Price Per Unit Time(min) : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="priceperunittime" ngModel name="priceperunittime" required>
-
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['priceperunittime']?.invalid  && AddVehiclepricingForm.controls['priceperunittime'].touched">
-                *Please enter a value</div>
-            </div>
-            <div class="form-field">
-
-              <label for="maxspace">Max Space : </label>&nbsp;&nbsp;&nbsp;
-              <input type="text" id="maxspace" ngModel name="maxspace" required>
-              <div class="error"
-                *ngIf="AddVehiclepricingForm.controls['maxspace']?.invalid  && AddVehiclepricingForm.controls['maxspace'].touched">
-                *Please enter a value</div>
-
-            </div>
-
-            <div class="form-field">
-              <button type="submit" class="btn btn-primary my-4">Add Vehicle Price</button>
-              <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4"
-                (click)="onSave(AddVehicleForm.value);AddVehiclepricingForm.reset();">Update Vehicle</button>
-              <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4"
-                (click)="onCancel(AddVehicleForm.value);AddVehiclepricingForm.reset();">cancel</button>
-            </div>
-
-
-
-
-
-          </form>
-        </div>
-
+      <div>
 
       </div>
     </div>
   </div>
 </div>
-<div class="container-fluid mt--7">
+
+<ng-template #content let-modal>
+  <div class="bg-aliceblue modal-div ">
+
+    <div class="modal-header">
+<h3>Vehicle Pricing details</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
+
+          aria-hidden="true">&times;</span></button>
+    </div>
+
+    <div class="modal-body">
+
+
+      <form role="form" #AddVehiclepricingForm="ngForm"
+        (ngSubmit)="onAdd(AddVehiclepricingForm.value);AddVehiclepricingForm.reset()" name="newForm">
+
+
+
+        <label for="country">Select Country:</label>&nbsp;&nbsp;&nbsp;
+        <select id="country" name="country" (change)="onselect(country.value)" #country required ngModel>
+          <!-- <option value="" disabled selected> Select Country</option> -->
+          <option *ngFor="let country of countriesArray" [value]="country._id">{{ country.name }}</option>
+        </select>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['country']?.invalid && AddVehiclepricingForm.controls['country']?.touched">
+          *Please select a country</div>
+
+
+
+        <div *ngIf="citiesArray.length >=1 ">
+
+          <label for="city">Select City : </label>&nbsp;&nbsp;&nbsp;
+          <select id="city" name="city">
+            <!-- <option selected disabled hidden>Select City</option> -->
+            <option *ngFor="let city of citiesArray" [value]="city._id">{{ city.city}}</option>
+          </select>
+
+
+
+        </div>
+
+        <label for="vehicle">Select Vehicle Type : </label>
+        <select id="vehicle" name="vehicle" ngModel required>
+          <option *ngFor="let vehicle of vehicleTypesArray" [value]="vehicle._id">{{ vehicle.name}}</option>
+        </select>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['vehicle']?.invalid && AddVehiclepricingForm.controls['vehicle']?.touched">
+          *Please select a vehicle</div>
+
+
+
+        <label for="driverprofit">Drivers Profit : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="driverprofit" ngModel name="driverprofit" required>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['driverprofit']?.invalid  && AddVehiclepricingForm.controls['driverprofit'].touched">
+          *Please enter a value</div>
+
+
+
+
+        <label for="minfare">Min. Fare : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="minfare" ngModel name="minfare" required>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['minfare']?.invalid  && AddVehiclepricingForm.controls['minfare'].touched">
+          *Please enter a value</div>
+
+
+
+        <label for="distanceforbaseprice">Distance for Base Price : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="distanceforbaseprice" ngModel name="distanceforbaseprice" required>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['distanceforbaseprice']?.invalid  && AddVehiclepricingForm.controls['distanceforbaseprice'].touched">
+          *Please enter a value</div>
+
+
+
+
+        <label for="baseprice">Base Price : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="baseprice" ngModel name="baseprice" required>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['baseprice']?.invalid  && AddVehiclepricingForm.controls['baseprice'].touched">
+          *Please enter a value</div>
+
+
+        <label for="priceperunitdistance">Price Per Unit Distance : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="priceperunitdistance" ngModel name="priceperunitdistance" required>
+
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['priceperunitdistance']?.invalid  && AddVehiclepricingForm.controls['priceperunitdistance'].touched">
+          *Please enter a value</div>
+
+        <label for="priceperunittime">Price Per Unit Time(min) : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="priceperunittime" ngModel name="priceperunittime" required>
+
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['priceperunittime']?.invalid  && AddVehiclepricingForm.controls['priceperunittime'].touched">
+          *Please enter a value</div>
+
+        <label for="maxspace">Max Space : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text" id="maxspace" ngModel name="maxspace" required>
+        <div class="error"
+          *ngIf="AddVehiclepricingForm.controls['maxspace']?.invalid  && AddVehiclepricingForm.controls['maxspace'].touched">
+          *Please enter a value</div>
+
+
+        <button type="submit" class="btn btn-primary my-4">Add Vehicle Price</button>
+        <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4"
+          (click)="onSave(AddVehicleForm.value);AddVehiclepricingForm.reset();">Update Vehicle</button>
+        <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4"
+          (click)="onCancel(AddVehicleForm.value);AddVehiclepricingForm.reset();">cancel</button>
+
+
+
+
+
+      </form>
+
+
+
+
+    </div>
+    <!--
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+    </div> -->
+  </div>
+
+</ng-template>
+
+<div class="container-fluid mt--5">
   <!-- Table -->
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header border-0">
-          <h3 class="mb-0">Users List</h3>
+        <div class="card-header border-0 row mr-0 ml-0">
+
+          <div class="col-sm-4">
+
+
+            <div class="form-control-search d-flex  align-items-center">
+              <input type="search" class="form-control" placeholder="Search" #search>
+              <div class="btn-group">
+                <button class="btn" (click)="onSearch(search.value)">
+                  <i class="search-icon fas fa-search"></i>
+                </button>
+                <button class="btn refresh" (click)="getAllPricing(1);search.value = ''">⟳</button>
+              </div>
+            </div>
+
+          </div>
+
+
+
+
+          <div class="col-sm-8 text-right">
+
+            <button class="btn btn-outline-primary add-dialog" (click)="openModel(content)"> + Add </button>
+          </div>
+
         </div>
         <div class="table-responsive">
-          <table class="table align-items-center table-flush">
+          <table class="table align-items-center table-flush text-center">
             <thead class="thead-light">
               <tr>
                 <th scope="col">Country</th>
@@ -172,14 +191,14 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let data of allPricing">
+              <tr *ngFor="let data of allPricing" (click)="openModel(content);onUpdate(data._id)">
 
 
 
 
-                <td>{{data.country}}
-                <td>{{data.city}}</td>
-                <td>{{data.vehicle}}</td>
+                <td>{{data.country.name}}
+                <td>{{data.city.city}}</td>
+                <td>{{data.vehicle.name}}</td>
                 <td>{{data.driverprofit}}</td>
 
                 <td>{{data.distanceforbaseprice}}
@@ -194,37 +213,44 @@
                 </td>
 
               </tr>
+              <tr *ngIf="allPricing?.length <= 0 ">
+                <td class="p-5" colspan="11">
+
+                  <strong> Driver Not Found</strong>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
-        <div class="card-footer py-4">
-          <nav aria-label="...">
-            <ul class="pagination justify-content-end mb-0">
-              <li class="page-item disabled">
-                <a class="page-link" href="javascript:void(0)" tabindex="-1">
-                  <i class="fas fa-angle-left"></i>
-                  <span class="sr-only">Previous</span>
-                </a>
-              </li>
-              <li class="page-item active">
-                <a class="page-link" href="javascript:void(0)">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0)">2 <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0)">
-                  <i class="fas fa-angle-right"></i>
-                  <span class="sr-only">Next</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+
+        <div>
+          <div class="card-footer py-4">
+            <nav aria-label="...">
+              <ul class="pagination justify-content-end mb-0">
+
+                <li class="page-item disabled" *ngIf="currentPage!==1" (click)="onPrevious()">
+                  <a class="page-link">
+                    <i class="fas fa-angle-left"></i>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                </li>
+                <li class="page-item" [ngClass]="{'active' : currentPage == i+1}"
+                  [hidden]="currentPage <i || currentPage-1 > i+1" *ngFor="let item of NoOfPages; let i = index"> <a
+                    class="page-link" (click)="onPage(i+1)">{{i+1}}</a>
+                </li>
+
+                <li class="page-item" [ngClass]="{'vh':currentPage==NoOfPages.length }" (click)="onNext()">
+                  <a class="page-link">
+                    <i class="fas fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!-- Dark table -->
+    <!-- Dark table -->
 
-</div>
+  </div>

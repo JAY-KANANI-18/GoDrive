@@ -1,36 +1,43 @@
-<div class="header bg-gradient-skyblue pb-8 pt-5 pt-md-8">
+<div class="header bg-gradient-skyblue pb-3 pb-7 pt-7">
   <div class="container-fluid">
-    <div class="header-body">
+    <div class="header">
+<h1>Running Request</h1>
       <!-- Card stats -->
 
-      <div class="modal" id="modals" #modals>
+      <!-- <div class="modal" id="modals" #modals >
         <div class="modal-dialog" role="document">
           <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" >
               <h5 class="modal-title">Assign Driver</h5>
+
+
+
+
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"
               (click)="closeAssignDialog()">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <p><strong>Trip Details:</strong></p>
+          <div class="modal-body" *ngIf="currentRide">
+           <h2>Trip Details:</h2>
+
+            <p>PickUp Location : {{currentRide.pickup}}</p>
+            <p>DropOff Location : {{currentRide.dropoff}}</p>
+            <p>distance : {{currentRide.distance}}</p>
 
 
-            <p><strong>Schedule Time:</strong> [insert schedule time here]</p>
+
             <p><strong>Available Drivers:</strong></p>
 
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="assign-selected-driver"
-            (click)="onAccept(ride._id);closeAssignDialog()">Assign Selected Driver</button>
-            <button type="button" class="btn btn-secondary" id="assign-nearest-driver">Assign Nearest
-              Driver</button>
+            (click)="onAccept(currentRide._id);closeAssignDialog()">Accept Ride</button>
+            <button type="button" class="btn btn-secondary" id="assign-nearest-driver" (click)="onReject(currentRide._id)">Decline Ride</button>
             </div>
           </div>
         </div>
-      </div>
-
+      </div> -->
 
 
     </div>
@@ -38,13 +45,13 @@
 </div>
 
 <!-- Page content -->
-<div class="container-fluid ">
+<div class="container-fluid mt--5">
 
   <!-- Table -->
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="modal" id="modal">
+        <!-- <div class="modal" id="modal">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -54,12 +61,12 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" *ngIf="currentRide">
               <p><strong>Trip Details:</strong></p>
 
-<!--
-              <p>PickUp Location : {{ride.pickup}}</p>
-              <p>DropOff Location : {{ride.dropoff}}</p> -->
+
+              <p>PickUp Location : {{currentRide.pickup}}</p>
+              <p>DropOff Location : {{currentRide.dropoff}}</p>
 
 
             </div>
@@ -71,17 +78,20 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div class="table-responsive">
           <table class="table align-items-center table-flush">
             <thead class="thead-light">
               <tr>
-                <th scope="col">Name`</th>
-                <th scope="col">Email</th>
-                <th scope="col">Number</th>
-                <th scope="col">Country</th>
+                <th scope="col">id`</th>
+                <th scope="col">user`</th>
+                <th scope="col">pickup</th>
+                <th scope="col">dropoff</th>
+                <th scope="col">distance</th>
                 <th scope="col">Status</th>
+                <th>Time</th>
+                <th>Driver</th>
                 <th scope="col">Buttons</th>
               </tr>
             </thead>
@@ -89,22 +99,41 @@
 
 
 
-              <tr *ngFor="let ride of allrides">
+              <tr class="table-row" *ngFor="let ride of allrides">
+                <!-- <ng-template hidden *ngFor="let timers of timers"> -->
 
-                <td class="nametd">{{ride.name}}
-                <td class="nametd">{{ride.pickup}}
-                <td class="nametd">{{ride.dropoff}}
-                <td class="nametd">{{ride.distance}}
-                <td class="nametd">active
-                <td id="b'+ driver._id + '">
-                  <button class="update-button btn btn-outline-primary" (click)="onAccept(driver._id)"> Accept</button>
-                  <button class="delete-button btn btn-outline-danger" (click)="onCancel(driver._id)"> DELETE</button>
+
+                  <td class="nametd">{{ride._id}}</td>
+                  <td class="nametd">{{ride.user.name}}</td>
+
+                  <td class="nametd">{{ride.pickup}}</td>
+                  <td class="nametd">{{ride.dropoff}}</td>
+                  <td class="nametd">{{ride.distance}}
+                  </td>
+                  <td class="nametd">{{ride.status | rideStatus}}</td>
+                  <td class="timer countdown">{{countDowns$[ride._id] | async }}</td>
+                  <td>{{ride.driver[0]?.name || 'No Driver'}}<lord-icon src="https://cdn.lordicon.com/yhtqafjk.json"
+                      trigger="loop" colors="primary:#121331,secondary:#08a88a,tertiary:#ebe6ef"
+                      style="width:20px;height:20px">
+                    </lord-icon>
                 </td>
+                <td id="b'+ driver._id + '">
+                  <button class="update-button btn btn-outline-primary" *ngIf="ride.driver[0]?.name" (click)="onAccept(ride._id)"> Accept</button>
+                  <button class="delete-button btn btn-outline-danger" *ngIf="ride.driver[0]?.name" (click)="onReject(ride)"> Reject</button>
+                </td>
+                <!-- </ng-template> -->
 
+              </tr>
+              <tr *ngIf="allrides.length <= 0 ">
+                <td class="Empty p-5" colspan="9">
+
+                  <strong> Rides Not Found</strong>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
+
         <div class="card-footer py-4">
           <nav aria-label="...">
             <ul class="pagination justify-content-end mb-0">

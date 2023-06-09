@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { PostsService } from 'src/app/services/login.service';
 
 declare interface RouteInfo {
     path: string;
@@ -23,6 +24,7 @@ export const ROUTES: RouteInfo[] = [
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
+
   submenu1: boolean = false;
   submenu2: boolean = false;
   sidebarOpen: boolean = false;
@@ -44,7 +46,7 @@ export class SidebarComponent implements OnInit {
   public menuItems: any[];
   public isCollapsed = true;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router ,private postsService:PostsService) { }
 
   ngOnInit() {
     this.menuItems = ROUTES.filter(menuItem => menuItem);
@@ -55,4 +57,9 @@ export class SidebarComponent implements OnInit {
   show(){this.drop=!this.drop}
   show2(){this.drop2=!this.drop2}
   show3(){this.drop3=!this.drop3}
+
+  onLogOut(){
+    this.postsService.logOut()
+    this.router.navigate(["/login"])
+  }
 }

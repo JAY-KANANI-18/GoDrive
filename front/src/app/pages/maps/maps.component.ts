@@ -1,92 +1,70 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashService } from 'src/app/services/dashboard.service';
 import { PricingService } from 'src/app/services/pricing.servive';
+// import * as $ from 'jquery';
 // declare const google: any;
 let infoWindow: google.maps.InfoWindow
 let map!: google.maps.Map
 let marker: google.maps.Marker
-let geocoder = new google.maps.Geocoder;
-let service = new google.maps.DistanceMatrixService()
+// let service = new google.maps.DistanceMatrixService()
 
 @Component({
   selector: 'app-maps',
   templateUrl: './maps.component.html',
   styleUrls: ['./maps.component.scss']
 })
+
 export class MapsComponent implements OnInit {
-  loaction: any = { lat: 22, lng: 22 }
-  newLocation: any
-  TotalDistance: any
-  TotalTime: any
-  polyValid:any = true
-  zoneMode = false
-  data = {
-    lat: 22,
-    lng: 22
-  }
-  zone: any = []
-  allzones: any
-  countriesArray: any
-  countryObj: any
-  selectedCountry: any
-  allZones: any
-  polygon: any
-  updateId: any
-  activateUpdate =false
-  activateAddZone =true
+  private geocoder = new google.maps.Geocoder;
+
+  private autocomplete: google.maps.places.Autocomplete
+
+  public polyerr: any
+  public allzones: any
+  public errorMsg: any
+  public countriesArray: any
+  public cityForm: FormGroup
+  public activateUpdate: boolean = false
+  public activateAddZone: boolean = true
+  public currentPage: any = 1
+  public NoOfPages: any = []
+
+
+  private polygon: any
+  private updateId: any
+  private zone: any = []
+  private selectedCountry: any
+
+
   @ViewChild('fromInput') fromInput: ElementRef;
   @ViewChild('toInput') toInput: ElementRef;
 
 
-  constructor(private dashService: DashService, private pricingService: PricingService) { }
+  constructor(private dashService: DashService, private pricingService: PricingService, private ngbService: NgbModal,
+  ) { }
 
 
   ngOnInit() {
-    this.getZones()
 
-    this.pricingService.getAddedCountry().subscribe((data: any) => {
-      this.countriesArray = []
-
-      data.forEach(element => {
-        this.countriesArray.push(element.name)
-
-
-
-      });
-
-console.log(data);
-
-      // this.countryObj = data.countriesObject
-
-
-
-
-    })
-
-    this.forCurrentlocation()
-    this.forAutofordist()
-
+    this.getZones(this.currentPage)
 
   }
 
-
-
-
-  initMap(data: any) {
+  initMap() {
     let option = {
       zoom: 8,
-      center: data,
-      animation: google.maps.Animation.DROP
+      animation: google.maps.Animation.DROP,
+      mapTypeControlOptions: {
+        mapTypeIds: []
+      },
+      streetViewControl: false,
 
     }
     map = new google.maps.Map(document.getElementById('map') as HTMLElement, option)
 
-
-
-
   }
-
-
 
   forCurrentlocation() {
 
@@ -96,23 +74,25 @@ console.log(data);
         lng: position.coords.longitude
 
       }
-      this.initMap(data)
+      this.initMap()
+      console.log(data);
+      map.setCenter(data)
 
-      this.forAutofordist()
+      // this.forAutofordist()
       this.forPoly()
-      // this.forholy()
     })
 
 
   }
-  forholy(data: any) {
+
+  forholy(data: any,edit:boolean) {
     const coordinates = data
 
     // Create a map object
-    const map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 8,
-      center: { lat: 37.7749, lng: -122.4194 }
-    });
+    // const map = new google.maps.Map(document.getElementById("map"), {
+    //   zoom: 8,
+    //   center: { lat: 37.7749, lng: -122.4194 }
+    // });
 
     // Create a polygon object
     const polygon = new google.maps.Polygon({
@@ -122,8 +102,8 @@ console.log(data);
       strokeWeight: 2,
       fillColor: "#FF0000",
       fillOpacity: 0.35,
-      editable: true,
-      draggable: true
+      editable: edit,
+      draggable: edit
     });
 
     google.maps.event.addListener(polygon.getPath(), 'set_at', function (index) {
@@ -157,17 +137,32 @@ console.log(data);
     map.setCenter(selectedLocation)
   }
 
+  changeAutoComplete(countryCode: any) {
+    // this.autocomplete.setComponentRestrictions(null);
+    this.autocomplete.setComponentRestrictions({ country: countryCode });
+  }
 
+  onselect(country: any) {
 
+    let countryId = country
+    const selectedCountry = this.countriesArray.find((country: any) => country._id === countryId);
+    console.log(selectedCountry.countrycode);
+    this.changeAutoComplete(selectedCountry.countrycode)
+    this.pricingService.getCities(country).subscribe({
+      next:(data:any)=>{
 
+        data.forEach((city:any) => {
+          this.forholy(city.zone,false)
+
+        });
+
+      },error:(error)=>{
+        console.log(error);
+      }
+    })
+  }
 
   forPoly() {
-
-    var map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
-      zoom: 10,
-      center: { lat: 37.7749, lng: -122.4194 } // set initial map center
-    });
-
 
 
     var drawingManager = new google.maps.drawing.DrawingManager({
@@ -206,6 +201,7 @@ console.log(data);
           coordinates.push({ lat: latLng.lat(), lng: latLng.lng() });
         });
         this.zone = coordinates
+        this.polyerr = true
 
 
         google.maps.event.addListener(path, 'set_at', function (index) {
@@ -236,133 +232,105 @@ console.log(data);
 
 
   }
+  openModel(content: any) {
 
-
-
+    this.ngbService.open(content, { centered: true });
+    this.CreateCityForm()
+    this.getAvailableCountries()
+    this.forCurrentlocation()
+    this.forAutofordist()
+  }
   forAutofordist() {
-    let option = {
-      componentRestrictions: { country: 'us' }
 
 
-    }
-    let autocomplete = new google.maps.places.Autocomplete(document.getElementById('city') as HTMLInputElement, {
+    this.autocomplete = new google.maps.places.Autocomplete(document.getElementById('city') as HTMLInputElement, {
       types: ['(cities)'],
-
-
-
+      // fields: ['formatted_address']
 
     })
+    console.log(this.autocomplete);
 
 
-
-    google.maps.event.addListener(autocomplete, 'place_changed', () => {
-      var place = autocomplete.getPlace()
+    google.maps.event.addListener(this.autocomplete, 'place_changed', () => {
+      var place = this.autocomplete.getPlace()
       let lat = place.geometry?.location?.lat()
       let lng = place.geometry?.location?.lng()
-
+      console.log( this.autocomplete);
       let selectedLocation: any = {
         lat,
         lng
 
-
       }
-
+      console.log(selectedLocation);
+      this.cityForm.get('city').setValue(place.formatted_address)
       map.setCenter(selectedLocation)
 
-      this.addMarker({ coords: selectedLocation })
+      // this.addMarker({ coords: selectedLocation })
 
     })
-
-
-
 
   }
-  addMarker(props: any) {
-    marker = new google.maps.Marker({
-      position: props.coords,
-      map: map,
-      draggable: true, // set draggable option to true
-      title: 'Drag me!'
 
-    })
+  addZone() {
 
-    if (props.icon) {
-      marker.setIcon(props.icon)
-    }
-    if (props.content) {
-      infoWindow = new google.maps.InfoWindow({
-        content: props.content
-      })
-    }
+    let formData = this.cityForm.value
+    let length: any = this.cityForm.controls
 
 
-    marker.addListener('click', () => {
-      infoWindow.open(map, marker)
-    })
-
-
-    google.maps.event.addListener(marker, 'dragend', function () {
-      let newplace = marker.getPosition();
-      geocoder.geocode({ location: newplace }, function (results: any, status) {
-        if (status === 'OK') {
-          if (results[0]) {
-
-            let ele = document.getElementById('searchInput') as HTMLInputElement
-            ele.value = results[0].formatted_address
-
-          } else {
-            window.alert('No results found');
-          }
-        } else {
-          window.alert('Geocoder failed due to: ' + status);
+    if (this.cityForm.invalid) {
+      for (const field in length) {
+        if (!length[field].value) {
+          length[field].touched = true
         }
-      });
-    });
-
-
-
-  }
-
-
-
-  addZone(country: any, city: any) {
-      if((this.zone.length == 0) || (this.zone.length<=3)){
-        this.polyValid = false
-        return
       }
-    let zoneData = {
-      country: country,
-      city: {
-        name: city,
-        zone: this.zone
-      }
+      return
+    }
 
+    if (!this.polyerr) {
+      this.polyerr = false
+      return
+    }
+    let citydata = {
+      country: formData.country,
+      city: formData.city,
+      zone: this.zone
 
     }
-    console.log(zoneData);
-    this.pricingService.addZone(zoneData).subscribe((data: any) => {
-      this.forCurrentlocation()
-      this.getZones()
+    console.log(citydata);
+    this.pricingService.addZone(citydata).subscribe({
+      next: (data: any) => {
+        this.cityForm.reset()
+        this.zone = []
+        this.forCurrentlocation()
+        this.getZones(this.currentPage)
 
+      }, error: (error) => {
+        if (error.error.city) {
+          console.log('in city err');
+
+          this.errorMsg = error.error.city
+          console.log(this.errorMsg);
+        }
+      }
     })
-    console.log(zoneData);
-
-
-    // this.dashService.addZone(country)
-
-
 
 
 
   }
-  getZones() {
-    this.pricingService.getZone().subscribe((data: any) => {
-      // console.log(data);
-      this.allzones = data
+  getZones(page:any) {
+    this.pricingService.getZone(page).subscribe(
+      {
+        next: (data: any) => {
+          console.log(data);
+          this.allzones = data.cities
+          this.NoOfPages = new Array(data.pages)
 
-    })
+
+        }, error: (error) => {
+          console.log(error);
+        }
+      })
   }
-
 
   updateCity(id: any) {
     this.activateUpdate = true
@@ -373,9 +341,9 @@ console.log(data);
         let el1 = document.getElementById('country') as HTMLInputElement
         let el2 = document.getElementById('city') as HTMLInputElement
         el1.value = data.country
-        el2.value = data.city.name
+        el2.value = data.city
         this.updateId = data._id
-        this.forholy(data.city.zone)
+        this.forholy(data.zone,true)
 
         var vertices = this.polygon.getPath();
         var centroid = { lat: 0, lng: 0 };
@@ -402,6 +370,7 @@ console.log(data);
     })
 
   }
+
   onSave() {
     let coordinates = []
     let path = this.polygon.getPath()
@@ -416,10 +385,9 @@ console.log(data);
 
     let zoneData = {
       country: country.value,
-      city: {
-        name: city.value,
-        zone: coordinates
-      }
+      city: city.value,
+      zone: coordinates
+
 
     }
     console.log(zoneData);
@@ -430,7 +398,7 @@ console.log(data);
 
 
       console.log(data);
-      this.getZones()
+      this.getZones(this.currentPage)
     })
 
     // this.dashService.addZone(country)
@@ -440,6 +408,7 @@ console.log(data);
 
 
   };
+
   getPolygonCenter(polygon) {
     var vertices = polygon.getPath();
     var centroid = { lat: 0, lng: 0 };
@@ -456,27 +425,92 @@ console.log(data);
 
     return new google.maps.LatLng(centroid.lat, centroid.lng);
   }
+
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
   onDelete(id: any) {
     let type: "City"
     this.pricingService.deleteCity(id).subscribe({
       next: (data: any) => {
-        this.getZones()
+        this.getZones(this.currentPage)
 
       }, error: (error) => {
         console.log(error);
       }
     })
   }
-  onCancel(){
-    this.getZones()
+
+  onCancel() {
+    this.getZones(this.currentPage)
     this.activateUpdate = false
     this.activateAddZone = true
     this.forCurrentlocation()
 
   }
 
+  CreateCityForm() {
+
+    this.cityForm = new FormGroup({
+      country: new FormControl("",
+      [Validators.required]
+      ),
+      city: new FormControl(null,
+        [Validators.required]
+        ),
+    })
+
+  }
+
+  getAvailableCountries() {
+
+    this.pricingService.getAddedCountry().subscribe(
+      {
+        next: (data: any) => {
+          this.countriesArray = data
+          console.log(data);
+
+        }, error: (error) => {
+          console.log(error);
+        }
+      })
+
+  }
+  onSearch(search:any){
+    console.log(search);
+    this.pricingService.getZone(this.currentPage,{search}).subscribe({
+      next:(data:any)=>{
+        console.log(data);
+        this.allzones = data.cities
+        this.NoOfPages = new Array(data.pages)
+        this.currentPage = 1
+      },error:(error)=>{
+        console.log(error);
+      }
+    })
+
+  }
+  onNext(){
+    this.currentPage++
+    console.log(this.currentPage);
+    console.log(this.NoOfPages);
+
+    this.getZones(this.currentPage)
+
+
+
+  }
+  onPrevious(){
+    this.currentPage--
+    this.getZones(this.currentPage)
+
+
+  }
+  onPage(page:any){
+    this.currentPage = page
+    this.getZones(this.currentPage)
+
+  }
 
 }

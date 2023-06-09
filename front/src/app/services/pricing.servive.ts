@@ -9,7 +9,6 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { Subject, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
-// import { Post } from './post.model';
 
 @Injectable({ providedIn: 'root' })
 
@@ -20,16 +19,13 @@ export class PricingService {
 
 
 
-//
+
   addVehicle(data: any) {
     return this.http.post(`http://localhost:3000/Pricing/VehicleType`, data)
 
   }
-  //
-  getVelicles() {
-    return this.http.get('http://localhost:3000/Pricing/Vehicles')
 
-  }
+
 
   deleteItem(id: any, type: any) {
     return this.http.get(`http://localhost:3000/Pricing/${type}/Delete/${id}`)
@@ -43,32 +39,30 @@ export class PricingService {
     return this.http.get(`http://localhost:3000/Pricing/VehiclePricing/Delete?id=${id}`)
 
   }
-  //
+
   updateVehicle(id: any) {
-    return this.http.get(`http://localhost:3000/Pricing/Vehicles/Update/${id}`)
+    return this.http.get(`http://localhost:3000/Pricing/Vehicles/Update?id=${id}`)
 
   }
-  //
+
   saveVehicle(data: any, id: any) {
     return this.http.post(`http://localhost:3000/Pricing/Vehicles/Update/save/${id}`, data)
 
   }
-//*
   getCountry() {
     return this.http.get(`http://localhost:3000/Country`)
 
   }
-//*
 
   addCountry(data: any) {
     return this.http.post(`http://localhost:3000/Pricing/Country`, data)
 
-//
+
   }
   getAddedCountry() {
     return this.http.get(`http://localhost:3000/Pricing/Country`)
 
-//
+
   }
   searchItem(query: any, type: any) {
     return this.http.get(`http://localhost:3000/Pricing/Search/${type}?str=${query}`)
@@ -77,22 +71,30 @@ export class PricingService {
   }
   getLocation(place: any) {
     console.log(place);
-    return this.http.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${place}&key=AIzaSyCjPuEw8IEcDWsL2DlvAk4uOMm_5sOMPIo`,)
+    return this.http.get(`http://maps.googleapis.com/maps/api/geocode/json?address=${place}&key=AIzaSyCjPuEw8IEcDWsL2DlvAk4uOMm_5sOMPIo`,)
   }
-//
+
   addZone(data: any) {
     return this.http.post(`http://localhost:3000/Pricing/city`, data)
 
   }
-  //
-  getZone() {
-    return this.http.get(`http://localhost:3000/Pricing/Zone`)
+
+  getZone(page:any,options?:any) {
+    if(options?.search){
+
+      return this.http.get(`http://localhost:3000/Pricing/Zone?page=${page}&str=${options.search}`)
+    }
+    return this.http.get(`http://localhost:3000/Pricing/Zone?page=${page}`)
 
 
   }
-//
-  getVehiclesPricing() {
-    return this.http.get(`http://localhost:3000/Pricing/AllVehiclePricing`)
+
+  getVehiclesPricing(page:any,options?:any) {
+    if(options?.search){
+
+      return this.http.get(`http://localhost:3000/Pricing/AllVehiclePricing?page=${page}&str=${options.search}`)
+    }
+    return this.http.get(`http://localhost:3000/Pricing/AllVehiclePricing?page=${page}`)
 
 
   }
@@ -106,13 +108,13 @@ export class PricingService {
 
 
   }
-  //
+
   getCities(country:any) {
     return this.http.get(`http://localhost:3000/Pricing/Cities?country=${country}`)
 
 
   }
-//
+
   addVehiclePricing(data: any) {
     return this.http.post(`http://localhost:3000/Pricing/VehiclePricing`, data)
 
@@ -121,10 +123,7 @@ export class PricingService {
   getServicePricing(city:any,vehicle:any) {
     return this.http.get(`http://localhost:3000/Pricing/VehiclePricing?city=${city}&type=${vehicle}`)
   }
-  //
-  getallzone() {
-    return this.http.get(`http://localhost:3000/Pricing/allZone`)
-  }
+
 
   updateCity(id:any){
     return this.http.get(`http://localhost:3000/Pricing/Update/City?id=${id}`)
@@ -143,9 +142,16 @@ export class PricingService {
   }
   allCallingCodes(){
     return this.http.get(`http://localhost:3000/CallingCodes`)
+  }
+
+  getcityofpoint(point:any){
+    return this.http.post(`http://localhost:3000/findZone`,point)
 
 
   }
+
+
+
 
 
 

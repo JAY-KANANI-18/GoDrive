@@ -20,7 +20,7 @@ export class DashService {
   constructor(private http: HttpClient, private router: Router) { }
 
   addVehicle(data: any) {
-    return this.http.post(`http://localhost:3000/addNewVehicle`, data)
+    return this.http.post(`https://localhost:3000/addNewVehicle`, data)
 
   }
 
@@ -29,45 +29,45 @@ export class DashService {
   // createAndStorePost(data: any) {
   //   const Data: any = { name: data.name, email: data.email, password: data.password };
 
-  //   return this.http.post('http://localhost:3000/login', Data)
+  //   return this.http.post('https://localhost:3000/login', Data)
 
   // }
 
   // getVelicles() {
-  //   return this.http.get('http://localhost:3000/Vehicles')
+  //   return this.http.get('https://localhost:3000/Vehicles')
 
   // }
 
   // deleteItem(id: any, type: any) {
-  //   return this.http.get(`http://localhost:3000/${type}/Delete/${id}`)
+  //   return this.http.get(`https://localhost:3000/${type}/Delete/${id}`)
 
   // }
   // updateVehicle(id: any) {
-  //   return this.http.get(`http://localhost:3000/Vehicles/Update/${id}`)
+  //   return this.http.get(`https://localhost:3000/Vehicles/Update/${id}`)
 
   // }
   // saveVehicle(data: any, id: any) {
-  //   return this.http.post(`http://localhost:3000/Vehicles/Update/save/${id}`, data)
+  //   return this.http.post(`https://localhost:3000/Vehicles/Update/save/${id}`, data)
 
   // }
 
   // getCountry() {
-  //   return this.http.get(`http://localhost:3000/getCountry`)
+  //   return this.http.get(`https://localhost:3000/getCountry`)
 
   // }
 
   // addCountry(data: any) {
-  //   return this.http.post(`http://localhost:3000/addCountry`, data)
+  //   return this.http.post(`https://localhost:3000/addCountry`, data)
 
 
   // }
   // getAddedCountry() {
-  //   return this.http.get(`http://localhost:3000/getAddedCountry`)
+  //   return this.http.get(`https://localhost:3000/getAddedCountry`)
 
 
   // }
   // searchItem(query: any, type: any) {
-  //   return this.http.get(`http://localhost:3000/Search/${type}?str=${query}`)
+  //   return this.http.get(`https://localhost:3000/Search/${type}?str=${query}`)
 
 
   // }
@@ -77,73 +77,73 @@ export class DashService {
   // }
 
   // addZone(data: any) {
-  //   return this.http.post(`http://localhost:3000/addZone`, data)
+  //   return this.http.post(`https://localhost:3000/addZone`, data)
 
   // }
   // getZone() {
-  //   return this.http.get(`http://localhost:3000/zone`)
+  //   return this.http.get(`https://localhost:3000/zone`)
 
 
   // }
 
   // getVehiclesType() {
-  //   return this.http.get(`http://localhost:3000/VehiclesType`)
+  //   return this.http.get(`https://localhost:3000/VehiclesType`)
 
 
   // }
   // getCities() {
-  //   return this.http.get(`http://localhost:3000/Cities`)
+  //   return this.http.get(`https://localhost:3000/Cities`)
 
 
   // }
   // addVehiclePricing(data: any) {
-  //   return this.http.post(`http://localhost:3000/addVehiclePricing`, data)
+  //   return this.http.post(`https://localhost:3000/addVehiclePricing`, data)
 
 
   // }
 
   // addUser(data: any) {
-  //   return this.http.post(`http://localhost:3000/Users`, data)
+  //   return this.http.post(`https://localhost:3000/Users`, data)
 
 
   // }
   // deleteUser(id: any) {
-  //   return this.http.get(`http://localhost:3000/Users/Delete/${id}`)
+  //   return this.http.get(`https://localhost:3000/Users/Delete/${id}`)
 
 
   // }
   // updateUser(id: any) {
-  //   return this.http.get(`http://localhost:3000/Users/Update/${id}`)
+  //   return this.http.get(`https://localhost:3000/Users/Update/${id}`)
 
 
   // }
   // getUsers() {
-  //   return this.http.get(`http://localhost:3000/Users`)
+  //   return this.http.get(`https://localhost:3000/Users`)
 
 
   // }
 
   // addDriver(data: any) {
-  //   return this.http.post(`http://localhost:3000/Drivers`, data)
+  //   return this.http.post(`https://localhost:3000/Drivers`, data)
 
 
   // }
   // getDrivers() {
-  //   return this.http.get(`http://localhost:3000/Drivers`)
+  //   return this.http.get(`https://localhost:3000/Drivers`)
   // }
 
 
   // getAddedUser(data: any) {
-  //   return this.http.post(`http://localhost:3000/User/Data`, data)
+  //   return this.http.post(`https://localhost:3000/User/Data`, data)
   // }
   // getVehiclePricing(lat: any, lng: any) {
-  //   return this.http.get(`http://localhost:3000/VehiclePricing?lat=${lat}&lng=${lng}`)
+  //   return this.http.get(`https://localhost:3000/VehiclePricing?lat=${lat}&lng=${lng}`)
   // }
   // addRide(data: any) {
-  //   return this.http.post(`http://localhost:3000/addRide`, data)
+  //   return this.http.post(`https://localhost:3000/addRide`, data)
   // }
   // getallzone() {
-  //   return this.http.get(`http://localhost:3000/allZone`)
+  //   return this.http.get(`https://localhost:3000/allZone`)
 
 
   // }

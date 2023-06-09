@@ -83,7 +83,6 @@ async function jay(){
 
     zone.forEach((each)=>{
        allzones.push( each.city.zone)
-       console.log(allzones);
        function isPointInPolygon(point, polygon) {
            let inside = false;
            let x = point[0], y = point[1];
@@ -112,7 +111,6 @@ async function jay(){
             
             if (isPointInPolygon(point, polygon)) {
                 console.log("The point is inside the polygon.");
-                console.log(each.city.name);
                 return each.city.name
             } else {
                 console.log("The point is outside the polygon.");

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-vertical navbar-expand-md navbar-light bg-white" id="sidenav-main">
+<nav class="navbar navbar-vertical navbar-expand-md navbar-light bg-aliceblue" id="sidenav-main">
   <div class="container-fluid">
     <!-- Toggler -->
     <button class="navbar-toggler" type="button" (click)="isCollapsed=!isCollapsed"
@@ -6,9 +6,13 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <!-- Brand -->
-    <a class="navbar-brand pt-0" routerLinkActive="active" [routerLink]="['/dashboard']" style="color:#49afd7 ;font-weight: 900;font-size: 25px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
+
+    <!-- <img src="./assets/img/logo1.jpeg" alt=""> -->
+    <img src="./assets/img/godrivePNG.png" alt="Logo" class="mt-3" width="200rem">
+    <!-- <a class="navbar-brand pt-0" routerLinkActive="active" [routerLink]="['/dashboard']"
+      style="color:#49afd7 ;font-weight: 900;font-size: 25px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">
       GODrive
-    </a>
+    </a> -->
     <!-- User -->
     <ul class="nav align-items-center d-md-none">
       <li class="nav-item" ngbDropdown placement="bottom-right">
@@ -76,38 +80,6 @@
           </div>
         </div>
       </div>
-      <!-- Form -->
-      <form class="mt-4 mb-3 d-md-none">
-        <div class="input-group input-group-rounded input-group-merge">
-          <input type="search" class="form-control form-control-rounded form-control-prepended" placeholder="Search"
-            aria-label="Search">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <span class="fa fa-search"></span>
-            </div>
-          </div>
-        </div>
-      </form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -115,39 +87,48 @@
 
 
 
-        <li class="nav-item" (click)="show()"><a class="nav-link active"> <img src="./assets/img/icons/road.png"
-          width="10%">
-          Rides </a></li>
+        <li class="nav-item" (click)="show()"><a class="nav-link active"> <img src="../../../assets/img/icons/automobile.png"
+              width="15%" >
+            Rides </a></li>
 
-          <div *ngIf="drop">
 
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/create-request']"> <img
-                src="./assets/img/icons/plus.png" width="8%"> Create Ride </a> </li>
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/rides/confirmed-rides']"><img
-                src="./assets/img/icons/check.png" width="8%"> Confirmed Rides </a></li>
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/rides/ride-history']"><img
-                src="./assets/img/icons/history.png" width="8%"> Ride History </a></li>
+        <div *ngIf="drop" >
+
+          <li class="nav-item nav-link child" routerlinkactive="active"><a class="nav-link "
+              [routerLink]="['/create-request']"> <img src="./assets/img/icons/plus.png" > Create Ride </a>
+          </li>
+
+          <li class="nav-item nav-link child" routerlinkactive="active"><a class="nav-link"
+              [routerLink]="['/rides/confirmed-rides']"><img src="../../../assets/img/icons/check.png" > Confirmed
+              Rides </a></li>
+          <li class="nav-item nav-link child" routerlinkactive="active"><a class="nav-link"
+              [routerLink]="['/rides/ride-history']"><img src="./assets/img/icons/history.png" > Ride History
+            </a></li>
         </div>
+        <div class="dropdown-divider"></div>
 
 
-        <li class="nav-item" routerlinkactive="active"><a class="nav-link" [routerLink]="['/users']"><img
-              src="./assets/img/icons/users.png" width="10%"> Users </a></li>
+        <li class="nav-item" routerlinkactive="active"><a class="nav-link " [routerLink]="['/users']"><img
+              src="../../../assets/img/icons/man.png" width="15%"> Users </a></li>
+
+              <div class="dropdown-divider"></div>
 
 
-
-        <li class="nav-item"  (click)="show2()"><a class="nav-link" ><img
-              src="./assets/img/icons/driver.png" width="10%"> Drivers </a></li>
+        <li class="nav-item" (click)="show2()"><a class="nav-link"><img src="./assets/img/icons/driver.png" width="15%">
+            Drivers </a></li>
 
         <div *ngIf="drop2">
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/drivers']"> <img
-                src="./assets/img/icons/plus.png" width="8%"> List</a> </li>
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/drivers/Running-request']"><img
-                src="./assets/img/icons/check.png" width="8%">Running request </a></li>
+          <li class="nav-item nav-link child" routerlinkactive="active"><a class="nav-link" [routerLink]="['/drivers']"> <img
+                src="../../../assets/img/icons/list.png" width="8%"> List</a> </li>
+          <li class="nav-item nav-link child" routerlinkactive="active"><a class="nav-link"
+              [routerLink]="['/drivers/Running-request']"><img src="../../../assets/img/icons/racing.png" width="8%">Running
+              request </a></li>
         </div>
 
+        <div class="dropdown-divider"></div>
 
-        <li class="nav-item"  (click)="show3()"><a class="nav-link" ><i
-              class="ni ni-single-02 text-yellow"></i> Pricing </a></li>
+        <li class="nav-item" (click)="show3()"><a class="nav-link"><i class="ni ni-single-02 text-yellow"></i> Pricing
+          </a></li>
 
 
 
@@ -156,18 +137,19 @@
                 src="./assets/img/icons/plus.png" width="8%"> country</a> </li>
           <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/city']"><img
                 src="./assets/img/icons/check.png" width="8%"> city </a></li>
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/vehicle-type']"> <img
-                src="./assets/img/icons/plus.png" width="8%">vehicle Type </a> </li>
-          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/vehicle-pricing']"><img
-                src="./assets/img/icons/check.png" width="8%"> vehical Pricing</a></li>
+          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link" [routerLink]="['/vehicle-type']">
+              <img src="./assets/img/icons/plus.png" width="8%">vehicle Type </a> </li>
+          <li class="nav-item nav-link" routerlinkactive="active"><a class="nav-link"
+              [routerLink]="['/vehicle-pricing']"><img src="./assets/img/icons/check.png" width="8%"> vehical
+              Pricing</a></li>
         </div>
-        <li class="nav-item" routerlinkactive="active"><a class="nav-link" [routerLink]="['/icons']"><i
+        <div class="dropdown-divider"></div>
+
+        <li class="nav-item" routerlinkactive="active"><a class="nav-link" [routerLink]="['/settings']"><i
               class="ni ni-planet text-blue"></i> Settings </a></li>
+              <div class="dropdown-divider"></div>
 
-        <!-- <li class="nav-item" routerlinkactive="active"><a class="nav-link" [routerLink]="['/login']"><i
-              class="ni ni-key-25 text-info"></i> Login </a></li>
-        <li class="nav-item" routerlinkactive="active"><a class="nav-link" [routerLink]="['/register']"><i
-              class="ni ni-circle-08 text-pink"></i> Register </a></li> -->
+
       </ul>
 
 
@@ -177,39 +159,14 @@
 
 
 
-
-
-      <!-- Navigation -->
-      <!-- <ul class="navbar-nav">
-      <li *ngFor="let menuItem of menuItems" class="{{menuItem.class}} nav-item">
-        <a routerLinkActive="active" [routerLink]="[menuItem.path]" class="nav-link">
-            <i class="ni {{menuItem.icon}}"></i>
-            {{menuItem.title}}
-          </a>
-        </li>
-      </ul> -->
-      <!-- Divider -->
-      <hr class="my-3">
-      <!-- Heading -->
-      <h6 class="navbar-heading text-muted">Documentation</h6>
-      <!-- Navigation -->
-      <ul class="navbar-nav mb-md-3">
-        <li class="nav-item">
-          <a class="nav-link" href="https://demos.creative-tim.com/argon-dashboard-angular/documentation/tutorial">
-            <i class="ni ni-spaceship"></i> Getting started
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://demos.creative-tim.com/argon-dashboard-angular/documentation/colors">
-            <i class="ni ni-palette"></i> Foundation
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://demos.creative-tim.com/argon-dashboard-angular/documentation/alerts">
-            <i class="ni ni-ui-04"></i> Components
-          </a>
-        </li>
-      </ul>
     </div>
+    <div class="dropdown-divider"></div>
+    <!-- <hr> -->
+    <a (click)="onLogOut()" class="text-center btn-link">
+      <i class="ni ni-user-run"></i>
+      &nbsp;
+      <span>Logout</span>
+    </a>
   </div>
+
 </nav>

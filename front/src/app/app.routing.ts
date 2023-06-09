@@ -15,13 +15,13 @@ const routes: Routes = [
   },  {
     path: '',
     component: AdminLayoutComponent,
-    canActivate: [AuthGuard],
     children: [
       {
         path: '',
         loadChildren: () => import('src/app/layouts/admin-layout/admin-layout.module').then(m => m.AdminLayoutModule)
       }
-    ]
+    ],
+    canActivate: [AuthGuard],
   },{
     path: '',
     component: AuthLayoutComponent,

@@ -1,140 +1,366 @@
-<div class="header bg-gradient-skyblue pb-8 pt-5 pt-md-8">
+<div class="header bg-gradient-skyblue p-3 pt-7 pb-7 ">
   <div class="container-fluid">
-    <div class="header-body">
-      <!-- Card stats -->
-      <div class="row">
-        <button id="search-btn" class="btn btn-secondary"> search User </button>
-
-        <div id="formdiv">
-          <div id="form2div">
-            <h1 id="formhead">Insert New User</h1>
-            <!--
-            <form id="form2">
-              <input id="search" type="search" placeholder="Seach here...">
-              <input id="b" type="submit" value="search">
-            </form> -->
-
-          </div>
-
-          <form #addUserForm="ngForm" class="text-center" (ngSubmit)="addUser(addUserForm.value);addUserForm.reset()"
-            name="newForm">
-
-
-            <div class="form-field ">
-              <label for="name">Name : </label>
-              <input id="name" name="name" type="text" placeholder="Enter Your name" value="" ngModel required>
-              <div class="error"
-                *ngIf="addUserForm.controls['name']?.errors?.required && addUserForm.controls['name'].touched">*Please
-                enter a value</div>
-            </div>
+    <div class="header">
+      <h1>Users</h1>
 
 
 
-
-            <div class="form-field">
-              <label for="email">EMail : </label>
-              <input id="email" name="email" type="text" placeholder="Enter Your Email address" value="" ngModel
-                required>
-              <div class="error"
-                *ngIf="addUserForm.controls['email']?.errors?.required && addUserForm.controls['email'].touched">*Please
-                enter a value</div>
-              <span class="error" *ngIf="errorMsg">*{{errorMsg}}</span>
-
-
-            </div>
-
-
-            <div class="form-field">
-              <label for="mobile">Number : </label>
-              <select name="CallingCode" id="CallingCode" style="width:5%;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" ngModel>
-                <option *ngFor="let item of allCallingCode" value={{item}}>{{item}}</option>
-
-              </select>
-              <input id="mobile" name="mobile" type="number" placeholder="Enter Your Phone number"
-                oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                maxlength='10' ngModel required style="width: 65%;border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
-              <div class="error"
-                *ngIf="addUserForm.controls['mobile']?.errors?.required && addUserForm.controls['mobile'].touched">
-                *Please enter a value</div>
-              <span class="error" *ngIf="errorMsg2">*{{errorMsg2}}</span>
-
-            </div>
-
-            <div class="form-field">
-              <label for="country">Country : </label>
-              <input id="country" name="country" type="text" placeholder="Enter Your country" value="" ngModel required>
-              <div class="error"
-                *ngIf="addUserForm.controls['country']?.errors?.required && addUserForm.controls['country'].touched">
-                *Please enter a value</div>
-
-            </div>
-
-            <div class="form-field">
-              <label for="file"> Avatar : </label>
-              <input id="file" type="file" name="avatar" #fileInput ngModel>
-
-            </div>
-            <button class="btn btn-primary" type="submit">Add User</button>
-
-
-          </form>
-
-        </div>
-
-
+      <div>
 
       </div>
     </div>
   </div>
 </div>
+
+
+
+
+<ng-template #content let-modal>
+  <div class="bg-aliceblue modal-div ">
+
+    <div class="modal-header">
+      <h2>User Detail</h2>
+
+
+
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
+          aria-hidden="true">&times;</span></button>
+    </div>
+
+    <div class="modal-body">
+
+
+
+
+
+      <form [formGroup]="UserForm"
+        (ngSubmit)="modal.close('Close click');addUser(UserForm.value,fileInput);UserForm.reset()" name="UserForm">
+
+
+        <label for="name">Name : </label>
+        <input id="name" formControlName="name" name="name" type="text" placeholder="Enter Your name" value="" ngModel
+          required>
+        <div class="error" *ngIf="UserForm.get('name').invalid && UserForm.get('name').touched">*Please
+          enter a value</div>
+
+
+
+
+        <label for="email">Email : </label>
+        <input id="email" formControlName="email" name="email" type="text" email placeholder="Enter Your Email address"
+          value="" ngModel required>
+        <div class="error" *ngIf="UserForm.get('email').invalid && UserForm.get('email').touched">*Please
+          enter a valid value</div>
+        <div class="error" *ngIf="errorMsg">*{{errorMsg}}</div>
+
+
+
+
+        <label for="mobile">Number : </label>
+        <select formControlName="callingCode" name="CallingCode" id="CallingCode"
+          style="width:20%;border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+          <option value="" selected hidden>Select Code </option>
+
+          <option *ngFor="let item of allCallingCode let i = index" value={{item}}>{{item}}</option>
+
+        </select>
+        <input formControlName="mobile" id="mobile" name="mobile" type="number" placeholder="Enter Your Phone number"
+          oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+          maxlength='10' style="width: 80%;border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+        <div class="error"
+          *ngIf="UserForm.get('mobile').invalid && UserForm.get('mobile').touched && UserForm.get('callingCode').invalid && UserForm.get('callingCode').touched">
+          *Please enter a value</div>
+
+        <span class="error" *ngIf="errorMsg2">*{{errorMsg2}}</span>
+
+
+
+        <label for="country">Select Country:</label>
+
+        <select id="country" formControlName="country" name="country" #country>
+          <option value="" selected hidden>Select Country</option>
+          <option *ngFor="let country of countriesArray;let i = index" [value]="country._id">{{ country.name}}
+          </option>
+        </select>
+        <div class="error" *ngIf=" UserForm.get('country').touched && UserForm.get('country').value == '' ">
+          *Please enter a value</div>
+
+
+        <label for="file"> Avatar : </label>
+        <input class="file-div" formControlName="file" id="file" type="file" name="avatar" #fileInput ngModel>
+
+        <button class="btn btn-primary" type="submit">Add User</button>
+        <!--
+      <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4" (click)="onSave(UserForm.value);UserForm.reset();modal.close('Close click');">Update Vehicle</button>
+      <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4" (click)="onCancel(UserForm.value);UserForm.reset();modal.close('Close click')">cancel</button> -->
+      </form>
+
+
+    </div>
+    <!--
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+    </div> -->
+  </div>
+
+</ng-template>
+
+
+<ng-template #content2 let-modal>
+
+  <div class="bg-aliceblue modal-div ">
+
+    <div class="modal-header">
+
+      <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link active">General <span class="sr-only">(current)</span></a>
+            <a class="nav-item nav-link"
+              (click)="modal.dismiss('Cross click');openModel(content3);openCards();getCards()">Cards</a>
+          </div>
+        </div>
+      </nav>
+
+
+      <!-- <a class="active">General</a>&nbsp; | &nbsp;<a class="active">Cards</a> -->
+
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
+          aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="dropdown-divider"></div>
+    <div class="modal-body ">
+
+
+
+      <form [formGroup]="UserForm"
+        (ngSubmit)="modal.close('Close click');addUser(UserForm.value,fileInput);UserForm.reset()" name="UserForm">
+
+
+        <div class="text-center profile">
+
+
+          <img *ngIf="UpdateActivate" src="http://localhost:3000/avatars/{{userImage }}" alt="user image">
+          <div class="file-div">
+
+            <label for="fileInput" class="custom-file-label">
+              <i class="fas fa-upload"></i>
+            </label>
+            <input class="custom-file-input" formControlName="file" id="file" type="file" name="avatar" #fileInput>
+          </div>
+        </div>
+
+
+        <label for="name">Name : </label>
+        <input id="name" formControlName="name" name="name" type="text" placeholder="Enter Your name" value="" ngModel
+          required>
+        <div class="error" *ngIf="UserForm.get('name').invalid && UserForm.get('name').touched">*Please
+          enter a value</div>
+
+
+
+
+        <label for="email">Email : </label>
+        <input id="email" formControlName="email" name="email" type="text" email placeholder="Enter Your Email address"
+          value="" ngModel required>
+        <div class="error" *ngIf="UserForm.get('email').invalid && UserForm.get('email').touched">*Please
+          enter a valid value</div>
+        <div class="error" *ngIf="errorMsg">*{{errorMsg}}</div>
+
+
+
+
+        <label for="mobile">Number : </label>
+        <select formControlName="callingCode" name="CallingCode" id="CallingCode"
+          style="width:10%;border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+          <option value="" selected hidden>Select Code </option>
+
+          <option *ngFor="let item of allCallingCode let i = index" value={{item}}>{{item}}</option>
+
+        </select>
+        <input formControlName="mobile" id="mobile" name="mobile" type="number" placeholder="Enter Your Phone number"
+          oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+          maxlength='10' style="width: 60%;border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+        <div class="error"
+          *ngIf="UserForm.get('mobile').invalid && UserForm.get('mobile').touched && UserForm.get('callingCode').invalid && UserForm.get('callingCode').touched">
+          *Please enter a value</div>
+
+        <span class="error" *ngIf="errorMsg2">*{{errorMsg2}}</span>
+
+
+
+        <label for="country">Select Country:</label>
+
+        <select id="country" formControlName="country" name="country" #country>
+          <option value="" selected hidden>Select Country</option>
+          <option *ngFor="let country of countriesArray;let i = index" [value]="country._id">{{ country.name}}
+          </option>
+        </select>
+        <div class="error" *ngIf=" UserForm.get('country').touched && UserForm.get('country').value == '' ">
+          *Please enter a value</div>
+
+
+        <!-- <div class="form-field">
+        <label for="file"> Avatar : </label>
+        <input class="file-div"  formControlName="file" id="file" type="file" name="avatar" #fileInput ngModel>
+
+      </div> -->
+        <button *ngIf="!UpdateActivate" class="btn btn-primary" type="submit">Add User</button>
+
+        <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4"
+          (click)="onSave(fileInput);UserForm.reset();modal.close('Close click');">Update Vehicle</button>
+        <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4"
+          (click)="onCancel(UserForm.value);UserForm.reset();modal.close('Close click')">cancel</button>
+      </form>
+
+
+    </div>
+    <!--
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+    </div> -->
+  </div>
+
+</ng-template>
+
+<ng-template #content3 let-modal>
+
+  <div class="bg-aliceblue modal-div ">
+
+    <div class="modal-header">
+
+      <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link " (click)="modal.dismiss('Cross click');openModel(content2)">General <span
+                class="sr-only">(current)</span></a>
+            <a class="nav-item nav-link active">Cards</a>
+          </div>
+        </div>
+      </nav>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
+          aria-hidden="true">&times;</span></button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- <hr> -->
+      <h3>
+
+        Add Card
+      </h3>
+      <div>
+        <form id="payment-form">
+          <div id="payment-element" style="border: 2px solid black; padding: 20px; border-radius: 5px">
+            <!-- Elements will create form elements here -->
+          </div>
+          <div id="error-message" class="mt-3" style="color: red;">{{error?.message}}
+            <!-- Display error message to your customers here -->
+          </div>
+          <button mat-raised-button color="primary" class="mt-4" id="submit" (click)="saveCard()">
+            Submit
+          </button>
+        </form>
+      </div>
+
+      <hr>
+      <div id="cards">
+        <div class="dcard" *ngFor="let card of allCards">
+          <div class="util">
+            <label>
+              xxxx-xxxx-xxxx-{{ card.card.last4 }}
+            </label>
+
+            <button class="btn default-btn" (click)="setDefault(card)" *ngIf="defaultMethod !== card.id">set
+              Default</button>
+          </div>
+          <img src="../../../assets/img//icons/dustbin.png" width="5%" height="100%" alt="icon"
+            (click)="onDeleteCard(card)">
+        </div>
+      </div>
+
+
+
+
+
+
+
+    </div>
+    <!--
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+    </div> -->
+  </div>
+
+</ng-template>
+
+
 <!-- Page content -->
-<div class="container-fluid mt--7">
+<div class="container-fluid mt--5">
   <!-- Table -->
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header border-0">
-          <h3 class="mb-0">Users List</h3>
+        <div class="card-header border-0 row mr-0 ml-0">
+          <div class="col-sm-4">
+
+            <div class="form-control-search d-flex  align-items-center">
+              <input type="search" class="form-control" placeholder="Search" #search>
+              <div class="btn-group">
+                <button class="btn" type="submit" (click)="onSearch(search.value)">
+                  <i class="search-icon fas fa-search"></i>
+                </button>
+                <button class="btn refresh" (click)="showUsers(1);search.value = ''">⟳</button>
+              </div>
+            </div>
+          </div>
+
+
+
+
+          <div class="col-sm-8 text-right">
+
+            <button class="btn btn-outline-primary " (click)="openModel(content)"> + Add </button>
+          </div>
         </div>
+
         <div class="table-responsive">
-          <table class="table align-items-center table-flush">
+          <table class="table align-items-center table-flush text-center">
             <thead class="thead-light">
               <tr>
-                <th scope="col">Name`</th>
-                <th scope="col">Email</th>
-                <th scope="col">Number</th>
-                <th scope="col">Country</th>
+                <th scope="col" (click)="onSort('name')">Name</th>
+                <th scope="col" (click)="onSort('email')">Email</th>
+                <th scope="col" (click)="onSort('number')">Number</th>
+                <th scope="col" (click)="onSort('country')">Country</th>
                 <th scope="col">avatars</th>
-                <th scope="col">Buttons</th>
+
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of allUsers">
+              <tr *ngFor="let user of allUsers" (click)="openModel(content2);updateUser(user._id)">
 
 
 
 
-                <td class="nametd">{{user.name}}
-                <td class="emailtd">{{user.email}}</td>
-                <td class="numbertd">{{user.mobile}}</td>
-                <td class="countrytd">{{user.country}}</td>
-                <td class="imgtd"><img class="imgClass" src="http://localhost:3000/avatars/{{user.avatar}}"></td>
-                <td id="b'+ user._id + '">
-                  <button class="update-button btn btn-outline-primary" (click)="updateUser(user._id)"> UPDATE</button>
+                <td>{{user.name}}
+                <td>{{user.email}}</td>
+                <td>{{user.mobile}}</td>
+                <td>{{user.country.name}}</td>
+                <td><img src="http://localhost:3000/avatars/{{user.avatar}}" alt="User Image"></td>
+                <!-- <td>
+                  <button class="update-button btn btn-outline-primary" (click)="updateUser(user._id);scrollToTop()"> UPDATE</button>
                   <button class="delete-button btn btn-outline-danger" (click)="deleteUser(user._id)"> DELETE</button>
-                </td>
+                </td> -->
 
-                <td class="text-right">
-                  <div ngbDropdown placement="top-right">
-                    <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </a>
-                    <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
-                      <a class="dropdown-item" href="javascript:void(0)">Action</a>
-                      <a class="dropdown-item" href="javascript:void(0)">Another action</a>
-                      <a class="dropdown-item" href="javascript:void(0)">Something else here</a>
-                    </div>
-                  </div>
+
+              </tr>
+              <tr *ngIf="allUsers?.length <= 0 ">
+                <td class="p-5" colspan="6">
+
+                  <strong> User Not Found</strong>
                 </td>
               </tr>
             </tbody>
@@ -143,21 +369,20 @@
         <div class="card-footer py-4">
           <nav aria-label="...">
             <ul class="pagination justify-content-end mb-0">
-              <li class="page-item disabled">
-                <a class="page-link" href="javascript:void(0)" tabindex="-1">
+
+              <li class="page-item disabled" *ngIf="currentPage!==1" (click)="onPrevious()">
+                <a class="page-link">
                   <i class="fas fa-angle-left"></i>
                   <span class="sr-only">Previous</span>
                 </a>
               </li>
-              <li class="page-item active">
-                <a class="page-link" href="javascript:void(0)">1</a>
+              <li class="page-item" [ngClass]="{'active' : currentPage == i+1}"
+                [hidden]="currentPage <i || currentPage-1 > i+1" *ngFor="let item of NoOfPages; let i = index"> <a
+                  class="page-link" (click)="onPage(i+1)">{{i+1}}</a>
               </li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0)">2 <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0)">
+
+              <li class="page-item" [ngClass]="{'vh':currentPage==NoOfPages.length }" (click)="onNext()">
+                <a class="page-link">
                   <i class="fas fa-angle-right"></i>
                   <span class="sr-only">Next</span>
                 </a>

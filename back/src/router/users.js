@@ -2,9 +2,17 @@
 const express = require('express')
 const User = require('../model/user')
 const multer = require('multer');
+const stripe = require('stripe')('sk_test_51N2piRJAU9zBfSBOhszeL5HWLkSKstapCQzk6dbn4ZUjR8xBLPYZPP64VvIUJEACl5COj23WPMpTMBjD400xVSzi00q0Ayujkw');
+const Driver = require('../model/driver');
 
+const sendMail = require('../utils/email')
 
+const sendSMS = require('../utils/sms')
 
+const auth = require('../middleware/auth');
+const { pipeline } = require('nodemailer/lib/xoauth2');
+const { default: mongoose } = require('mongoose');
+const usersController = require('../controllers/routes/usersController');
 
 
 const storage = multer.diskStorage({
@@ -32,114 +40,38 @@ const upload = multer({
 
 const router = new express.Router()
 
+router.post("/Users/Update/Save", upload.single('file'),auth, usersController.saveUpdatedUser);//----------> Save Updated Detail of USer       
 
-router.get('/Users/Delete/:id', async (req, res) => {
-    try {
-      let   user=  await User.findOneAndRemove({ '_id': req.params.id })
+router.post("/Users", upload.single('file'),auth,usersController.addUser);//--------------------> Add New User
 
-        res.send(user)
-    } catch (e) {
-        console.log(e);
+router.get("/Users/Cards/default",auth,usersController.setDefaultCard);//----------------------> Set Users Default Card
 
-    }
-})
-router.post('/User/Data', async (req, res) => {
-    console.log(req.body);
-    try {
+router.get('/Users/Update',auth, usersController.getDetailForUpdate)//------------------------> Get User Detail for Upadte
 
-        let user = await User.findOne({ mobile: req.body.number })
-        console.log(user);
-        if (!user) {
-            res.send(user)
+router.get('/Users/Payment',auth,usersController.getPaymentFromUser)//------------------------> Get Payment of Ride Form User
 
-            return
-        }
-        res.send(user)
-    } catch (e) {
-        console.log(e);
+router.get("/Users/Cards/delete",auth,usersController.deleteCard);//------------------------> Delete Card of User
 
-    }
-})
+router.get('/Users/Delete/:id',auth,usersController.deleteUser)//------------------------> Delete User
+
+router.get('/Users/Cards',auth,usersController.getUserCards );//------------------------> Get All Added Card of User
+
+router.post('/User/Data',auth, usersController.getAddedUser)//------------------------> Get Detail of User For Create Ride
+
+router.post('/User/Card',auth, usersController.addUserCard)//------------------------> Add Card in User
+
+router.get('/Users',auth, usersController.getUsers)//------------------------> Get All Added Usewer
 
 
-router.get('/Users/Update/:id', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id)
-
-        await res.status(200).json(user)
 
 
-    } catch (e) {
-        console.log(e);
-    }
-})
-router.post("/Users", upload.single('file'), async (req, res) => {
-
-    if (req.file) {
-        req.body.avatar = req.file.filename
-    } else {
-        req.body.avatar = "default.jpeg";
-    }
-
-    try {
-        const user = new User(req.body);
-        // const emails = req.body.email
-        // const mobile = req.body.mobile
-
-        // let duplicateE = await User.findOne({ email: emails })
-        // let duplicateM = await User.findOne({ mobile: mobile })
-
-        // errors = {}
-
-        // if (duplicateE) errors.error_email = "email already exists"
-        // if (duplicateM) errors.error_number = "number already exists"
-        // if ((!duplicateE) && (!duplicateM)) {
-        await user.save();
-        await res.json(user)
-        // } else {
-        //     res.json({ errors })
-        // }
-
-    } catch (e) {
-
-        errors = {
-
-        }
-
-        if (e.keyPattern.email && e.keyValue.email) {
 
 
-            errors.email = "email already exist"
-        } else if (e.keyPattern.mobile && e.keyValue) {
-            errors.number = "number already exist"
-
-        }
-        res.status(400).send(errors)
-
-    }
-});
-router.get('/Users', async (req, res) => {
-
-    const currentPage = req.query.page || 1;
-    const limits = req.query.size
-    const str = req.query.str
-    const regext = new RegExp(str, "i")
-
-    try {
 
 
-        const totalUser = await User.find({ $or: [{ name: { $regex: regext } }, { mobile: { $regex: regext } }, { email: { $regex: regext } }, { country: { $regex: regext } }], }).count()
-        const data = await User.find({ $or: [{ name: { $regex: regext } }, { mobile: { $regex: regext } }, { email: { $regex: regext } }, { country: { $regex: regext } }], })
 
 
-        let user = { data, totalUser, limits }
-        console.log(data);
-        res.json(data)
 
-    } catch (e) {
-        console.log(e);
 
-    }
 
-})
 module.exports = router

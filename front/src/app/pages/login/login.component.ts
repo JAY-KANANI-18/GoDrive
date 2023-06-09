@@ -10,9 +10,16 @@ import { PostsService } from 'src/app/services/login.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  constructor(private http: HttpClient, private router: Router, private loginSErvice: PostsService ,private timerService:TimerService ) { }
+  constructor(private http: HttpClient, private router: Router, private loginSErvice: PostsService, private timerService: TimerService) { }
 
   ngOnInit() {
+    // this.loginSErvice.justTest().subscribe({
+    //   next:(data:any)=>{
+    //     console.log(data);
+    //   },error:(error)=>{
+    //     console.log(error);
+    //   }
+    // })
   }
   ngOnDestroy() {
   }
@@ -22,20 +29,21 @@ export class LoginComponent implements OnInit, OnDestroy {
       email: loginForm.email,
       password: loginForm.password
     }
-
     this.loginSErvice.login(Data).subscribe((data: any) => {
-
+      console.log('datttttttttttttttttt');
       this.router.navigate(['./dashboard'])
       this.loginSErvice.logginToken = data.token
-     const newToken =  this.loginSErvice.logginToken
-      localStorage.setItem("newToken",data.token)
+      const newToken = this.loginSErvice.logginToken
+      localStorage.setItem("newToken", data.token)
 
-      this.timerService.startTimer();
 
     })
 
 
 
+
+
   }
+
 
 }

@@ -2,10 +2,14 @@
 const express = require('express')
 const multer = require('multer');
 const Driver = require('../model/driver');
-const Rides = require('../model/rides');
+const Ride = require('../model/rides');
+const User = require('../model/user');
+const auth = require('../middleware/auth');
+const { default: mongoose } = require('mongoose');
+const driversController = require('../controllers/routes/driversController');
 
 
-
+const stripe = require('stripe')('sk_test_51N2piRJAU9zBfSBOhszeL5HWLkSKstapCQzk6dbn4ZUjR8xBLPYZPP64VvIUJEACl5COj23WPMpTMBjD400xVSzi00q0Ayujkw');
 
 
 
@@ -38,141 +42,27 @@ const upload = multer({
 const router = new express.Router()
 
 
-router.post("/Drivers", upload.single('file'), async (req, res) => {
-
-    console.log(req.body);
-    if (req.file) {
-        req.body.avatar = req.file.filename
-    } else {
-        req.body.avatar = "";
-    }
-
-    try {
-        const driver = new Driver(req.body);
-        // const emails = req.body.email
-        // const mobile = req.body.mobile
-
-        // let duplicateE = await User.findOne({ email: emails })
-        // let duplicateM = await User.findOne({ mobile: mobile })
-
-        // errors = {}
-
-        // if (duplicateE) errors.error_email = "email already exists"
-        // if (duplicateM) errors.error_number = "number already exists"
-        // if ((!duplicateE) && (!duplicateM)) {
-        await driver.save();
-        await res.json(driver)
-        // } else {
-        //     res.json({ errors })
-        // }
-
-    } catch (e) {
-        console.log(e);
-    }
-});
 
 
-router.get('/Drivers/Delete/:id', async (req, res) => {
-    try {
-      let   user=  await Driver.findOneAndRemove({ '_id': req.params.id })
+router.patch("/Drivers/Update/Save", auth, upload.single('file'),driversController.SaveUpdatedDetailofDriver);
 
-        res.send(user)
-    } catch (e) {
-        console.log(e);
+router.post("/Drivers", auth, upload.single('file'),driversController.addNewDriver );
 
-    }
-})
+router.get('/Drivers/RunningRequest', auth,driversController.getRunningRequest )
 
-router.get('/Drivers/Update/:id', async (req, res) => {
-    try {
-      let   user=  await Driver.findOneAndRemove({ '_id': req.params.id })
+router.patch('/Drivers/Approve', auth,driversController.getApprovedDriver )
 
-        res.send(user)
-    } catch (e) {
-        console.log(e);
+router.get('/Drivers', auth, driversController.getAllAddedDrivrsandSearch)
 
-    }
-})
+router.get('/Drivers/Delete/:id', auth, driversController.deleteDriver)
 
-router.patch('/Drivers/Approve', async (req, res) => {
+router.get('/Drivers/Online', auth, driversController.getOnlineDriver)
 
-  
-
-    try {
+router.get('/Drivers/Update', auth, driversController.getDriverFromId)
 
 
-   const driver = await Driver.findOneAndUpdate(req.query.id, req.body, { new: true, runValidators: true })
 
 
-        
-        res.json(driver)
 
-    } catch (e) {
-        console.log(e);
-
-    }
-
-})
-router.get('/Drivers/Online', async (req, res) => {
-
-    const currentPage = req.query.page || 1;
-    const limits = req.query.size
-    const str = req.query.str
-    const regext = new RegExp(str, "i")
-
-    try {
-
-
-        const data = await Driver.find({status:'online'})
-
-
-        res.json(data)
-
-    } catch (e) {
-        console.log(e);
-
-    }
-
-})
-router.get('/Drivers/CurrentRide', async (req, res) => {
-
-    try {
-
-
-        const data = await Driver.find({})
-        console.log(data);
-
-
-        res.json(data)
-
-    } catch (e) {
-        console.log(e);
-
-    }
-
-})
-router.get('/Drivers', async (req, res) => {
-
-    const currentPage = req.query.page || 1;
-    const limits = req.query.size
-    const str = req.query.str
-    const regext = new RegExp(str, "i")
-
-    try {
-
-
-        // const totalUser = await Drivers.find({ $or: [{ name: { $regex: regext } }, { mobile: { $regex: regext } }, { email: { $regex: regext } }, { country: { $regex: regext } }], }).count()
-        const data = await Driver.find({ $or: [{ name: { $regex: regext } }, { mobile: { $regex: regext } }, { email: { $regex: regext } }, { country: { $regex: regext } }], })
-
-
-        // let user = { data, totalUser, limits }
-        res.json(data)
-
-    } catch (e) {
-        console.log(e);
-
-    }
-
-})
 
 module.exports = router

@@ -4,42 +4,36 @@ const validator = require('validator')
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true, 
+        required: true,
         trim: true,
-                lowercase: true,
+        lowercase: true,
 
-        
+
 
     },
 
-   
 
     email: {
         type: String,
         required: true,
         trim: true,
         lowercase: true,
-        unique:true,
-        // validate(value) {
+        unique: true,
 
-        //     if (!validator.isEmail(value)) {
-        //         throw new Error("Email is not valid")
-        //     }
-
-        // }
 
     },
     mobile: {
         type: String,
         required: true,
         trim: true,
-        unique:true,
+        unique: true,
 
 
     },
     country: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        require: true,
+        ref: 'countries',
         trim: true,
         lowercase: true,
 
@@ -48,6 +42,8 @@ const userSchema = new mongoose.Schema({
     avatar: {
         type: String,
         default: 'default.jpeg'
+    }, stripeid: {
+        type: String
     }
 
 });

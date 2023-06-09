@@ -1,6 +1,8 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 import { DashService } from 'src/app/services/dashboard.service';
-import { PostsService } from 'src/app/services/login.service';
 import { PricingService } from 'src/app/services/pricing.servive';
 
 @Component({
@@ -9,139 +11,153 @@ import { PricingService } from 'src/app/services/pricing.servive';
   styleUrls: ['./coutry.component.scss']
 })
 export class CoutryComponent implements OnInit {
-  title = "country"
-  countriesArray = []
-  // countryDetails:any
-  CountryName: any
-  currentCountry: any
-  timezone: any
-  selectedCountry: any = ''
-  tako: any
-  countryObj: any
-  addedCountry: any = []
-  Flag: any
-  nullData: any
+
+  public addCountryForm: FormGroup
+  public selectedCountry: any = ''
+  public addedCountry = []
+  public allAddedCountries = []
+  public countriesArray = []
+  public title = "country"
+  public nullData: any
+
+  private countryObj: any
 
 
+  constructor(
 
-  constructor(private dashService: DashService ,private pricingService:PricingService) { }
+    private pricingService: PricingService,
+    private toster: ToastrService,
+    private ngbService: NgbModal,
+
+
+  ) {
+    this.addCountryForm = new FormGroup({
+
+      flag: new FormControl(null, [Validators.required]),
+      name: new FormControl(null, [Validators.required]),
+      timezone: new FormControl(null, [Validators.required]),
+      currency: new FormControl(null, [Validators.required]),
+      countrycode: new FormControl(null, [Validators.required]),
+      callingcode: new FormControl(null, [Validators.required]),
+
+    });
+  }
 
   ngOnInit(): void {
-    this.pricingService.getCountry().subscribe((data: any) => {
 
-
-
-      this.countriesArray = data.allCountries
-      this.countryObj = data.countriesObject
-      console.log(data.countryData);
-
-      this.getAddedCountry()
-
-
-
-    })
+    this.getAllCountries()
+    this.getAddedCountry()
 
   }
-  ngOnChanges(changes: SimpleChanges): void {
-
-
-  };
-
-
+  onSearch(val:any){
+    console.log(this.allAddedCountries);
+    this.addedCountry = this.allAddedCountries.filter((country:any)=>country.name.toLowerCase().includes(val.toLowerCase()))
 
 
 
+  }
   getAddedCountry() {
-    this.pricingService.getAddedCountry().subscribe((data: any) => {
-      this.addedCountry = data
-      let newarray = []
-      data.forEach(element => {
-        newarray.push(element.name)
+    this.pricingService.getAddedCountry().subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.allAddedCountries = data
+        this.addedCountry =  this.allAddedCountries
+        let newarray = []
+        data.forEach(element => {
+          newarray.push(element.name)
+        });
+        this.countriesArray = this.countriesArray.filter((element) => !newarray.includes(element))
 
-      });
-            this.countriesArray =  this.countriesArray.filter((element) => !newarray.includes(element))
-
-
-
-
-
-
-
+      }, error: (error) => {
+        console.log(error);
+        this.toster.error('Something went wrong!')
+      }
     })
+  }
+  openModel(content: any) {
 
+    this.ngbService.open(content);
   }
 
-  onSelect() {
+  onSelect(value: any) {
     this.nullData = false
-    let selects = this.selectedCountry
+    let selects = value
 
     if (Object.keys(this.countryObj).includes(selects)) {
       const country = this.countryObj[selects];
 
       if (!country.name || !country.currency || !country.flag || !country.callingcode || !country.timezone || !country.countrycode) {
         this.nullData = true
-        this.selectedCountry=''
+        this.selectedCountry = null
         return
 
       }
 
-      // for (let prop in country) {
-      //   if (country[prop] === null || country[prop] === undefined) {
-      //     this.nullData = true
-      //     console.log('null che');
-      //     return ;
-      //   }
-      // }
       this.selectedCountry = country
-
+      this.addCountryForm.get('name').setValue(this.selectedCountry.name)
+      this.addCountryForm.get('flag').setValue(this.selectedCountry.flag)
+      this.addCountryForm.get('timezone').setValue(this.selectedCountry.timezone)
+      this.addCountryForm.get('currency').setValue(this.selectedCountry.currency)
+      this.addCountryForm.get('callingcode').setValue(this.selectedCountry.callingcode)
+      this.addCountryForm.get('countrycode').setValue(this.selectedCountry.countrycode)
 
     }
-
   }
 
-  onAdd(formData: any) {
+  onAddCountry() {
+    this.pricingService.addCountry(this.addCountryForm.value).subscribe({
+      next: (data: any) => {
 
+        this.getAddedCountry()
+        this.toster.success('Country Added')
+        this.addCountryForm.reset();
+        this.selectedCountry = null
 
-
-
-
-    this.pricingService.addCountry(formData).subscribe((data) => {
-      console.log(data);
-      this.getAddedCountry()
-
-
-
+      }, error: (error) => {
+        this.toster.error('Something went wrong!')
+      }
     })
+
   }
-
-
 
   onDelete(id: any) {
 
     let type = "Country"
-    this.pricingService.deleteItem(id, type).subscribe((data) => {
-      console.log(data);
-      this.getAddedCountry()
-
+    this.pricingService.deleteItem(id, type).subscribe({
+      next: (data: any) => {
+        this.getAddedCountry()
+        this.toster.success('Country deleted')
+      }, error: (error) => {
+        this.toster.error('Something went wrong!')
+      }
     })
-
   }
 
   searchCountry(FormData: any) {
 
-    let query = FormData.search
-    let type = "Country"
 
-
-    this.pricingService.searchItem(query, type).subscribe((data) => {
-      console.log(data);
-      this.addedCountry = data
+    this.pricingService.searchItem(FormData.search, 'Country').subscribe({
+      next: (data: any) => {
+        this.addedCountry = data
+        // this.toster.success('Country deleted')
+      }, error: (error) => {
+        this.toster.error('Something went wrong!')
+      }
     })
-
-
   }
-  onReset(){
+
+  onResetSearch() {
     this.getAddedCountry()
   }
 
+  getAllCountries() {
+    this.pricingService.getCountry().subscribe({
+      next: (data: any) => {
+        this.countriesArray = data.allCountries
+        this.countryObj = data.countriesObject
+      }, error: (error) => {
+        this.toster.error('Something went wrong!')
+      }
+    })
+  }
 }

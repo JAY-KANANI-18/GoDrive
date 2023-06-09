@@ -15,8 +15,8 @@ import { Router } from '@angular/router';
 
 
 export class DriversService {
-  zone:any
-    constructor(private http: HttpClient, private router: Router) { }
+  zone: any
+  constructor(private http: HttpClient, private router: Router) { }
 
 
   addDriver(data: any) {
@@ -24,8 +24,13 @@ export class DriversService {
 
 
   }
-  getDrivers() {
-    return this.http.get(`http://localhost:3000/Drivers`)
+  getDrivers(page:any,option?:any) {
+
+    if(option?.search){
+      return this.http.get(`http://localhost:3000/Drivers?page=${page}&str=${option.search}`)
+
+    }
+    return this.http.get(`http://localhost:3000/Drivers?page=${page}`)
   }
   deleteDriver(id: any) {
     return this.http.get(`http://localhost:3000/Drivers/Delete/${id}`)
@@ -33,25 +38,29 @@ export class DriversService {
 
   }
   updateDriver(id: any) {
-    return this.http.get(`http://localhost:3000/Drivers/Update/${id}`)
+    return this.http.get(`http://localhost:3000/Drivers/Update?id=${id}`)
 
 
   }
-  approveDriver(id:any,data:any){
-    return this.http.patch(`http://localhost:3000/Drivers/Approve?id=${id}`,data)
+  SaveDriver(id: any, data: any) {
+    return this.http.patch(`http://localhost:3000/Drivers/Update/Save?id=${id}`, data)
 
 
   }
-  getOnlineDrivers(){
+  approveDriver(id: any, data: any) {
+    return this.http.patch(`http://localhost:3000/Drivers/Approve?id=${id}`, data)
+
+
+  }
+  getOnlineDrivers() {
     return this.http.get(`http://localhost:3000/Drivers/Online`)
 
 
 
   }
-  driversCurrentRide(){
-    return this.http.get(`http://localhost:3000/Drivers/CurrentRide`)
 
-
+  getRunningRequest() {
+    return this.http.get(`http://localhost:3000/Drivers/RunningRequest`)
   }
 
 

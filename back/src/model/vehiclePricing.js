@@ -5,16 +5,18 @@ mongoose.set('strictQuery', true)
 
 const VehiclePricingSchema = new mongoose.Schema({
     country: {
-        type:String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:'countries'
     }, city: {
-        type:String,
-        require: true
-
+        type: mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:'zones'
     }
     , vehicle: {
-        type: String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:'vehicles'
 
     }, driverprofit: {
         type:String,

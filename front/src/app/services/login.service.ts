@@ -29,6 +29,8 @@ export class PostsService {
     return this.http.post('http://localhost:3000/login', Data)
 
   }
+
+
   logOut() {
     this.logginToken = null
     const token = localStorage.removeItem("newToken")
@@ -43,9 +45,16 @@ export class PostsService {
     // let searchParams = new HttpParams();
     // searchParams = searchParams.append('print', 'pretty');
     // searchParams = searchParams.append('custom', 'key');
-    localStorage.setItem(this.logginToken, data.token)
+    console.log(data);
+    // localStorage.setItem(this.logginToken, data.token)
     return this.http.post('http://localhost:3000/users/login', Data)
 
+
+
+  }
+
+  justTest(){
+    return this.http.get('http://localhost:3000/users/loginss')
 
 
   }
@@ -85,7 +94,7 @@ export class PostsService {
   // }
   // deletePosts() {
   //   return this.http
-  //     .delete('https://ng-complete-guide-c56d3.firebaseio.com/posts.json', {
+  //     .delete('http://ng-complete-guide-c56d3.firebaseio.com/posts.json', {
   //       observe: 'events',
   //       responseType: 'text'
   //     })

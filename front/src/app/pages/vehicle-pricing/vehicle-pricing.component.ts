@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashService } from 'src/app/services/dashboard.service';
 import { PricingService } from 'src/app/services/pricing.servive';
 
@@ -8,31 +9,27 @@ import { PricingService } from 'src/app/services/pricing.servive';
   styleUrls: ['./vehicle-pricing.component.scss']
 })
 export class VehiclePricingComponent implements OnInit {
-  vehicleTypesArray = []
-  citiesArray = []
-  countriesArray = []
-  allPricing: any
-  opselect: any
+  public vehicleTypesArray = []
+  public citiesArray = []
+  public countriesArray = []
+  public allPricing: any
+  public SubmitActivate: any
+  public UpdateActivate: any
+  public currentPage: any = 1
+  public NoOfPages: any = []
+
+  private opselect: any
 
 
-
-  selectedCountry: any = "select country"
-  selectedCity: any
-  selectedVehicleType: any
-  SubmitActivate: any
-  UpdateActivate: any
-  constructor(private dashboardService: DashService, private pricingService: PricingService) { }
+  constructor( private pricingService: PricingService,private ngbService: NgbModal) { }
 
   ngOnInit(): void {
-    this.getAllPricing()
-    // this.getCities()
+    this.getAllPricing(this.currentPage)
     this.getCountry()
     this.getVehicleType()
   }
 
   onAdd(data: any) {
-
-
     let city = document.getElementById('city') as HTMLInputElement
     let country = document.getElementById('country') as HTMLInputElement
     let vehicle = document.getElementById('vehicle') as HTMLInputElement
@@ -55,78 +52,60 @@ export class VehiclePricingComponent implements OnInit {
     console.log(formObj);
 
 
-    this.pricingService.addVehiclePricing(formObj).subscribe((data) => {
-      this.getAllPricing()
-    })
+    this.pricingService.addVehiclePricing(formObj).subscribe(
+      {
+        next: (data: any) => {
+          this.getAllPricing(this.currentPage)
 
 
-
-
+        }, error: (error) => {
+          console.log(error);
+        }
+      })
   }
   onselect(val: any) {
     this.opselect = true
-    this.selectedCountry = val
-    this.getCities()
+    this.getCities(val)
 
   }
 
-  getCities() {
-    // this.dashboardService.getCities().subscribe((data: any) => {
-    //   this.citiesArray = data
-    // })
-    console.log("country name", this.selectedCountry);
-    this.pricingService.getCities(this.selectedCountry).subscribe((data: any) => {
+  getCities(val: any) {
+
+    console.log("country name", val);
+    this.pricingService.getCities(val).subscribe((data: any) => {
       this.citiesArray = data
-
-
-
-      // data.forEach((each:any) => {
-      //   if (each.country === this.selectedCountry) {
-
-      //     this.citiesArray.push(each.city.name)
-      //     console.log(each.city.name);
-
-      //   }
-
-
-
-
-      // })
-
-
-
     })
   }
   getCountry() {
     this.pricingService.getAddedCountry().subscribe((data: any) => {
       this.countriesArray = []
       data.forEach((each) => {
-        this.countriesArray.push(each.name)
+        this.countriesArray.push(each)
 
       })
     })
-
-
-
   }
   getVehicleType() {
-    this.pricingService.getallVehicleTypes().subscribe((data: any) => {
+    this.pricingService.getallVehicleTypes().subscribe(
+      {
+        next:(data:any)=>{
+          this.vehicleTypesArray = data
 
 
-      this.vehicleTypesArray = []
-      data.forEach((each) => {
-        this.vehicleTypesArray.push(each.name)
-
+        },error:(error)=>{
+          console.log(error);
+        }
       })
-    })
+
   }
 
-  getAllPricing() {
-    this.pricingService.getVehiclesPricing().subscribe({
+  getAllPricing(page:any) {
+    this.pricingService.getVehiclesPricing(page).subscribe({
       next: (data: any) => {
-        this.allPricing = data
         console.log(data);
-          ;
+        this.allPricing = data.pricings
+        this.NoOfPages = new Array(data.pages)
+        ;
       }, error: (error) => {
         console.log(error);
       }
@@ -136,7 +115,7 @@ export class VehiclePricingComponent implements OnInit {
     this.pricingService.deleteVehiclePricing(id).subscribe({
       next: (data: any) => {
         console.log(data);
-        this.getAllPricing()
+        this.getAllPricing(this.currentPage)
       }, error: (error) => {
         console.log(error);
       }
@@ -183,5 +162,44 @@ export class VehiclePricingComponent implements OnInit {
     })
 
   }
+  openModel(content: any) {
 
+    this.ngbService.open(content,{centered:true});
+
+  }
+  onSearch(search:any){
+    console.log(search);
+    this.pricingService.getVehiclesPricing(1,{search}).subscribe({
+      next:(data:any)=>{
+        console.log(data);
+        this.allPricing = data.pricings
+        this.NoOfPages = new Array(data.pages)
+        this.currentPage =1
+      },error:(error)=>{
+        console.log(error);
+      }
+    })
+
+  }
+  onNext(){
+    this.currentPage++
+    console.log(this.currentPage);
+    console.log(this.NoOfPages);
+
+    this.getAllPricing(this.currentPage)
+
+
+
+  }
+  onPrevious(){
+    this.currentPage--
+    this.getAllPricing(this.currentPage)
+
+
+  }
+  onPage(page:any){
+    this.currentPage = page
+    this.getAllPricing(this.currentPage)
+
+  }
 }

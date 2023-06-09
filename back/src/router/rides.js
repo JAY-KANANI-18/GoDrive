@@ -4,8 +4,20 @@ const express = require('express')
 
 const multer = require('multer');
 
-const Rides = require("../model/rides") 
+const Rides = require("../model/rides")
+const stripe = require('stripe')('sk_test_51N45EpSAETG1lrtoCyIOrQBKsC40rN9TDa0itbl4qp1wSRLOPqzmdoqc7B1oLcRgN6PB172qHLTHQAfJSVbbQTvV007T3DL57i');
+// const nodemailer = require('nodemailer');
+const Sockets = require('../controllers/socket/socket')
 
+
+const io = Sockets.getIO();
+
+
+const auth = require('../middleware/auth');
+const { addNewRide } = require('../controllers/routes/ridesController');
+const ridesController = require('../controllers/routes/ridesController');
+
+// sendMail().then(result=>console.log('send complete...',result)).catch(error=>console.log(error))
 
 
 const storage = multer.diskStorage({
@@ -34,65 +46,81 @@ const upload = multer({
 const router = new express.Router()
 
 
-router.post("/addRide", async (req, res) => {
+router.post("/addRide", ridesController.addNewRide);
 
-    try {
-        const Ride = new Rides(req.body);
-
-        await Ride.save();
-        await res.json(Ride)
+router.get('/Rides',ridesController.getConfirmedRides )
 
 
-    } catch (e) {
-        console.log(e);
-    }
+router.get('/Rides/Completed',ridesController.getCompletedRides)
 
 
+
+
+router.get("/Rides/Payment", async (req, res) => {
+    const { items } = req.body;
+
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: 1,
+        currency: "usd",
+        automatic_payment_methods: {
+            enabled: true,
+        },
+    });
+
+    res.send({
+        clientSecret: paymentIntent.client_secret,
+    });
 });
-router.get('/Rides', async (req, res) => {
 
-
+router.post('/create-payment-intent', async (req, res) => {
     try {
+        const { amount, currency, customer } = req.body;
 
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount,
+            currency,
+            customer,
+            payment_method_types: ['card'],
+            setup_future_usage: 'off_session',
+        });
 
-        const data = await Rides.find()
-
-
-        res.json(data)
-
-    } catch (e) {
-        console.log(e);
-
+        res.send({ client_secret: paymentIntent.client_secret });
+    } catch (err) {
+        res.status(500).send(err);
     }
+});
 
-})
-router.get('/Rides/Completed', async (req, res) => {
-
-
+router.post('/attach-payment-method', async (req, res) => {
     try {
+        const { paymentMethod, customer } = req.body;
 
 
-        const data = await Rides.find({status: {$in: ["completed", "cancelled"]}})
+        await stripe.paymentMethods.attach(paymentMethod, {
+            customer: '6459e260e318ff85d1c79312',
+        });
 
+        await stripe.customers.update(customer, {
+            invoice_settings: {
+                default_payment_method: paymentMethod,
+            },
+        });
 
-        res.json(data)
-
-    } catch (e) {
-        console.log(e);
-
+        res.send('Payment method attached');
+    } catch (err) {
+        res.status(500).send(err);
     }
+});
 
+router.patch('/Rides/Accepted/Status',async(req,res)=>{
+
+
+    const ride = await Rides.findByIdAndUpdate(req.query.id,req.body,{new:true})
+
+io.emit('ride_status_change')
+    res.send({status:ride.status})
 })
-router.patch('/Rides/Status', async (req, res) => {
 
-    try {
-        const ride = await Rides.findByIdAndUpdate(req.query.id, req.body, { new: true})
 
-        res.json(ride)
 
-    } catch (e) {
-        console.log("e");
-    }
-
-})
 module.exports = router

@@ -2,6 +2,8 @@ import { Component, SimpleChanges } from '@angular/core';
 import { TimerService } from './services/auto-logout';
 import { PostsService } from './services/login.service';
 import { Router } from '@angular/router';
+import { AngularFireMessaging } from '@angular/fire/compat/messaging';
+
 
 @Component({
   selector: 'app-root',
@@ -10,8 +12,19 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   title = 'argon-dashboard-angular';
-  constructor(private timerService:TimerService,private postsService:PostsService,private router:Router){}
+  constructor(private timerService:TimerService,private postsService:PostsService,private router:Router,private messaging: AngularFireMessaging){
+    this.messaging.requestPermission.subscribe({
+      next:(data:any)=>{
+        console.log('permission granted!');
+      },error:(error)=>{
+        console.log('permission denied');
+      }
+    })
+
+  }
   ngOnInit(): void {
+    // this.timerService.startTimer();
+
 //     this.postsService.authCheck().subscribe((data:boolean)=>{
 // if(data==true){
 //   this.router.navigate(["/dashboard"])

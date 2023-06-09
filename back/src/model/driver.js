@@ -17,6 +17,14 @@ const DriverSchema = new mongoose.Schema({
 
 
     },
+    vehicle: {
+        type: mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:'vehicles',
+    }, acceptride: {
+        type: String,
+        default: 'yes'
+    },
 
     email: {
         type: String,
@@ -34,29 +42,40 @@ const DriverSchema = new mongoose.Schema({
 
     },
     country: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:'countries',
 
     },
     city: {
-        type: String,
-
+        type: mongoose.Schema.Types.ObjectId,
+        require:true,
+        ref:'zones',
     },
     profile: {
         type: String,
         default: 'default.jpeg'
     },
-    approval:{
-        type:String,
+    approval: {
+        type: Number,
+
+        enum: [0, 1, 2],
+
     },
-    status:{
-        type:String,
-        default:'online'
-    },currentride:{
-        type:Object,
-        default:'none'
+    status: {
+        type: Number,
+        default: 0,
+        enum: [0,1,2,3] //----> 0:offline ----> 1:online ----> 2:hold ----> 3:onride
+
+    }, currentride: {
+        type: Object,
+        default: 'none'
+    },stripeid:{
+        type:String
+
     }
 
-});
+}, { validateBeforeSave: true });
 
 
 const Driver = mongoose.model('Driver', DriverSchema)

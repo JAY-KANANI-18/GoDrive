@@ -5,13 +5,12 @@ const Login = require('../model/login')
 const auth = async (req,res,next)=>{
     try{
 
-        // const token = req.header('Authorization').replace('Bearer ','')
-        const token = req.header('Authorization')
+        const token = req.header('Authorization').replace('Bearer ','')
+        // const token = req.header('Authorization')
         const decoded = jwt.verify(token,'thisismynewcourse')
         const user = await Login.findOne({_id:decoded._id,'tokens.token':token})
         if(!user){
             throw Error('eihiii')
-            next()
 
         }
         req.token = token
@@ -22,6 +21,7 @@ const auth = async (req,res,next)=>{
 
     }catch(e){
         console.log("plese auth");
+        
 
         res.status(401).send({error:'please authenticate.'})
 
@@ -36,7 +36,7 @@ const auth = async (req,res,next)=>{
 
 // const auth = async (req,res,next) =>{
 //     console.log("auth middleware")
-//     next()
+//      ()
 
 // }
 

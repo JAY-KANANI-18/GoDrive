@@ -1,317 +1,567 @@
 // server side
 
-
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const express = require("express");
-const path = require('path')
+const path = require("path");
 const cors = require("cors");
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+const bodyParser = require("body-parser");
 
-const adminRouter = require("../src/router/admin")
-const pricingRouter = require("../src/router/pricing")
-const ridesRouter = require("../src/router/rides")
-const usersRouter = require("../src/router/users")
-const driversRouter = require("../src/router/drivers")
-const Driver = require('./model/driver')
-const Ride = require('./model/rides')
-const cron = require('cron');
-var CronJob = require('cron').CronJob;
+const Driver = require("./model/driver");
+const Ride = require("./model/rides");
+
+const loginRouter = require("../src/router/login");
+const https = require("http");
+const Sockets = require('./controllers/socket/socket')
+const fs = require('fs');
 
 
-
-const loginRouter = require("../src/router/login")
-const http = require('http');
+const app = express();
 
 
+const privateKey = fs.readFileSync('../localhost.key', 'utf8');
+const certificate = fs.readFileSync('../localhost.csr', 'utf8');
 
-const app = express()
-const server = http.createServer(app)
-const io = require('socket.io')(server)
-// const io = socketio(server)
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+};
 
-app.use(cors())
-app.use(express.json())
+
+const server = https.createServer(credentials,app);
+
+// const io = require("socket.io")(server);
+
+// module.exports = {
+//   io:io
+// }
+
+// Sockets.socket(io)
+Sockets.initialize(server);
+
+
+app.use(cors());
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-mongoose.set('strictQuery', true)
-mongoose.connect("mongodb://127.0.0.1:27017/GoDrive")
+mongoose.set("strictQuery", true);
+mongoose.connect("mongodb://127.0.0.1:27017/GoDrive");
+
+
+
+const publicDiractoryPath = path.join(__dirname, "../public");
+app.use(express.static(publicDiractoryPath));
 
 
 
 
+const adminRouter = require("../src/router/admin");
+const pricingRouter = require("../src/router/pricing");
+const ridesRouter = require("../src/router/rides");
+const usersRouter = require("../src/router/users");
+const driversRouter = require("../src/router/drivers");
+const SettingsRouter = require("../src/router/settings");
+
+app.use(adminRouter);
+app.use(loginRouter);
+app.use(ridesRouter);
+app.use(usersRouter);
+app.use(driversRouter);
+app.use(pricingRouter);
+app.use(SettingsRouter);
+
+const ServerStartTime = new Date()
 
 
-const publicDiractoryPath = path.join(__dirname, '../public')
-// const viewPath = path.join(__dirname, "../src/templates/views")
-app.use(express.static(publicDiractoryPath))
 
 
-
-// app.set('view engine', 'hbs')
-// app.set('views', viewPath)
-
-app.use(adminRouter)
-app.use(loginRouter)
-app.use(ridesRouter)
-app.use(usersRouter)
-app.use(driversRouter)
-app.use(pricingRouter)
 
 // app.use(express.static(publicDiractoryPath))
 // app.use(userRouter)
-
 
 // app.use(cookieParser());
 
 
 
+// async function rideaccepted(driver, ride) {
+
+//   let rideobj = {
+//     status: 'accepted',
+//     driver: driver.name
+//   }
+//   let driverobj = {
+//     status: 'busy',
+//     currentride: ride
+
+//   }
 
 
 
+//   const nride = await Ride.findByIdAndUpdate(ride._id, rideobj, {
+//     new: true,
+//     runValidators: true,
+//   });
+//   const ndriver = await Driver.findByIdAndUpdate(driver._id, driverobj, {
+//     new: true,
+//     runValidators: true,
+//   });
 
-// **************************  MASS  INSERT USER MANUAL    **************************
-// async function adduser (){
-//     for (let i = 1; i <= 50; i++) {
+//   io.emit('ride_status_change', { ride: nride, driver: ndriver })
+//   io.emit('driver_status_change', { driver: ndriver, ride: nride })
 
-//         const user = new User({
-//             name:`user`,
-//             mobile:10000000000-i,
-//             country:`india`,
-//             email:`user${i}@gmail.com`
+
+// }
+// async function changedriverstatus(driver, status) {
+
+//   console.log(driver,status);
+//   let driverobj = {
+//     status
+//   }
+
+//   const ndriver = await Driver.findByIdAndUpdate(driver._id, driverobj, {
+//     new: true,
+//     runValidators: true,
+//   });
+//   io.emit('driver_status_change', { driver: ndriver })
+
+
+// }
+// async function changeRideStatus(ride,driver){
+//   console.log('in func');
+
+//   io.emit('ride_status_change',{ ride, driver })
+
+// }
+
+
+// async function autoAssign(ride) {
+
+//   const drivers = await Driver.find({
+//     status: "online",
+//     vehicle: ride.vehicle,
+//     approval: "approved",
+//   });
+
+//   for (const driver of drivers) {
+//     changedriverstatus(driver, "busy")
+//     const cdriver = await Driver.findById(driver._id);
+
+//     if (cdriver.status == "busy") {
+//       continue
+//     }
+//     console.log(cdriver.status);
+
+
+//     const response = await new Promise((resolve) => {
+//       const intervalId = setTimeout(() => {
+//         if (driver.acceptride == "yes") {
+//           rideaccepted(driver, ride)
+//           clearTimeout(intervalId);
+//           resolve("accepted");
+//         } else {
+//           console.log(driver.name);
+//           resolve("next");
+//           changedriverstatus(driver, "online")
+
+
 //         }
-//         )
-//         await user.save()
+//       }, 2000);
+//     });
+
+//     if (response === "accepted") {
+//       console.log("accepted");
+//       return;
 //     }
 
+
+
+
+//   }
+//   io.emit('notification', 'Driver not found')
+
 // }
-//     for(i=0;i<50 ;i++){
 
-//         const user = new User({
-//             name:`user${i}`,
-//             mobile:10000000000-i,
-//             country:`india${i}`,
-//             email:`user${i}@gmail.com`
+// const cronFunc = async () => {
+//   let CurrentDriver
+//   let CurrentDrivers
+//   let newDetails
+//   let rideRequest
 
-//         })
+//   if (EmergencyRide) {
+//     console.log(EmergencyRide);
+//     if (EmergencyRide.status === 'pending') {
+//       rideRequest = EmergencyRide
+//     }
+
+//   } else {
 
 
-// adduser()
+//     rideRequest = await Ride.findOne({ status: "pending" });
+
+
+//   }
+//   newDetails = rideRequest
+//   delete newDetails._id;
+
+//   if (!rideRequest) {
+//     return;
+//   }
+
+
+//   CurrentDrivers = await Driver.find({
+//     status: "online",
+//     vehicle: rideRequest.vehicle,
+//     approval: "approved", _id: { $nin: newDetails.rejected }
+//   }, { _id: 1 });
+
+
+//   console.log(CurrentDrivers.length);
+
+//   CurrentDriver = CurrentDrivers[0]
+
+
+//   let driver = CurrentDriver
+
+//   if (!driver) {
+//     return
+//   }
+
+
+
+//   changedriverstatus(driver, "busy")
+
+//   const response = await new Promise(async (resolve) => {
+//     console.log(driver);
+//     if (driver.acceptride == "yes") {
+//       resolve("accepted");
+//       // let  z =await Ride.findByIdAndUpdate(rideRequest._id, newDetails,{new:true})
+//     } else {
+//       console.log('next');
+//       resolve("next");
+//       changedriverstatus(driver, "online")
+
+
+//       z = await Ride.updateOne(
+//         { _id: rideRequest._id },
+//         { $push: { rejected: driver } })
+//     }
+//   });
+//   if (response === "accepted") {
+//     console.log("accepted");
+//     rideaccepted(driver, rideRequest)
+//     return;
+
+//   }
+
+// };
+
+// const job = new CronJob('* * * * * *', async () => {
+//   let currentTime = new Date()
+
+
+//   // const next10Seconds = new Date(Math.ceil(new Date().getTime() / 10000) * 10000);
+
+//   // const rides = await Ride.aggregate([
+//   //   {
+//   //     $match: {
+//   //       status: { $in: ['pending', 'assigning'] },
+//   //       $expr: {
+
+//   //         $gte: ['$createdAt', ServerStartTime]
+
+//   //       }
+//   //     }
+
+//   //   },
+//   //   {
+//   //     $addFields: {
+//   //       remainingSeconds: {
+//   //         $mod: [
+
+//   //           {
+//   //             $divide: [
+//   //               { $subtract: [new Date(), '$createdAt'] },
+//   //               1000  // Divide by 1000 to convert milliseconds to seconds
+//   //             ],
+//   //           }, 30
+//   //         ]
+
+//   //       }
+//   //     }
+//   //   },
+
+//   // ]);
+
+//   let Rides = await Ride.find({ status: { $in: ['pending', 'assigning'] }, createdAt: { $lte: ServerStartTime.getTime() } })
+
+
+//   // await inPerfectRide(rides, currentTime)
+
+//   await cronefunc(Rides)
+
+
+// });
+
+
+// async function inPerfectRide(rides, currentTime) {
+
+//   timeArray = []
+
+
+//   for (let ride of rides) {
+//     time = ride.remainingSeconds
+//     timeArray.push({ time, ride })
+//   }
+//   timeArray.sort(function (a, b) { return a.time - b.time });
+
+
+//   for (let Ride of timeArray) {
+//     let ride = Ride
+//     let time = currentTime.getTime() + (ride.time * 1000)
+
+
+//     await waitForTime(currentTime, time)
+//     console.log('here');
+
+//     changedriverstatus({ _id: ride.driver }, "online")
+
+//     let availableDriver = await Driver.findOne({
+//       status: 'online', approval: 'approved',
+//       _id: { $nin: ride.rejected },
+//       vehicle: ride.vehicle
+
+
+//     })
+
+//     if (!availableDriver) {
+//       ridedriver = {
+//         driver: ''
+
+//       }
+//       console.log('no found');
+//       continue
+//     }
+//     if (availableDriver) {
+//       changedriverstatus(availableDriver, "busy")
+//       ridedriver = {
+//         driver: availableDriver._id
+//       }
+//       await Ride.updateOne(
+//         { _id: ride._id },
+//         { $push: { rejected: availableDriver._id } })
+//       ride.driver = availableDriver.name
+
+//     }
+
+//     await Ride.findByIdAndUpdate(ride._id, ridedriver, { new: true })
+
+
+//     gbsoket.on('driver_response', (res) => {
+//       console.log('ayo ayo soket ma');
+
+//     });
+
+
+
+
+//   }
+
+
+
+
+
+
+
+
 // }
-// ***************************** End ***************************
+
+
+// async function waitForTime(currentTime, desiredTime) {
+//   let z = currentTime.getTime()
+//   function getCurrentTime() {
+//     const now = new Date();
+//     return now.getTime()
+//   }
+
+//   await new Promise((resolve) => {
+//     const checkTime = () => {
+//       const currentTime = getCurrentTime();
+//       if (currentTime === desiredTime) {
+//         resolve(currentTime);
+//       } else {
+//         setImmediate(checkTime);
+//       }
+//     };
+
+//     checkTime();
+//   });
 
 
 
+// }
+
+// async function cronefunc(Rides) {
+
+//   for (let ride of Rides) {
+//     let ridedriver
 
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
+//     if (ride.driver !== "No Driver" ){
 
-  socket.on('message', (message) => {
-    console.log(message);
-    io.emit('message', `${socket.id.substr(0, 2)} said ${message}`);
-  });
-  socket.on('request-select-assign', (data) => {
-    io.emit('toDriver', data);
-  });
-  // socket.on('driver-location', (location) => {
-  //   driverLocation = location;
-  //   io.emit('driver-location', driverLocation);
-  // });
-  socket.on('status_change', async (location) => {
-
-    let data = {
-      status: location.status
-    }
-
-    const driver = await Ride.findOneAndUpdate(location.id, data, { new: true, runValidators: true })
+      
+//       await changedriverstatus({ _id: ride.driver }, "online")
+//     }
 
 
-
-    io.emit('status_change', location);
-  });
-  socket.on('driver_status_change', async (location) => {
-
-    let data = {
-      status: location.status
-    }
-
-    const driver = await Driver.findOneAndUpdate(location.id, data, { new: true, runValidators: true })
+//     let availableDriver = await Driver.findOne({
+//       status: 'online', approval: 'approved',
+//       _id: { $nin: ride.rejected },
+//       vehicle: ride.vehicle
+//     })
 
 
+//     if (!availableDriver) {
 
-    io.emit('status_change', location);
-  });
-  socket.on('accept_ride', async (detail) => {
-    let id = "6448b5b2541475ce64a83e7f"
-    let dataa = {
-      currentride: detail
-    }
+//       console.log('no driver',availableDriver,ride._id);
+//       ridedriver = {
+//         driver: ''
 
-    const driver = await Driver.findOneAndUpdate(id, dataa, { new: true, runValidators: true })
+//       }
+//      let z =  await Ride.findByIdAndUpdate(ride._id,{rejected:[],driver:"No Driver"},{new:true})
+//       console.log('no found');
+//       console.log(z);
+//       continue
+//     }
+//     if (availableDriver) {
+//       changedriverstatus(availableDriver, "busy")
+//       ridedriver = {
+//         driver: availableDriver._id
+//       }
+//       await Ride.updateOne(
+//         { _id: ride._id },
+//         { $push: { rejected: availableDriver._id } })
+//       ride.driver = availableDriver.name
 
+//     }
 
-  });
-  // socket.on('search_driver', (data) => {
+//    let upride= await Ride.findByIdAndUpdate(ride._id, ridedriver, { new: true })
 
-
-
-
-
-
-  //   cron.schedule('* * * * *', async () => {
-  //     const rideRequests = await Ride.find({ status: 'pending' });
-
-  //     for (const rideRequest of rideRequests) {
-  //       const timeDifference = Date.now() - rideRequest.createdAt.getTime();
-
-  //       if (timeDifference > TIMEOUT_DURATION) {
-  //         // Mark the ride request as unassigned and update its status in the database to "timed out"
-  //         // ...
-  //       }
-  //     }
-  //   });
+//     changeRideStatus(upride,availableDriver)
 
 
-
-  //   app.post('/search-for-driver', async (req, res) => {
-  //     const rideRequest = req.body;
-
-  //     const { driver } = await searchForDriver(rideRequest);
-
-  //     res.json({ driver });
-  //   });
+//     // await new Promise(resolve => {
+//     //     gbsoket.on('driver_response', (res) => {
+//     //       console.log('ayo ayo soket ma');
+//     //       resolve()
+//     //     })
+//     //   });
 
 
 
 
 
 
+//   }
 
 
-  //   const searchForDriver = async (rideRequest) => {
-  //     // Search for the nearest available driver(s) in the database
-  //     // ...
-
-  //     if (driver) {
-  //       // Assign the ride request to the driver and update the ride request status in the database to "assigned"
-  //       // ...
-  //       return { driver };
-  //     } else {
-  //       // Mark the ride request as unassigned and update its status in the database to "no driver found"
-  //       // ...
-  //       return { driver: null };
-  //     }
-  //   };
+// }
 
 
 
-  // })
-  
-  socket.on('disconnect', () => {
-    console.log('a user disconnected!');
-  });
+
+
+
+// var job = new CronJob("*/10 * * * * *", async function () {
+
+//   const rideRequest = await Ride.findOne({ status: "pending" });
+//   if (!rideRequest) {
+//     return;
+//   }
+
+
+//   const drivers = await Driver.find({
+//     status: "online",
+//     vehicle: rideRequest.vehicle,
+//     approval: "approved",
+//   });
+
+//   for (const driver of drivers) {
+//     changedriverstatus(driver,"busy")
+
+//     const response = await new Promise((resolve) => {
+//       // const intervalId = setTimeout(() => {
+//         if (driver.acceptride == "yes") {
+//           rideaccepted(driver,rideRequest)
+//           clearTimeout(intervalId);
+//           resolve("accepted");
+//         } else {
+//           console.log(driver.name);
+//           resolve("next");
+//           changedriverstatus(driver,"online")
+
+
+//         }
+//       // }, 2000);
+//     });
+
+//     if (response === "accepted") {
+//       console.log("accepted");
+//       return;
+//     }
+
+
+
+
+//   }
+
+// });
+
+const cronService = require('./controllers/cronjob/crone')
+
+
+cronService.getSettingData()
+cronService.job.start();
+
+server.listen(3000, () => {
+  console.log("port is runiing...(at 3000)");
 });
 
 
+// const rides = await Ride.aggregate([
+//   {
+//     $match: {
+//       status: { $in: ['assigning'] },
+//       assignType: { $in: ['next', 'selected'] }
 
 
-var job = new CronJob('* * * * * *',async function() {  
-  
-  
-  
-  const rideRequest = await Ride.findOne({ status:'pending'});
-    if (!rideRequest) {
-      // Ride request does not exist
-      return;
-    }
+//     }
 
-    // if (rideRequest.status === 'assigned') {
-    //   // Ride request has already been assigned to a driver
-    //   return;
-    // }
+//   },
+//   {
+//     $addFields: {
+//       remainingSeconds: {
+//         // $ceil: {
 
-    // if (rideRequest.status === 'timed_out') {
-    //   // Ride request has already timed out
-    //   return;
-    // }
+//           $add: [
+//             { 
+//               $subtract: [new Date(), '$updatedAt']
+//              },
+//              currentTime.getTime()
+//             // 1000  // Divide by 1000 to convert milliseconds to seconds
+//           ],
+//         // }
 
-    const drivers = await Driver.find({ status: 'online' })
+//       }
+//     }
+//   },
+//   // {
+//   //   $match: {
+//   //     remainingSeconds: {
+//   //       $lt:10
+//   //     }
+//   //   }
+//   // },
+//   {
+//     $sort:{updatedAt:1}
+//   }
 
-    for (const driver of drivers) {
-      // Send a request to the driver
-      io.emit('ride_request',  rideRequest);
-
-      // Wait for the driver to accept or reject the request
-      const response = await waitForDriverResponse( rideRequest);
-
-      if (response === 'accepted') {
-        // Driver has accepted the ride request
-        // await assignRideRequestToDriver(driver, rideRequest);
-        return;
-      }
-    }
-
-    // No driver has accepted the ride request
-    // await markRideRequestAsUnassigned(rideRequest);
-    // socket.emit('no_driver_found', { rideRequestId: rideRequest._id });
-  });
-
-  // Stop the cron job if the user cancels the ride request
-
-
-
-// job.start()
-
-
-const waitForDriverResponse = async (rideRequest) => {
-    let timer;
-
-    let res 
-
-    io.on('check_driver',(data)=>{
-
-     res =  data.response 
-     
-    })
-    setTimeout(() => {
-      if(!res){
-        console.log('set time out on');
-        res = "next"
-      }
-     
-    }, 9000);
-    
-
-    return res
-
-
-
-
-
-
-
-
-    const onDriverResponse = (data) => {
-      if (data.driverId === driverId && data.rideRequestId === rideRequestId) {
-        clearTimeout(timer);
-        socket.off('ride_request_response', onDriverResponse);
-        resolve(data.response);
-      }
-    };
-
-    timer = setTimeout(() => {
-      socket.off('ride_request_response', onDriverResponse);
-      resolve('timeout');
-    }, timeout);
-
-    socket.on('ride_request_response', onDriverResponse);
-};
-
-
-
-
-server.listen(3000, () => {
-  console.log('port is runiing...(at 3000)')
-})
-
+// ]);

@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DashService } from 'src/app/services/dashboard.service';
 import { PricingService } from 'src/app/services/pricing.servive';
 
@@ -8,41 +9,50 @@ import { PricingService } from 'src/app/services/pricing.servive';
   styleUrls: ['./vehical-type.component.scss']
 })
 export class VehicleType implements OnInit {
+
   @ViewChild('fileInput') fileInput: ElementRef;
-  errorMsg: any
-  errorMsg2: any
-  Vehicles = []
-  constructor(private dashService: DashService,private pricingService:PricingService) { }
-  title = "Add Vehicle"
-  vehicleName = ""
-  UpdateActivate = false
-  SubmitActivate = true
-  updateId = ""
-  file: any
+
+  public errorMsg: any
+  public errorMsg2: any
+  public Vehicles = []
+  public title = "Add Vehicle"
+  public UpdateActivate = false
+  public SubmitActivate = true
+  public vehicleName: any
+  public allVehicles: any
+
+  private updateId = ""
+  private file: any
+
+  constructor(private dashService: DashService, private pricingService: PricingService,private ngbService: NgbModal
+    ) { }
+
+  ngOnInit() {
+    this.getVehicles()
+
+  }
+ async  onSearch(val:any){
+    console.log(val);
+    this.Vehicles = this.allVehicles.filter((vehicle:any)=>vehicle.name.toLowerCase().includes(val.toLowerCase()))
+    //  this.getVehicles()
 
 
+
+  }
   getVehicles() {
-    this.pricingService.getVelicles().subscribe((data: any) => {
-      this.Vehicles = data
+    this.pricingService.getallVehicleTypes().subscribe((data: any) => {
+      this.allVehicles = data
+      this.Vehicles = this.allVehicles
 
       console.log(this.Vehicles);
     })
 
   }
 
-
-  ngOnInit() {
-    this.getVehicles()
-
-  }
-
-
-
-
-  onAdd(formData: any) {
+  onAdd(formData: any,files:any) {
     this.errorMsg2 = false
 
-    const file = this.fileInput.nativeElement.files[0];
+    const file = files.files[0];
     const formDataObj = new FormData();
     if (file.size >= 1000000) {
       this.errorMsg2 = true
@@ -64,12 +74,13 @@ export class VehicleType implements OnInit {
 
 
       }, error: (error) => {
-        console.log(error.error.message);
+        console.log(error);
 
         if (error.error.msg) {
 
           this.errorMsg = error.error.msg
         }
+        // this.errorMsg = error.error.error
 
       }
 
@@ -82,40 +93,39 @@ export class VehicleType implements OnInit {
   onDelete(id: any) {
     console.log('on delete', id);
     let type = 'Vehicles'
-    this.pricingService.deleteItem(id, type).subscribe((data) => {
-      console.log(data);
-    })
-
-    this.getVehicles()
-
-
+    this.pricingService.deleteItem(id, type).subscribe(
+      {
+        next: (data: any) => {
+          console.log(data);
+          this.getVehicles()
+        }
+      })
   }
   onUpdate(id: any) {
     this.errorMsg2 = false
+    this.pricingService.updateVehicle(id).subscribe(
+      {
+        next: (data: any) => {
 
+          this.vehicleName = data.name
+          this.file = data.file
+          this.updateId = id
+          this.title = "Update User"
+          this.UpdateActivate = true
+          this.SubmitActivate = false
+        }, error: (error) => {
+          console.log(error);
+        }
+      })
 
-
-    console.log('on update', id);
-    this.pricingService.updateVehicle(id).subscribe((data: any) => {
-      this.vehicleName = data.name
-      this.file = data.file
-
-      this.updateId = id
-
-
-
-      this.title = "Update User"
-      this.UpdateActivate = true
-      this.SubmitActivate = false
-
-    })
   }
-  onSave(formData: any) {
+  onSave(formData: any,fileInput:any) {
     this.errorMsg2 = false
 
 
-    const file = this.fileInput.nativeElement.files[0];
-    if (file.size >= 1000000) {
+    const file = fileInput.files[0];
+     console.log(file);
+    if (file?.size >= 1000000) {
       this.errorMsg2 = true
       return
     }
@@ -163,6 +173,9 @@ export class VehicleType implements OnInit {
 
 
   }
+  openModel(content: any) {
 
+    this.ngbService.open(content,{centered:true});
 
+  }
 }
