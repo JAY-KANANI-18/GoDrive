@@ -1,53 +1,97 @@
-<div class="header bg-aliceblue py-lg-8">
+<div class="header py-lg-8">
   <div class="container">
     <div class="header-body text-center mb-7">
-      <div class="row justify-content-center">
-
-      </div>
+      <div class="row justify-content-center"></div>
     </div>
   </div>
-
 </div>
 <!-- Page content -->
 <div class="container mt--8 pb-5">
   <!-- Table -->
   <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8">
-      <div class="card bg-secondary shadow border-0">
-
+      <div class="card bg-secondary shadow border-0 text-center">
+        <h1 class="mt-5">Register</h1>
         <div class="card-body px-lg-5 py-lg-5">
-
-          <form role="form" #postForm="ngForm" (ngSubmit)="onCreatePost(postForm.value)">
+          <form
+            role="form"
+            #postForm="ngForm"
+            (ngSubmit)="onCreatePost(postForm.value)"
+          >
             <div class="form-group">
               <div class="input-group input-group-alternative mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                  <span class="input-group-text"
+                    ><i class="ni ni-hat-3"></i
+                  ></span>
                 </div>
-                <input class="form-control" placeholder="Name" type="text" required ngModel name="name">
+                <input
+                  class="form-control"
+                  placeholder="Name"
+                  type="text"
+                  required
+                  ngModel
+                  name="name"
+                />
               </div>
             </div>
             <div class="form-group">
               <div class="input-group input-group-alternative mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                  <span class="input-group-text"
+                    ><i class="ni ni-email-83"></i
+                  ></span>
                 </div>
-                <input class="form-control" placeholder="Email" type="email"  #email="ngModel" required ngModel name="email">
+                <input
+                  class="form-control"
+                  placeholder="Email"
+                  type="email"
+                  #email="ngModel"
+                  required
+                  ngModel
+                  name="email"
+                />
               </div>
-              <span class="help-block"  style="color: red;" *ngIf="!email.valid && email.touched">*Please enter valid email</span>
+              <span
+                class="help-block"
+                style="color: red"
+                *ngIf="!email.valid && email.touched"
+                >*Please enter valid email</span
+              >
             </div>
             <div class="form-group">
               <div class="input-group input-group-alternative">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                  <span class="input-group-text"
+                    ><i class="ni ni-lock-circle-open"></i
+                  ></span>
                 </div>
-                <input class="form-control" placeholder="Password" type="password"  required ngModel name="password" #pass="ngModel">
+                <input
+                  class="form-control"
+                  placeholder="Password"
+                  type="password"
+                  required
+                  ngModel
+                  name="password"
+                  #pass="ngModel"
+                />
               </div>
-              <span class="help-block" style="color: red;" *ngIf="!pass.valid && pass.touched">*Password must contains minimum 8 characters</span>
+              <span
+                class="help-block"
+                style="color: red"
+                *ngIf="!pass.valid && pass.touched"
+                >*Password must contains minimum 8 characters</span
+              >
             </div>
 
-
             <div class="text-center">
-              <button type="submit"  class="btn btn-primary mt-4" [disabled]="!postForm.valid">Create account</button>
+              <button
+                type="submit"
+                class="btn btn-primary mt-4"
+                [disabled]="!postForm.valid"
+              >
+                Create account
+              </button>
             </div>
           </form>
         </div>

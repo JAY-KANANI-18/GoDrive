@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-  HttpEventType
-} from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
-import { Subject, throwError } from 'rxjs';
-import { Router } from '@angular/router';
+  HttpClient
 
-// import { Post } from './post.model';
+} from '@angular/common/http';
+import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
+
 
 @Injectable({ providedIn: 'root' })
 
@@ -21,10 +17,10 @@ export class SettingsService {
     setTimeOut(id:any,data:any) {
 
       console.log(data);
-      return this.http.patch(`http://localhost:3000/Settings/edit?id=${id}`,data)
+      return this.http.patch(`${environment.URL}/Settings/edit?id=${id}`,data)
     }
     currentSettings(){
-      return this.http.get(`http://localhost:3000/Settings`)
+      return this.http.get(`${environment.URL}/Settings`)
 
 
     }

@@ -1,7 +1,7 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'utcDate'
+  name: "utcDate",
 })
 export class UtcDatePipe implements PipeTransform {
   transform(value: string): string {

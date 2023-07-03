@@ -2,59 +2,108 @@
   <div class="container-fluid">
     <div class="header">
       <h1>Vehicle Type</h1>
-
-
     </div>
   </div>
 </div>
 
 <ng-template #content let-modal>
-  <div class="bg-aliceblue modal-div ">
-
+  <div class="bg-aliceblue modal-div">
     <div class="modal-header">
       <h4>Service Type</h4>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
-          aria-hidden="true">&times;</span></button>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
 
     <div class="modal-body">
-
-      <form role="form" #AddVehicleForm="ngForm"
-        (ngSubmit)="onAdd(AddVehicleForm.value,fileInput);AddVehicleForm.reset()" name="newForm">
-
-            <label for="">Vehicle Type : </label>
-            <input class="form-control" placeholder="Vehicle type" type="name" required [ngModel]="vehicleName"
-              name="name">
-          <span class="errors"
-            *ngIf="AddVehicleForm.controls['name']?.errors?.required && AddVehicleForm.controls['name']?.touched">*Please
-            enter a value</span>
-
-            <label for="">Vehicle Image : </label>
-
-              <input class="form-control" name="file" type="file" required ngModel #fileInput>
-            <span class="errors"
-              *ngIf="AddVehicleForm.controls['file']?.errors?.required && AddVehicleForm.controls['file']?.touched">*Please
-              enter a value</span>
-            <span class="errors" *ngIf="errorMsg2">*File should less then 1MB </span>
-
-        <span class="errors" *ngIf="errorMsg">*{{errorMsg}}</span>
+      <form
+        role="form"
+        [formGroup]="vehicleForm"
+        (ngSubmit)="
+          onAdd(fileInput,modal)
+        "
+        name="newForm"
+      >
 
         <div class="text-center">
-          <button *ngIf="SubmitActivate" type="submit" class="btn btn-primary my-4"
-            [disabled]="AddVehicleForm.invalid">Add Vehicle</button>
-          <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4"
-            (click)="onSave(AddVehicleForm.value,fileInput);AddVehicleForm.reset();">Update Vehicle</button>
-          <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4"
-            (click)="onCancel(AddVehicleForm.value);AddVehicleForm.reset();">cancel</button>
+
+          <img *ngIf="selectedImage" [src]="selectedImage " alt="Selected Image" width="50%" height="50%">
         </div>
 
+        <label for="">Vehicle Image : </label>
+
+        <input
+          class="form-control"
+          name="file"
+          type="file"
+          formControlName="file"
+          (change)="onFileSelected($event)"
+
+          #fileInput
+        />
+
+        <span
+          class="errors"
+          *ngIf="vehicleForm.get('file').invalid && vehicleForm.get('file').touched"
+
+          >*Please enter a value</span
+        >
+        <label for="">Vehicle Type : </label>
+        <input
+          class="form-control"
+          placeholder="Vehicle type"
+          type="name"
+          formControlName="name"
+          name="name"
+          appAppNumericOnly
+
+        />
+        <span
+          class="errors"
+          *ngIf="vehicleForm.get('name').invalid && vehicleForm.get('name').touched"
 
 
+          >*Please enter a value</span
+        >
+        <span class="errors" *ngIf="errorMsg2"
+          >*File should less then 1MB
+        </span>
 
+        <span class="errors" *ngIf="errorMsg">*{{ errorMsg }}</span>
+
+        <div class="text-center">
+          <button
+            *ngIf="!UpdateActivate"
+            type="submit"
+            class="btn btn-primary my-4"
+            [disabled]="vehicleForm.invalid"
+          >
+            Add Vehicle
+          </button>
+          <button
+            *ngIf="UpdateActivate"
+            type="button"
+            class="btn btn-success my-4"
+            (click)="
+              onSave(fileInput,modal);
+            "
+          >
+Save          </button>
+          <button
+            *ngIf="UpdateActivate"
+            type="button"
+            class="btn btn-danger my-4"
+            (click)="onCancel(modal); "
+          >
+            cancel
+          </button>
+        </div>
       </form>
-
-
-
     </div>
     <!--
     <div class="modal-footer">
@@ -62,53 +111,51 @@
       <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
     </div> -->
   </div>
-
 </ng-template>
 
-
-<!-- Page content -->
-<!-- <div class="container-fluid mt--7"> -->
 <div class="container-fluid mt--5">
-
-
-  <div class=" vehicles ">
-
-    <div class="card-header row ml-0 mr-0" >
-
+  <div class="vehicles">
+    <div class="card-header row ml-0 mr-0">
       <div class="col-sm-4">
-
-        <div class="form-control-search d-flex  align-items-center">
-          <input type="search" class="form-control" placeholder="Search" (input)="onSearch($event.target.value)">
+        <div class="form-control-search d-flex align-items-center">
+          <input
+            type="search"
+            class="form-control"
+            placeholder="Search"
+            (input)="onSearch($event.target.value)"
+          />
           <div class="btn-group">
-
-            <button class="btn refresh">⟳</button>
+            <button class="btn refresh" (click)="getVehicles()">⟳</button>
           </div>
         </div>
-
       </div>
-
-
-
 
       <div class="col-sm-8 text-right">
-
-        <button class="btn btn-outline-primary add-dialog" (click)="openModel(content)"> + Add </button>
+        <button
+          class="btn btn-outline-primary add-dialog"
+          (click)="openModel(content, 1)"
+        >
+          + Add
+        </button>
       </div>
-
     </div>
 
-
-    <div class="  vehicle col-sm-4 pr-0 pl-0  text-center mt-5 " *ngFor="let vehicle of Vehicles || allVehicles"
-      (click)="openModel(content);onUpdate(vehicle._id)">
-
-      <img src="http://localhost:3000/avatars/{{vehicle.file}}" alt="image" width="100%" height="75%">
-      <hr>
-      <div>{{vehicle.name | uppercase}}</div>
+    <div
+      class="vehicle col-sm-4 pr-0 pl-0 text-center mt-5"
+      *ngFor="let vehicle of Vehicles || allVehicles"
+      (click)="openModel(content, 2); onUpdate(vehicle._id)"
+    >
+      <img
+        src="http://localhost:3000/avatars/{{ vehicle.file }}"
+        alt="image"
+        width="100%"
+        height="75%"
+      />
+      <hr />
+      <div>{{ vehicle.name | uppercase }}</div>
       <!-- <button  class="btn btn-success  mt-3 mr-2" (click)="onUpdate(vehicle._id);scrollToTop()">Update</button> -->
       <!-- <button   class="btn btn-danger mt-3" (click)="onDelete(vehicle._id)">Delete</button> -->
-
     </div>
   </div>
 </div>
-<h3 class="text-center" *ngIf="Vehicles.length<=0">No Data Found</h3>
-<!-- </div> -->
+<h3 class="text-center" *ngIf="Vehicles.length <= 0">No Data Found</h3>

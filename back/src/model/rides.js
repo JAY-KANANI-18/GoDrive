@@ -1,83 +1,84 @@
-const mongoose = require("mongoose")
-const validator = require('validator')
+const mongoose = require("mongoose");
+const validator = require("validator");
 
-const RidesSchema = new mongoose.Schema({
+const RidesSchema = new mongoose.Schema(
+  {
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        require: true,
-        ref: 'users',
-
+      type: mongoose.Schema.Types.ObjectId,
+      require: true,
+      ref: "users",
     },
     pickup: {
-        type: String,
-        require: true
-
+      type: String,
+      require: true,
     },
     dropoff: {
-        type: String,
-        require: true
-
-
+      type: String,
+      require: true,
     },
     assignType: {
-        type: Number,
-        enum :[0,1,2,3,4]
+      type: Number,
+      enum: [0, 1, 2, 3, 4],
     },
     stop: {
-        type: Array,
-
+      type: Array,
     },
     vehicle: {
-        type: mongoose.Schema.Types.ObjectId,
-        require: true,
-        ref: 'vehicles',
-
-
+      type: mongoose.Schema.Types.ObjectId,
+      require: true,
+      ref: "vehicles",
     },
     distance: {
-        type: String,
-        require: true
+      type: String,
+      require: true,
     },
     time: {
-        type: String,
-        require: true
+      type: String,
+      require: true,
+    },
+    ride_fees: {
+      type: Number,
+      require: true,
     },
     bookingtime: {
-        type: String,
-        require: true
-
-    }, status: {
-        type: Number,
-        enum:[0,1,2,3,4,5,6]
+      type: String,
+      require: true,
+    },
+    status: {
+      type: Number,
+      enum: [0, 1, 2, 3, 4, 5, 6],
+    },
+    card_detail: {
+      type: String
     },
 
     payment_type: {
-        type: Number,
-        enum:[0,1]
-    }
-    ,
+      type: Number,
+      enum: [0, 1],
+    },
     scheduletime: {
-        type: String,
-
+      type: String,
     },
     scheduledate: {
-        type: String
+      type: String,
     },
-     driver: {
-        type: mongoose.Schema.Types.ObjectId,
-        require: true,
-        ref: 'drivers',
+    bookingtype:{
+      type: String,
+
     },
-     rejected: {
-        type: Array
+    driver: {
+      type: mongoose.Schema.Types.ObjectId,
+      // require: true,
+      ref: "drivers",
+      // default:"No Driver",
+    },
+    rejected: {
+      type: Array,
+    },
+  },
+  { timestamps: true }
+);
 
-
-    }
-}, { timestamps: true });
-
-
-const Rides = mongoose.model('Rides', RidesSchema)
+const Rides = mongoose.model("Rides", RidesSchema);
 
 module.exports = Rides;
-
-

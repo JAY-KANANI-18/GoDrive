@@ -1,67 +1,58 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {
   HttpClient,
-  HttpHeaders,
-  HttpParams,
-  HttpEventType
-} from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
-import { Subject, throwError } from 'rxjs';
-import { Router } from '@angular/router';
+
+} from "@angular/common/http";
+
+import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 // import { Post } from './post.model';
 
-@Injectable({ providedIn: 'root' })
-
-
+@Injectable({ providedIn: "root" })
 export class DriversService {
-  zone: any
-  constructor(private http: HttpClient, private router: Router) { }
-
+  zone: any;
+  constructor(private http: HttpClient, private router: Router) {}
 
   addDriver(data: any) {
-    return this.http.post(`http://localhost:3000/Drivers`, data)
-
-
+    return this.http.post(`${environment.URL}/Drivers`, data);
   }
-  getDrivers(page:any,option?:any) {
+  getDrivers(page: any, option?: any) {
+    let params = {page}
 
-    if(option?.search){
-      return this.http.get(`http://localhost:3000/Drivers?page=${page}&str=${option.search}`)
+    if (option?.field) {
+
+      params['field'] = option.field
+
+    } else if (option?.search) {
+      console.log("2");
+      params['str'] = option.search
 
     }
-    return this.http.get(`http://localhost:3000/Drivers?page=${page}`)
+
+
+    return this.http.get(`${environment.URL}/Drivers`,{params});
   }
   deleteDriver(id: any) {
-    return this.http.get(`http://localhost:3000/Drivers/Delete/${id}`)
-
-
+    return this.http.get(`${environment.URL}/Drivers/Delete/${id}`);
   }
   updateDriver(id: any) {
-    return this.http.get(`http://localhost:3000/Drivers/Update?id=${id}`)
-
-
+    return this.http.get(`${environment.URL}/Drivers/Update?id=${id}`);
   }
   SaveDriver(id: any, data: any) {
-    return this.http.patch(`http://localhost:3000/Drivers/Update/Save?id=${id}`, data)
-
-
+    return this.http.patch(
+      `${environment.URL}/Drivers/Update/Save?id=${id}`,
+      data
+    );
   }
   approveDriver(id: any, data: any) {
-    return this.http.patch(`http://localhost:3000/Drivers/Approve?id=${id}`, data)
-
-
+    return this.http.patch(`${environment.URL}/Drivers/Approve?id=${id}`, data);
   }
-  getOnlineDrivers() {
-    return this.http.get(`http://localhost:3000/Drivers/Online`)
-
-
-
+  getOnlineDrivers(ride:any) {
+    return this.http.post(`${environment.URL}/Drivers/Online`,ride);
   }
 
   getRunningRequest() {
-    return this.http.get(`http://localhost:3000/Drivers/RunningRequest`)
+    return this.http.get(`${environment.URL}/Drivers/RunningRequest`);
   }
-
-
 }

@@ -1,21 +1,19 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'driverStatus'
+  name: "driverStatus",
 })
 export class DriverStatusPipe implements PipeTransform {
-
   transform(value: unknown, ...args: unknown[]): unknown {
-
     switch (value) {
       case 0:
-        return 'offline'
-      case 1 :
-        return 'online'
-      case 2 :
-        return 'hold'
+        return "offline";
+      case 1:
+        return "online";
+      case 2:
+        return "hold";
       default:
-        return 'onride'
-    }  }
-
+        return "onride";
+    }
+  }
 }

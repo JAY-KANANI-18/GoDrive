@@ -1,181 +1,202 @@
-import { Component, ElementRef, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DashService } from 'src/app/services/dashboard.service';
-import { PricingService } from 'src/app/services/pricing.servive';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from "@angular/core";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { ToastrService } from "ngx-toastr";
+import { PricingService } from "src/app/services/pricing.servive";
+import { environment } from "src/environments/environment";
 
 @Component({
-  selector: 'app-vehicletype',
-  templateUrl: './vehical-type.component.html',
-  styleUrls: ['./vehical-type.component.scss']
+  selector: "app-vehicletype",
+  templateUrl: "./vehical-type.component.html",
+  styleUrls: ["./vehical-type.component.scss"],
 })
 export class VehicleType implements OnInit {
 
-  @ViewChild('fileInput') fileInput: ElementRef;
 
-  public errorMsg: any
-  public errorMsg2: any
-  public Vehicles = []
-  public title = "Add Vehicle"
-  public UpdateActivate = false
-  public SubmitActivate = true
-  public vehicleName: any
-  public allVehicles: any
+  public Vehicles = [];
+  public title = "Add Vehicle";
+  public UpdateActivate = false;
+  public SubmitActivate = true;
+  public vehicleName: any;
+  public allVehicles: any;
+  public vehicleForm: any;
+  selectedImage: string;
 
-  private updateId = ""
-  private file: any
 
-  constructor(private dashService: DashService, private pricingService: PricingService,private ngbService: NgbModal
-    ) { }
+  private updateId = "";
+
+  constructor(
+    private pricingService: PricingService,
+    private ngbService: NgbModal,
+    private toster: ToastrService,
+
+  ) { }
 
   ngOnInit() {
-    this.getVehicles()
-
+    this.getVehicles();
   }
- async  onSearch(val:any){
+
+  createVehicleTypeForm() {
+    this.vehicleForm = new FormGroup({
+      name: new FormControl(null, [Validators.required]),
+      file: new FormControl(null, [Validators.required]),
+
+    });
+  }
+  async onSearch(val: any) {
     console.log(val);
-    this.Vehicles = this.allVehicles.filter((vehicle:any)=>vehicle.name.toLowerCase().includes(val.toLowerCase()))
-    //  this.getVehicles()
-
-
-
+    this.Vehicles = this.allVehicles.filter((vehicle: any) =>
+      vehicle.name.toLowerCase().includes(val.toLowerCase())
+    );
   }
   getVehicles() {
-    this.pricingService.getallVehicleTypes().subscribe((data: any) => {
-      this.allVehicles = data
-      this.Vehicles = this.allVehicles
+    this.pricingService.getallVehicleTypes().subscribe(
+      {
+        next: (data: any) => {
 
-      console.log(this.Vehicles);
-    })
+          this.Vehicles = data.vehicle;
+          if (this.Vehicles.length == 0) {
+            this.toster.error('Vehicles Not Found')
+          } else {
+            this.toster.success(data.msg)
 
-  }
+          }
 
-  onAdd(formData: any,files:any) {
-    this.errorMsg2 = false
-
-    const file = files.files[0];
-    const formDataObj = new FormData();
-    if (file.size >= 1000000) {
-      this.errorMsg2 = true
-      return
-    }
-
-    formDataObj.append('name', formData.name);
-    formDataObj.append('file', file);
+        },error:(error)=>{
+          this.toster.error(error.error.msg)
 
 
-
-    this.pricingService.addVehicle(formDataObj).subscribe({
-
-      next: (data) => {
-
-        console.log(data);
-
-        this.getVehicles()
-
-
-      }, error: (error) => {
-        console.log(error);
-
-        if (error.error.msg) {
-
-          this.errorMsg = error.error.msg
         }
-        // this.errorMsg = error.error.error
-
       }
 
 
-
-    })
-
-
+    );
   }
-  onDelete(id: any) {
-    console.log('on delete', id);
-    let type = 'Vehicles'
-    this.pricingService.deleteItem(id, type).subscribe(
-      {
-        next: (data: any) => {
-          console.log(data);
-          this.getVehicles()
+
+  onAdd(files: any, modal: any) {
+
+    const file = files.files[0];
+    const formDataObj = new FormData();
+
+    if (file.size >= 1000000) {
+      this.toster.error('File should be less than 1 Mb')
+      return;
+    }
+
+    formDataObj.append("name", this.vehicleForm.value.name);
+    formDataObj.append("file", file);
+
+    this.pricingService.addVehicle(formDataObj).subscribe({
+      next: (data) => {
+        this.getVehicles();
+        modal.dismiss('Click')
+        this.vehicleForm.reset()
+      },
+      error: (error) => {
+
+        if (error.error.msg) {
+          this.toster.error(error.error.msg)
+
         }
-      })
+      },
+    });
   }
+
   onUpdate(id: any) {
-    this.errorMsg2 = false
-    this.pricingService.updateVehicle(id).subscribe(
-      {
-        next: (data: any) => {
 
-          this.vehicleName = data.name
-          this.file = data.file
-          this.updateId = id
-          this.title = "Update User"
-          this.UpdateActivate = true
-          this.SubmitActivate = false
-        }, error: (error) => {
-          console.log(error);
-        }
-      })
+    this.pricingService.updateVehicle(id).subscribe({
+      next: (res: any) => {
 
+       let data = res.vehicle
+
+        this.vehicleForm.get('name').setValue(data.name)
+
+        this.selectedImage = `${environment.URL}/avatars/${data.file}`
+        this.updateId = id;
+        this.UpdateActivate = true;
+        this.SubmitActivate = false;
+        this.toster.success(res.msg)
+
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
   }
-  onSave(formData: any,fileInput:any) {
-    this.errorMsg2 = false
-
+  onSave(fileInput: any, modal: any) {
 
     const file = fileInput.files[0];
-     console.log(file);
+    console.log(file);
     if (file?.size >= 1000000) {
-      this.errorMsg2 = true
-      return
+      this.toster.error('File should be less than 1 Mb')
+      return;
     }
     const formDataObj = new FormData();
-    formDataObj.append('name', formData.name);
-    if (!file) {
-      console.log("no file");
-      console.log(this.file);
+    formDataObj.append("name", this.vehicleForm.value.name);
 
-      formDataObj.append('file', this.file);
-    } else {
-      console.log("file che");
-
-      formDataObj.append('file', file);
-
-
+    if (file) {
+      formDataObj.append("file", file);
     }
 
+    const id = this.updateId;
+    this.pricingService.saveVehicle(formDataObj, id).subscribe({
+      next: (data: any) => {
+        modal.dismiss('Click')
 
+        this.toster.success(data.msg)
+        this.vehicleForm.reset()
+        this.updateId = "";
 
+        this.getVehicles();
 
+      }, error: (error) => {
+        console.log(error);
+          this.toster.error(error.error.msg)
 
-    const id = this.updateId
-    this.pricingService.saveVehicle(formDataObj, id).subscribe((data) => {
-      console.log(data);
-      this.updateId = ''
-
-      this.getVehicles()
-
-      this.UpdateActivate = false
-      this.SubmitActivate = true
-
-
+      }
     })
+
 
   }
   scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  onCancel() {
-    this.UpdateActivate = false
-    this.SubmitActivate = true
-    this.updateId = ''
-    this.title = "Add Vehicle"
-
-
+  onCancel(modal: any) {
+    modal.dismiss('Click')
+    this.vehicleForm.reset()
+    // this.UpdateActivate = false;
+    // this.SubmitActivate = true;
+    this.updateId = "";
+    // this.title = "Add Vehicle";
   }
-  openModel(content: any) {
+  openModel(content: any, type: any) {
+    this.createVehicleTypeForm()
+    this.selectedImage = null
 
-    this.ngbService.open(content,{centered:true});
+    if (type == 1) {
+      this.UpdateActivate = false
+    }
+    if (type == 2) {
+      this.UpdateActivate = true
 
+    }
+    this.ngbService.open(content, { centered: true });
   }
+  onFileSelected(e: any) {
+    if (e.target.files) {
+      let reader = new FileReader()
+      reader.readAsDataURL(e.target.files[0])
+      reader.onload = (event: any) => {
+        this.selectedImage = event.target.result
+      }
+    }
+  }
+
+
 }

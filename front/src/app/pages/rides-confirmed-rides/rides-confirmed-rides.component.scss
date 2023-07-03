@@ -1,36 +1,9 @@
-// .show-element {
-//   opacity: 1;
-//   height: auto;
-//   transition: all 0.3s ease-in-out;
-// }
-// .hide-element {
-//   opacity: 0;
-//   height: 0;
-//   overflow: hidden;
-//   transition: all 0.3s ease-in-out;
-// }
-
-// .custom-modal-dialog {
-//   max-width: 800px;
-// }
 
 ::ng-deep .modal-backdrop {
   z-index: 1020 !important;
 }
-.modal-div{
-  width: 33vw;
-}
-
-// input {
-//   width: 50%;
-//   background-color: transparent;
-//   border-radius: 15px;
-//   border: 1px solid gray;
-// }
-
-// label {
-//   display: inline-block;
-//   width: 25%;
+// .modal-div {
+//   width: 33vw;
 // }
 
 .modal-body input {
@@ -38,18 +11,11 @@
   margin-top: 20px;
   width: 70%;
   height: 45px;
-
-
 }
 
-// .search-div {
-//   width: 60%;
-//   align-items: center;
-//   margin-bottom: 10px;
-
-// }
-
-
-// .add-dialog {
-//   float: right;
-// }
+.vertical-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // height: 100vh; /* Optional: Set a height for the container */
+}

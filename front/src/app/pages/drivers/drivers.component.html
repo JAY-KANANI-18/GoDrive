@@ -1,104 +1,131 @@
-<div class="header bg-gradient-skyblue p-3 pt-7 pb-7 ">
+<div class="header bg-gradient-skyblue p-3 pt-7 pb-7">
   <div class="container-fluid">
     <div class="header">
       <h1>Drivers</h1>
 
-
-
-      <div>
-
-      </div>
+      <div></div>
     </div>
   </div>
 </div>
 
-
 <ng-template #content let-modal>
-  <div class="bg-aliceblue modal-div ">
-
+  <div class="bg-aliceblue modal-div">
     <div class="modal-header">
-      <h4>Service Type</h4>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
-          aria-hidden="true">&times;</span></button>
+      <h3>Driver's Details</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
 
     <div class="modal-body">
+      <form [formGroup]="adddriverForm" class="" (ngSubmit)="addDriver(fileInput,modal);" name="newForm"
+        id="newForm">
 
 
-      <form [formGroup]="adddriverForm" class=""
-        (ngSubmit)="addDriver(fileInput);adddriverForm.reset()" name="newForm" id="newForm">
+        <div class="text-center">
 
-
-          <label for="name">Name : </label>
-          <input class="form-control" formControlName="name" id="name" name="name" type="text" placeholder="Enter Your name">
-
-        <div class="error" *ngIf="adddriverForm.get('name').invalid && adddriverForm.get('name').touched">*Please
-          enter a valid value</div>
-
-          <label for="email">EMail : </label>
-          <input formControlName="email" id="email" name="email" type="text" placeholder="Enter Your Email address">
-
-        <div class="error" *ngIf="adddriverForm.get('email').invalid && adddriverForm.get('email').touched">*Please
-          enter a valid value</div>
-
-
-          <label for="mobile">Number : </label>
-          <select formControlName="callingCode" name="CallingCode" id="CallingCode"
-            style="width:20%;border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
-            <option value="" selected disabled>Select Code</option>
-
-            <option *ngFor="let item of allCallingCode" value={{item}}>{{item}}</option>
-
-          </select>
-          <input formControlName="mobile" id="mobile" name="mobile" type="number" placeholder="Enter Your Phone number"
-            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-            maxlength='10' style="width: 80%;border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
-
-
-        <div class="error"
-          *ngIf="(adddriverForm.get('mobile').invalid && adddriverForm.get('mobile').touched) || (adddriverForm.get('callingCode').invalid && adddriverForm.get('callingCode').touched)">
-          *Please enter a value</div>
-
-          <label for="country">Select Country:</label>
-          <select formControlName="country" id="country" name="country" #country (change)="onselect(country.value)">
-            <option value="" selected disabled>Select Country</option>
-
-            <option *ngFor="let country of countriesArray" [value]="country._id">{{ country.name}}</option>
-          </select>
-          <div class="error" *ngIf="adddriverForm.get('country').value == '' && adddriverForm.get('country')?.touched">
-            *Please
-            enter a valid value</div>
-
-        <div *ngIf="citiesArray.length>=1">
-          <label for="city">Select City:</label>
-          <select formControlName="city" id="city" name="city" #city>
-            <option value="" selected disabled>Select City</option>
-            <option *ngFor="let city of citiesArray" [value]="city._id">{{ city.city}}</option>
-          </select>
-          <div class="error" *ngIf="adddriverForm.get('city').value == '' && adddriverForm.get('city')?.touched">*Please
-            enter a valid value</div>
+          <img *ngIf="selectedImage" [src]="selectedImage " alt="Selected Image" width="50%" height="50%">
         </div>
 
-          <label for="file"> Profile : </label>
-          <input class="file-div" formControlName="file" id="file" type="file" name="profile" #fileInput>
 
-        <div class="error"
-          *ngIf="adddriverForm.controls['profile']?.errors?.required && adddriverForm.controls['profile'].touched">
-          *Please enter a value</div>
-        <button *ngIf="!UpdateActivate" class="btn btn-primary" type="submit"
-          [disabled]="adddriverForm.invalid">add</button>
+        <label for="file"> Profile : </label>
+        <input class="file-div" formControlName="file" (change)="onFileSelected($event)" id="file" type="file" name="profile" #fileInput />
 
-        <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4"
-          (click)="onSave(adddriverForm.value);adddriverForm.reset();">Update Vehicle</button>
-        <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4"
-          (click)="onCancel(adddriverForm.value);adddriverForm.reset();">cancel</button>
+        <div class="error" *ngIf="
+            adddriverForm.controls['profile']?.errors?.required &&
+            adddriverForm.controls['profile'].touched
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="name">Name : </label>
+        <input class="form-control" formControlName="name" id="name" name="name" type="text"           appAppNumericOnly
+
+          placeholder="Enter Your name" />
+
+        <div class="error" *ngIf="
+            adddriverForm.get('name').invalid &&
+            adddriverForm.get('name').touched
+          ">
+          *Please enter a valid value
+        </div>
+
+        <label for="email">EMail : </label>
+        <input formControlName="email" id="email" name="email" type="text" placeholder="Enter Your Email address" />
+
+        <div class="error" *ngIf="
+            adddriverForm.get('email').invalid &&
+            adddriverForm.get('email').touched
+          ">
+          *Please enter a valid value
+        </div>
+
+        <label for="mobile">Number : </label>
+        <select formControlName="callingCode" name="callingCode" id="callingCode" style="
+            width: 20%;
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+          ">
+          <option [value]="null" selected disabled>Select Code</option>
+
+          <option *ngFor="let item of allCallingCode" value="{{ item }}">
+            {{ item }}
+          </option>
+        </select>
+        <input formControlName="mobile" id="mobile" name="mobile" type="number" placeholder="Enter Your Phone number"
+          oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+          maxlength="10" style="
+            width: 80%;
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+          " />
+
+        <div class="error" *ngIf="
+            (adddriverForm.get('mobile').invalid &&
+              adddriverForm.get('mobile').touched) ||
+            (adddriverForm.get('callingCode').invalid &&
+              adddriverForm.get('callingCode').touched)
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="country">Select Country:</label>
+        <select formControlName="country" id="country" name="country" #country (change)="onselect(country.value)">
+          <option [value]="null" selected disabled>Select Country</option>
+
+          <option *ngFor="let country of countriesArray" [value]="country._id">
+            {{ country.name }}
+          </option>
+        </select>
+        <div class="error" *ngIf="
+            adddriverForm.get('country').value == '' &&
+            adddriverForm.get('country')?.touched
+          ">
+          *Please enter a valid value
+        </div>
+
+        <div *ngIf="citiesArray.length >= 1">
+          <label for="city">Select City:</label>
+          <select formControlName="city" id="city" name="city" #city>
+            <option [value]="null" selected disabled>Select City</option>
+            <option *ngFor="let city of citiesArray" [value]="city._id">
+              {{ city.city }}
+            </option>
+          </select>
+          <div class="error" *ngIf="
+              adddriverForm.get('city').value == '' &&
+              adddriverForm.get('city')?.touched
+            ">
+            *Please enter a valid value
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit" [disabled]="adddriverForm.invalid">
+          add
+        </button>
+
 
       </form>
-
-
-
-
-
     </div>
     <!--
     <div class="modal-footer">
@@ -106,8 +133,138 @@
       <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
     </div> -->
   </div>
-
 </ng-template>
+
+<ng-template #content3 let-modal>
+  <div class="bg-aliceblue modal-div">
+    <div class="modal-header">
+      <h3>Driver's Details</h3>
+
+
+      <!-- <a class="active">General</a>&nbsp; | &nbsp;<a class="active">Cards</a> -->
+
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="UpdateForm" class=""  name="UpdateForm" id="UpdateForm">
+
+        <div class="text-center">
+
+          <img *ngIf="selectedImage" [src]="selectedImage " alt="Selected Image" width="50%" height="50%">
+        </div>
+        <label for="ufile"> Profile : </label>
+        <input class="file-div" formControlName="ufile" id="ufile" (change)="onFileSelected($event)" type="file" name="profile" #fileInput2 />
+
+        <div class="error" *ngIf="
+        UpdateForm.controls['profile']?.errors?.required &&
+        UpdateForm.controls['profile'].touched
+        ">
+          *Please enter a value
+        </div>
+
+
+        <label for="uname">Name : </label>
+        <input class="form-control" formControlName="uname" id="uname" name="uname" type="text"           appAppNumericOnly
+
+          placeholder="Enter Your name" />
+
+        <div class="error" *ngIf="
+        UpdateForm.get('uname').invalid &&
+        UpdateForm.get('uname').touched
+        ">
+          *Please enter a valid value
+        </div>
+
+        <label for="uemail">EMail : </label>
+        <input formControlName="uemail" id="uemail" name="uemail" type="text" placeholder="Enter Your Email address" />
+
+        <div class="error" *ngIf="
+        UpdateForm.get('uemail').invalid &&
+          UpdateForm.get('uemail').touched
+        ">
+          *Please enter a valid value
+        </div>
+
+        <label for="umobile">Number : </label>
+        <select formControlName="ucallingCode" name="ucallingCode" id="ucallingCode" style="
+          width: 20%;
+          border-top-right-radius: 0px;
+          border-bottom-right-radius: 0px;
+        ">
+          <option value="" selected disabled>Select Code</option>
+
+          <option *ngFor="let item of allCallingCode" value="{{ item }}">
+            {{ item }}
+          </option>
+        </select>
+        <input formControlName="umobile" id="umobile" name="umobile" type="number" placeholder="Enter Your Phone number"
+          oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+          maxlength="10" style="
+          width: 80%;
+          border-top-left-radius: 0px;
+          border-bottom-left-radius: 0px;
+        " />
+
+        <div class="error" *ngIf="
+          (UpdateForm.get('umobile').invalid &&
+          UpdateForm.get('umobile').touched) ||
+          (UpdateForm.get('ucallingCode').invalid &&
+          UpdateForm.get('ucallingCode').touched)
+        ">
+          *Please enter a value
+        </div>
+
+        <label for="ucountry">Select Country:</label>
+        <select formControlName="ucountry" id="ucountry" name="ucountry" #country (change)="onselect(country.value)">
+          <option value="" selected disabled>Select Country</option>
+
+          <option *ngFor="let country of countriesArray" [value]="country._id">
+            {{ country.name }}
+          </option>
+        </select>
+        <div class="error" *ngIf="
+        UpdateForm.get('ucountry').value == '' &&
+        UpdateForm.get('ucountry')?.touched
+        ">
+          *Please enter a valid value
+        </div>
+
+        <div *ngIf="citiesArray.length >= 1">
+          <label for="ucity">Select City:</label>
+          <select formControlName="ucity" id="ucity" name="cuity" #city>
+            <option value="" selected disabled>Select City</option>
+            <option *ngFor="let city of citiesArray" [value]="city._id">
+              {{ city.city }}
+            </option>
+          </select>
+          <div class="error" *ngIf="
+          UpdateForm.get('ucity').value == '' &&
+          UpdateForm.get('ucity')?.touched
+          ">
+            *Please enter a valid value
+          </div>
+        </div>
+
+
+
+        <button type="button" class="btn btn-success my-4"
+          (click)="onSave(fileInput2,modal);">
+Save        </button>
+        <button type="button" class="btn btn-danger my-4" (click)=" adddriverForm.reset();modal.dismiss('Click')">
+          cancel
+        </button>
+      </form>
+    </div>
+    <!--
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+    </div> -->
+  </div>
+</ng-template>
+
 <!-- Page content -->
 <div class="container-fluid mt--5">
   <!-- Table -->
@@ -115,106 +272,97 @@
     <div class="col">
       <div class="card shadow">
         <div class="card-header border-0 row mr-0 ml-0">
-
           <div class="col-sm-4">
-
-            <div class="form-control-search d-flex  align-items-center">
-              <input type="search" class="form-control" placeholder="Search" #search>
+            <div class="form-control-search d-flex align-items-center">
+              <input type="search" class="form-control" placeholder="Search" #search />
               <div class="btn-group">
                 <button class="btn" (click)="onSearch(search.value)">
                   <i class="search-icon fas fa-search"></i>
                 </button>
-                <button class="btn refresh" (click)="getDrivers(1);search.value = ''">⟳</button>
+                <button class="btn refresh" (click)="getDrivers(1); search.value = ''">
+                  ⟳
+                </button>
               </div>
             </div>
-
           </div>
-
-
-
 
           <div class="col-sm-8 text-right">
-
-            <button class="btn btn-outline-primary add-dialog" (click)="openModel(content)"> + Add </button>
+            <button class="btn btn-outline-primary add-dialog" (click)="openModel(content)">
+              + Add
+            </button>
           </div>
-
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive text-center">
           <table class="table align-items-center table-flush" id="example">
             <thead class="thead-light">
               <tr>
-                <th scope="col">Name`</th>
-                <th scope="col">Email</th>
-                <th scope="col">Number</th>
+                <th scope="col" (click)="onSort('name')">Name`</th>
+                <th scope="col" (click)="onSort('email')">Email</th>
+                <th scope="col" (click)="onSort('mobile')">Number</th>
                 <th scope="col">Country</th>
                 <th scope="col">City</th>
                 <th scope="col">avatars</th>
                 <th scope="col">approval</th>
                 <th scope="col">status</th>
-                <th scope="col">Accept Ride</th>
+                <!-- <th scope="col">Accept Ride</th> -->
                 <th scope="col">Vehicles</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let driver of allDrivers">
-
-
-
-
-                <td>{{driver.name}}
-                <td>{{driver.email}}</td>
-                <td>{{driver.mobile}}</td>
-                <td>{{driver.country.name}}</td>
-                <td>{{driver.city.city}}</td>
-                <td><img class="imgClass" src="http://localhost:3000/avatars/{{driver.profile}}"></td>
+                <td>{{ driver.name }}</td>
+                <td>{{ driver.email }}</td>
+                <td>{{ driver.mobile }}</td>
+                <td>{{ driver.country.name }}</td>
+                <td>{{ driver.city.city }}</td>
+                <td>
+                  <img class="imgClass" src="http://localhost:3000/avatars/{{ driver.profile }}" />
+                </td>
                 <td>{{ driver.approval | driverApprove }}</td>
                 <td>
-
-                  <select name="dstatus" id="dstatus" [value]="driver.status "
-                    (change)="onStatusSelect($event.target.value,driver._id)">
+                  <select name="dstatus" id="dstatus" [value]="driver.status"
+                    (change)="onStatusSelect($event.target.value, driver._id)">
                     <option value="0">offline</option>
                     <option value="1">online</option>
                     <option value="2">hold</option>
                     <option value="3">onRide</option>
                   </select>
                 </td>
-                <td>
 
-                  <select name="Acceptence" id="Acceptence" [value]="driver.acceptride"
-                    (change)="onacceptSelect($event.target.value,driver._id)">
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </select>
-                </td>
-                <td>{{driver.vehicle[0]?.name ||'-'}}
+                <td>
+                  {{ driver.vehicle[0]?.name || "-" }}
                   <div>
-                    <br>
-                    <a class="link " (click)="openModel(content2,driver._id,$event)"> assign vehicle <i
-                        class="fa fa-pencil" aria-hidden="true"></i></a>
+                    <br />
+                    <a class="link" (click)="openModel(content2, driver._id, $event)">
+                      assign vehicle
+                      <i class="fa fa-pencil" aria-hidden="true"></i></a>
                   </div>
                 </td>
-                <td>
-                  <!-- <button class="update-button btn btn-outline-primary" (click)="onUpdate(driver._id)"> UPDATE</button> -->
-                  <!-- <button class="delete-button btn btn-outline-danger" (click)="onDelete(driver._id)"> DELETE</button> -->
-                </td>
+                <!-- <td> -->
+                <!-- <button class="update-button btn btn-outline-primary" (click)="onUpdate(driver._id)"> UPDATE</button> -->
+                <!-- <button class="delete-button btn btn-outline-danger" (click)="onDelete(driver._id)"> DELETE</button> -->
+                <!-- </td> -->
                 <td class="text-right">
-                  <div ngbDropdown placement="top-right">
+                  <div ngbDropdown placement="bottom-right" class="dd">
                     <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
                       <i class="fas fa-ellipsis-v"></i>
                     </a>
-                    <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                    <div ngbDropdownMenu class="dropdown-menu-right dropdown-menu-arrow">
+
+                      <a class="dropdown-item" (click)="onUpdate(driver._id);openModel(content3)">Edit</a>
+                      <div class="dropdown-divider"></div>
+
                       <a class="dropdown-item" (click)="onApprove(driver._id)"
-                        *ngIf="driver.approval !== 1 || 0 ">approve Driver</a>
+                        *ngIf="driver.approval !== 1 || 0">approve Driver</a>
                       <a class="dropdown-item" (click)="onDecline(driver._id)"
                         *ngIf="driver.approval !== 2 || 0">decline Driver</a>
                     </div>
                   </div>
                 </td>
               </tr>
-              <tr *ngIf="allDrivers?.length <= 0 ">
+              <tr *ngIf="allDrivers?.length <= 0">
                 <td class="p-5" colspan="10">
-
                   <strong> Driver Not Found</strong>
                 </td>
               </tr>
@@ -224,39 +372,47 @@
         <ng-template #content2 let-modal>
           <div class="modal-header">
             <h4>Service Type</h4>
-            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
-                aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
 
           <div class="modal-body">
             <label>Driver service type:</label>
             <select class="driver-input" name="driverServiceType" id="driverServiceType" #vehicle>
-              <option disabled selected hidden [value]="null">Select service type</option>
-              <option *ngFor="let vehicle of vehicleTypesArray" [value]="vehicle._id">
-                {{vehicle.name}}</option>
+              <!-- <option disabled selected hidden value="">
+                Select service type
+              </option> -->
+              <option *ngFor="let vehicle of vehicleTypesArray; let i is index" [value]="vehicle._id" [selected]='i==0'>
+                {{ vehicle.name }}
+              </option>
             </select>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
-            <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+            <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">
+              Save Updates
+            </button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('Close click');updateService('')">
+              Delete Service
+            </button>
           </div>
         </ng-template>
         <div class="card-footer py-4">
           <nav aria-label="...">
             <ul class="pagination justify-content-end mb-0">
-
-              <li class="page-item disabled" *ngIf="currentPage!==1" (click)="onPrevious()">
+              <li class="page-item disabled" *ngIf="currentPage !== 1" (click)="onPrevious()">
                 <a class="page-link">
                   <i class="fas fa-angle-left"></i>
                   <span class="sr-only">Previous</span>
                 </a>
               </li>
-              <li class="page-item" [ngClass]="{'active' : currentPage == i+1}" [hidden]="currentPage < i || currentPage-1 > i+1"
-                *ngFor="let item of NoOfPages; let i = index"> <a class="page-link" (click)="onPage(i+1)">{{i+1}}</a>
+              <li class="page-item" [ngClass]="{ active: currentPage == i + 1 }"
+                [hidden]="currentPage < i || currentPage - 1 > i + 1" *ngFor="let item of NoOfPages; let i = index">
+                <a class="page-link" (click)="onPage(i + 1)">{{ i + 1 }}</a>
               </li>
 
-              <li class="page-item"  [ngClass]="{'vh':currentPage==NoOfPages.length }"  (click)="onNext()">
+              <li class="page-item" [ngClass]="{ vh: currentPage == NoOfPages.length }" (click)="onNext()">
                 <a class="page-link">
                   <i class="fas fa-angle-right"></i>
                   <span class="sr-only">Next</span>
@@ -268,6 +424,4 @@
       </div>
     </div>
   </div>
-  <!-- Dark table -->
-
 </div>

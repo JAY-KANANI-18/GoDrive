@@ -41,7 +41,7 @@ const handleMulterError = (err, req, res, next) => {
         return res.status(400).json({ msg: err.message });
     } else if (err) {
         // Other error occurred
-        return res.status(500).json({ msg: err });
+        return res.status(400).json({ msg: err });
     }
     next();
 };
@@ -55,8 +55,6 @@ const router = new express.Router()
 
 //////------------Countries ----------///////////
 
-router.get("/Pricing/Country/Delete/:id", auth, pricingController.deleteCountry);//--------------------> Delete Added Country
-router.get('/Pricing/Search/Country', auth, pricingController.searchCountry)//-------------------->  Search Country
 router.get("/Pricing/Country", auth, pricingController.getAllAddedCounries)//-------------------->  Get All Added Countries
 router.get("/Country", auth, pricingController.getAllCountriesfromModule)//-------------------->  Get Countries Data From npm Module
 router.get("/CallingCodes", auth, pricingController.getAllCallingCode)//-------------------->  Get All Countries CallingCode From npm Module
@@ -71,8 +69,7 @@ router.post("/Pricing/Country", auth, pricingController.addNewCountry)//--------
 //////------------Vehicle Types ----------///////////
 
 router.post("/Pricing/VehicleType", upload.single('file'), handleMulterError, auth,pricingController.addNewVehicleType )//--------------------> Add New Vehicle Type
-router.post("/Pricing/Vehicles/Update/save/:id", auth, upload.single('file'), pricingController.saveUpdatedVehicle)//--------------------> Save Updated Vehicle Tupe
-router.get("/Pricing/Vehicles/Delete/:id", auth, upload.single('file'), pricingController.deleteVehicle)//--------------------> Delete Added Vehicle Type
+router.post("/Pricing/Vehicles/Update/save/:id", auth, upload.single('file'),handleMulterError, pricingController.saveUpdatedVehicle)//--------------------> Save Updated Vehicle Tupe
 router.get('/Pricing/VehiclesTypes', auth, pricingController.getAllAddedVehicleType)//--------------------> Get All Added Vehicle Types
 router.get("/Pricing/Vehicles/Update", auth, pricingController.getVehicleById)//--------------------> Get Vehicle Detail BY Id
 
@@ -87,10 +84,10 @@ router.get('/Pricing/City/VehiclesType', auth, pricingController.getAllvehicleso
 router.post('/Pricing/City/Save', auth, pricingController.saveUpdatedCity)//--------------------> Save Updated Detail of City
 router.get("/Pricing/Cities", auth, pricingController.getCitiesByCountry)//--------------------> Get Cities By Country
 router.get('/Pricing/Update/City', auth,pricingController.getCityByID)//--------------------> Get City By Id
-router.get("/Pricing/City/Delete", auth, pricingController.deleteCity)//--------------------> Delete Added Ciry
-router.get("/Pricing/Zone", auth, pricingController.getAddedCities)//--------------------> Get All Added Cities
+router.get("/Pricing/Zone", auth, pricingController.getAddedCities)//--------------------> Get  Added Cities with pagination
 router.post("/Pricing/city", auth, pricingController.addNewCity)//--------------------> Add New City
 router.post('/findZone', auth,pricingController.findCityByPoint)//--------------------> Find City By Point
+router.get('/Pricing/allCities', auth,pricingController.getAddedCitiesAll)//--------------------> Get All Added Cities
 
 
 
@@ -101,11 +98,11 @@ router.post('/findZone', auth,pricingController.findCityByPoint)//--------------
 
 //////------------Vehicle Pricing ----------///////////
 
-router.get("/Pricing/VehiclePricing/Delete", auth, pricingController.deletePricingofVehicle)//--------------------> Delete Added Pricing of Vehicle
 router.get('/Pricing/Update/VehiclePricing', auth, pricingController.getVehiclePricingByID)//--------------------> Get Vehicle Pricing by Id
 router.get('/Pricing/VehiclePricing', auth, pricingController.getPricingofVehicle)//--------------------> Get Vehicle Pricing For Calculation
-router.post("/Pricing/VehiclePricing", auth, pricingController.addNewVehiclePricing)//--------------------> Add New Vehicle Pricing
+router.post("/Pricing/VehiclePricing",upload.single(), auth, pricingController.addNewVehiclePricing)//--------------------> Add New Vehicle Pricing
 router.get("/Pricing/AllVehiclePricing", auth,pricingController.getAllVehiclePricing)//--------------------> Get All vehicle Pricing
+router.post("/Pricing/Save/VehiclePricing",upload.single(), auth,pricingController.saveUpdatedVehiclePricing)//--------------------> Get All vehicle Pricing
 
 
 

@@ -34,6 +34,9 @@ import { UtcDatePipe } from './services/pipes/utc-date.pipe';
 import { AuthInterceptorInterceptor } from './services/interceptor/auth-interceptor.interceptor';
 import { RideAssignTypePipe } from './services/pipes/ride-assign-type.pipe';
 import { PaymentModesPipe } from './services/pipes/payment-modes.pipe';
+import { SafeResourceUrlPipe } from './services/pipes/safe-resource-url.pipe';
+import { AppNumericOnlyDirective } from './services/directives/app-numeric-only.directive';
+import { PaymentTypePipe } from './services/pipes/payment-type.pipe';
 
 
 @NgModule({
@@ -50,7 +53,7 @@ import { PaymentModesPipe } from './services/pipes/payment-modes.pipe';
     HttpClientModule,
     SocketIoModule,
     AngularFireAuthModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig) ,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
     ReactiveFormsModule,
     NgbModule,
     NgIdleModule.forRoot(),
@@ -82,6 +85,9 @@ import { PaymentModesPipe } from './services/pipes/payment-modes.pipe';
     UtcDatePipe,
     RideAssignTypePipe,
     PaymentModesPipe,
+    SafeResourceUrlPipe,
+    AppNumericOnlyDirective,
+    PaymentTypePipe,
   ],
   providers: [{provide:HTTP_INTERCEPTORS,        useClass:AuthInterceptorInterceptor,
     multi:true}],

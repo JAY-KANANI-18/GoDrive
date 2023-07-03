@@ -6,10 +6,14 @@ const Ride = require('../model/rides');
 const User = require('../model/user');
 const auth = require('../middleware/auth');
 const { default: mongoose } = require('mongoose');
-const driversController = require('../controllers/routes/driversController');
+const driversController = require('../controllers/routes/driversController').driversController;
+const settings = require("../controllers/settings/settings");
+
+let stripe_secret_key = settings.stripe_secret_key
 
 
-const stripe = require('stripe')('sk_test_51N2piRJAU9zBfSBOhszeL5HWLkSKstapCQzk6dbn4ZUjR8xBLPYZPP64VvIUJEACl5COj23WPMpTMBjD400xVSzi00q0Ayujkw');
+
+const stripe = require('stripe')(stripe_secret_key);
 
 
 
@@ -33,20 +37,36 @@ const upload = multer({
     },
     fileFilter: (req, file, cb) => {
         if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
-            return cb(new Error('please upload a jpg , jpeg or png'));
+            const error = ('Please upload a jpg, jpeg, or png');
+            error.statusCode = 400; // You can set an appropriate status code
+            return cb(error, false);
         }
 
         cb(null, true);
     }
 });
+
+
+const handleMulterError = (err, req, res, next) => {
+    console.log(err);
+    if (err instanceof multer.MulterError) {
+        // Multer error occurred
+        return res.status(400).json({ msg: err.message });
+    } else if (err) {
+        // Other error occurred
+        return res.status(500).json({ msg: err });
+    }
+    next();
+  };
+  
 const router = new express.Router()
 
 
 
 
-router.patch("/Drivers/Update/Save", auth, upload.single('file'),driversController.SaveUpdatedDetailofDriver);
+router.patch("/Drivers/Update/Save", upload.single('profile'),handleMulterError,auth,driversController.SaveUpdatedDetailofDriver);
 
-router.post("/Drivers", auth, upload.single('file'),driversController.addNewDriver );
+router.post("/Drivers",upload.single('profile'),handleMulterError, auth,driversController.addNewDriver );
 
 router.get('/Drivers/RunningRequest', auth,driversController.getRunningRequest )
 
@@ -56,7 +76,7 @@ router.get('/Drivers', auth, driversController.getAllAddedDrivrsandSearch)
 
 router.get('/Drivers/Delete/:id', auth, driversController.deleteDriver)
 
-router.get('/Drivers/Online', auth, driversController.getOnlineDriver)
+router.post('/Drivers/Online', auth, driversController.getOnlineDriver)
 
 router.get('/Drivers/Update', auth, driversController.getDriverFromId)
 

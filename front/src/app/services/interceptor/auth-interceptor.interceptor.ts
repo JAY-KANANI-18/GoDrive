@@ -1,35 +1,60 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpResponse
-} from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { LoadingServiceService } from '../loading-service.service';
+  HttpResponse,
+  HttpErrorResponse,
+} from "@angular/common/http";
+import { Observable, catchError, finalize, of, tap, throwError } from "rxjs";
+import { LoadingServiceService } from "../loading-service.service";
+import { PostsService } from "../login.service";
+import { ToastrService } from "ngx-toastr";
 
 @Injectable()
 export class AuthInterceptorInterceptor implements HttpInterceptor {
+  constructor(
+    private loadingService: LoadingServiceService,
+    private loginService: PostsService,
+    private toster: ToastrService
+  ) {}
 
-  constructor(private loadingService: LoadingServiceService) { }
+  intercept(
+    request: HttpRequest<unknown>,
+    next: HttpHandler
+  ): Observable<HttpEvent<unknown>> {
+    let localtoken = localStorage.getItem("newToken");
+    // this.loginService.autoLogout();
+    this.loadingService.showLoading();
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    console.log('gagagagagagaagaggag');
-    this.loadingService.setLoading(true);
-    let localtoken = localStorage.getItem('newToken')
     // request = request.clone({headers:request.headers.set('Authorization',localStorage.getItem('newToken'))})
-    if (request.url.includes('fcm.googleapis.com/fcm/send')) {
+    if (request.url.includes("fcm.googleapis.com/fcm/send")) {
       return next.handle(request);
     }
-    request = request.clone({ headers: request.headers.set('Authorization', 'Bearer ' + localtoken) })
+    request = request.clone({
+      headers: request.headers.set("Authorization", "Bearer " + localtoken),
+    });
 
     return next.handle(request).pipe(
       tap((event) => {
         if (event instanceof HttpResponse) {
-          this.loadingService.setLoading(false); // Set the loading state to false when the response is received
         }
+      }),
+      catchError((error) => {
+        console.log(error);
+        if (error.status === 401) {
+          console.log("time to logout");
+
+          this.loginService.logOut();
+          // this.toster.error('session complete')
+        }
+
+        throw error;
+      }),
+      finalize(() => {
+        this.loadingService.hideLoading();
       })
-    );;
+    );
   }
 }

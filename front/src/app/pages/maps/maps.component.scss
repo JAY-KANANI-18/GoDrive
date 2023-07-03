@@ -1,7 +1,6 @@
-#map{
-  // display: inline-block;
-  width:30vw;
-  height:30vh;
+#map {
+  width: 30vw;
+  height: 30vh;
 }
 
 img {
@@ -10,19 +9,16 @@ img {
   height: 100px;
 }
 
-
 ::ng-deep .modal-backdrop {
   z-index: 1020 !important;
 }
 
-
-.map-div{
-margin: auto;
+.map-div {
+  margin: auto;
 }
-.modal-div{
+.modal-div {
   width: 35vw;
 }
-.add-dialog{
+.add-dialog {
   float: right;
 }
-

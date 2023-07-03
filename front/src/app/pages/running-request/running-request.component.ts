@@ -1,66 +1,59 @@
-import { SimpleChanges } from '@angular/core';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { DriversService } from 'src/app/services/drivers.service';
-import { SocketService } from 'src/app/services/soketio.service';
-import io from 'socket.io-client/dist/socket.io.js';
-import { RidesService } from 'src/app/services/rides.service';
-import { CreateRequestComponent } from '../create-request/create-request.component';
-import { PricingService } from 'src/app/services/pricing.servive';
-import { Subscription, async } from 'rxjs';
+import { SimpleChanges } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { DriversService } from "src/app/services/drivers.service";
+import { SocketService } from "src/app/services/soketio.service";
+import io from "socket.io-client/dist/socket.io.js";
+import { RidesService } from "src/app/services/rides.service";
+import { CreateRequestComponent } from "../create-request/create-request.component";
+import { PricingService } from "src/app/services/pricing.servive";
+import { Subscription, async } from "rxjs";
 
-import { Observable, interval } from 'rxjs';
-import { map, takeWhile } from 'rxjs/operators';
-
-
-
+import { Observable, interval } from "rxjs";
+import { map, takeWhile } from "rxjs/operators";
+import { ToastrService } from "ngx-toastr";
 
 @Component({
-  selector: 'app-running-request',
-  templateUrl: './running-request.component.html',
-  styleUrls: ['./running-request.component.scss']
+  selector: "app-running-request",
+  templateUrl: "./running-request.component.html",
+  styleUrls: ["./running-request.component.scss"],
 })
 export class RunningRequestComponent {
-  private socket: any
-  s1 = []
-  s2 = []
-  currentRide: any
-  Vehicles: any
-  allrides: any = []
-  z: any
-  TotalDistance: any
-  TotalTime: any
+  private socket: any;
+  s1 = [];
+  s2 = [];
+  currentRide: any;
+  Vehicles: any;
+  allrides: any = [];
+  z: any;
+  TotalDistance: any;
+  TotalTime: any;
 
-  accepted: any
+  accepted: any;
   driverLocationSubscription: Subscription;
-  correntPosition: string = ""
-  status: any
-  driverId: any
-  markers = []
-  timers: { id: number, seconds: number }[] = [];
+  correntPosition: string = "";
+  status: any;
+  driverId: any;
+  markers = [];
+  timers: { id: number; seconds: number }[] = [];
   countDowns$: { [key: number]: Observable<number> } = {};
 
+  infoWindow: google.maps.InfoWindow;
+  private map!: google.maps.Map;
+  private marker: google.maps.Marker;
+  private service = new google.maps.DistanceMatrixService();
+  @ViewChild("modals") modals!: ElementRef;
+  constructor(
+    private driverService: DriversService,
+    private socketService: SocketService,
+    private toster: ToastrService,
 
-
-  infoWindow: google.maps.InfoWindow
-  private map!: google.maps.Map
-  private marker: google.maps.Marker
-  private geocoder = new google.maps.Geocoder;
-  private service = new google.maps.DistanceMatrixService()
-  private directionsRenderer: google.maps.DirectionsRenderer;
-  @ViewChild('modals') modals!: ElementRef
-  constructor(private driverService: DriversService, private rideService: RidesService, private pricingService: PricingService, private socketService: SocketService) {
-
-
-
-
+  ) {
     this.socketService.changeRideStatusOn().subscribe({
       next: (data: any) => {
-        this.getRunningRequest()
+        this.getRunningRequest();
         // console.log(data);
 
         // data['remainingSeconds'] = 0
-
-
 
         // if (data.status == 'arrived') {
 
@@ -89,41 +82,30 @@ export class RunningRequestComponent {
         //     this.allrides.push(data)
         //     this.timer(data._id)
 
-
         //   }
 
         //   console.log(this.allrides.length);
 
         // }
-
-
-
-
-      }, error: (error) => {
+      },
+      error: (error) => {
         console.log(error);
-      }
-    })
+      },
+    });
     this.socketService.driversResponseOn().subscribe({
       next: (data: any) => {
-        this.getRunningRequest()
-      }
-    })
-
-
-
+        this.getRunningRequest();
+      },
+    });
   }
 
   ngOnInit(): void {
-    this.getRunningRequest()
-
+    this.getRunningRequest();
   }
 
-
-
-
-  onAccept(id: any) {
-
-    this.socketService.changeRideStatusEmit({ ride: { status: 2, id } })
+  onAccept(ride: any) {
+    this.socketService.changeRideStatusEmit({ ride: { status: 2, id:ride._id } });
+    this.socketService.changeDriverStatusEmit({id:ride.driver, status: 3 })
 
     // let data = {
     //   status: "accepted"
@@ -133,7 +115,6 @@ export class RunningRequestComponent {
     //   response: 'accepted'
     // }
     // this.socketService.changeDriverStatusEmit({ id: '6448b5b2541475ce64a83e7f', status: "busy" })
-
 
     // this.socketService.driversResponseEmit("kaka")
 
@@ -147,10 +128,6 @@ export class RunningRequestComponent {
     //     this.forDirectionTouser()
     //     this.socket.emit('accept_ride', this.currentRide)
 
-
-
-
-
     //   }, error: (error) => {
     //     console.log(error);
     //   }
@@ -161,32 +138,24 @@ export class RunningRequestComponent {
     //     this.allrides.push(this.currentRide)
     //     this.initMap()
 
-
     //     this.forDirectionTouser()
     //     this.socket.emit('accept_ride', this.currentRide)
     //     console.log(this.currentRide);
-
-
-
 
     //   }, error: (error) => {
     //     console.log(error);
     //   }
     // })
-
   }
   onReject(ride: any) {
-
-
     if (ride?.assignType === 2) {
-      this.socketService.changeDriverStatusEmit({ id:ride.driver, status: 1 })
-      this.socketService.changeRideStatusEmit({ ride: { id: ride._id, status: 0, assignType: 4,driver:'' } })
+      this.socketService.changeDriverStatusEmit({ id: ride.driver, status: 1 });
+      this.socketService.changeRideStatusEmit({
+        ride: { id: ride._id, status: 0, assignType: 4, driver: "" },
+      });
     } else {
-
-      this.socketService.driversResponseEmit({ res: 'reject', id: ride._id })
+      this.socketService.driversResponseEmit({ res: "reject", id: ride._id });
     }
-
-
   }
   // forCurrentlocation() {
 
@@ -209,7 +178,6 @@ export class RunningRequestComponent {
   //   } else {
   //     console.log("Geolocation is not supported by this browser.");
   //   }
-
 
   // }
 
@@ -363,67 +331,50 @@ export class RunningRequestComponent {
   //   }
   //   this.map = new google.maps.Map(document.getElementById('map') as HTMLElement, option)
 
-
-
-
   // }
-
 
   // initDriverLocationSubscription(): void {
   //   this.socket.emit('driver-location', this.correntPosition)
 
   // }
 
-
   getRunningRequest() {
     this.driverService.getRunningRequest().subscribe({
       next: (data: any) => {
-
-        this.allrides = data
+        // this.toster.success(data.msg)
+        this.allrides = data.rides;
 
         this.allrides.forEach((each) => {
-
-          this.timer(each._id)
-          this.startCountdown(each._id, (30 - each.remainingSeconds))
-
-        })
-
-
-
-
-      }, error: (error) => {
+          this.timer(each._id);
+          this.startCountdown(each._id, 30 - each.remainingSeconds);
+        });
+      },
+      error: (error) => {
+        this.toster.error(error.error.msg)
         console.log(error);
-      }
-    })
+      },
+    });
   }
-
 
   timer(id: any) {
     let index = this.allrides.findIndex((element: any) => element._id === id);
     if (index !== -1) {
-      let count = this.allrides[index].remainingSeconds
+      let count = this.allrides[index].remainingSeconds;
 
       let z = setInterval(() => {
-
-        count++
+        count++;
         if (this.allrides[index]?.remainingSeconds == 29) {
-          console.log('done');
-          clearInterval(z)
-          return
-
+          console.log("done");
+          clearInterval(z);
+          return;
         } else {
           if (this.allrides[index]?.remainingSeconds) {
-            this.allrides[index].remainingSeconds = count
-
+            this.allrides[index].remainingSeconds = count;
           }
         }
-      }, 1000)
+      }, 1000);
     }
-
-
   }
-
-
 
   startCountdown(id: number, seconds: number) {
     if (this.countDowns$[id]) {
@@ -431,20 +382,20 @@ export class RunningRequestComponent {
     }
 
     const timer$ = interval(1000).pipe(
-      map(t => seconds - t),
-      takeWhile(t => t >= 0)
+      map((t) => seconds - t),
+      takeWhile((t) => t >= 0)
     );
 
     this.countDowns$[id] = timer$;
 
     timer$.subscribe(
-      t => {
+      (t) => {
         if (t === 1) {
           this.stopCountdown(id);
         }
       },
-      err => {
-        console.error('An error occurred:', err);
+      (err) => {
+        console.error("An error occurred:", err);
         this.stopCountdown(id);
       }
     );
@@ -452,15 +403,8 @@ export class RunningRequestComponent {
     this.timers.push({ id, seconds });
   }
 
-
-
   stopCountdown(id: number) {
     delete this.countDowns$[id];
-    this.timers = this.timers.filter(timer => timer.id !== id);
+    this.timers = this.timers.filter((timer) => timer.id !== id);
   }
-
-
-
 }
-
-

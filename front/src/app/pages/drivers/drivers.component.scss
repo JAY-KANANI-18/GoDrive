@@ -1,27 +1,25 @@
-
-
 img {
   padding: 10px;
   width: 100px;
   height: 100px;
 }
 
-
-
-option{
+option {
   background-color: inherit;
+}
+table select{
+  width: 100%;
+  padding: 0px;
 }
 
 .child:hover {
   pointer-events: none;
 }
 
-
 .error {
   color: red;
   font-size: 12px;
 }
-
 
 .vh {
   visibility: hidden;
@@ -30,4 +28,6 @@ option{
 ::ng-deep .modal-backdrop {
   z-index: 1020 !important;
 }
-
+.dd{
+  z-index: 500000;
+}

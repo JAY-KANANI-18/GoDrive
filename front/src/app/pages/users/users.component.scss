@@ -1,39 +1,29 @@
-
-
 table img {
   padding: 10px;
   width: 100px;
   height: 100px;
 }
 
-// .file-div{
-//   padding: 0px;
-//   padding-left: 10px;
-//   height: 40px;
-//   }
-.active{
+.active {
   text-decoration: underline;
 }
 
-
-.navbar{
+.navbar {
   background-color: transparent;
 }
 ::ng-deep .modal-backdrop {
   z-index: 1020 !important;
 }
 
-.dcard{
-  // border: 1px solid grey;
+.dcard {
   width: 100%;
   padding-left: 1rem;
   display: flex;
   align-items: center;
-  // border-radius: 0.8rem;
   margin-top: 1rem;
 }
-.util{
-  width:90%;
+.util {
+  width: 90%;
   border: 1px solid grey;
   padding-left: 1rem;
   display: flex;
@@ -41,58 +31,18 @@ table img {
   align-items: center;
   border-radius: 0.8rem;
   margin-right: 1rem;
-  // margin-top: 1rem;
-
 }
-.default-btn{
+.default-btn {
   display: inline-block;
   margin: 0;
   height: 100%;
   background-color: transparent;
-// width: 10%;
 }
 #payment-element {
-  // border: none !important;
-  // background-color: red;
   border: 1px solid grey !important;
   margin-top: 3rem;
-
 }
 
-
-// .text-center.profile {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   justify-content:center;
-// }
-
-// .file-div {
-//   display: inline-block;
-//   margin-top: 10px; /* Adjust as needed */
-//   position: relative;
-//   left: 23%;
-//   // display: flex;
-//   // align-items: center;
-// }
-
-// .custom-file-label {
-//   display: flex;
-//   justify-content:space-between;
-//   align-items: center;
-//   width: 35%;
-//   height: 100%;
-// }
-
-// .custom-file-input {
-//   opacity: 0;
-//   // position: absolute;
-//   // top: 0;
-//   // left: 0;
-//   // width: 100%;
-//   // height: 100%;
-//   cursor: pointer;
-// }
-.vh{
+.vh {
   visibility: hidden;
 }

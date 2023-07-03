@@ -1,54 +1,45 @@
-.header{
-  // display: flex;
-  // justify-content: space-between;
-  // align-items: center;
+.header {
   z-index: -1;
 }
 
-.controller-div{
-  width:100%;
+.controller-div {
+  width: 100%;
   padding: 2rem;
   z-index: 1000;
   background: white;
   border-radius: 1rem;
   margin: 0;
   border-bottom: 1px solid rgb(216, 216, 216);
-  border-bottom-left-radius:0 ;
-  border-bottom-right-radius:0 ;
-
-
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
-.countries{
-
+.countries {
   background: aliceblue;
   z-index: 1000;
   border-radius: 1rem;
   box-sizing: border-box;
-
 }
 
-.country{
+.country {
   text-align: left;
   display: inline-block;
-  width:30%;
-  margin:10px 20px 10px 20px;
+  width: 30%;
+  margin: 10px 20px 10px 20px;
   // height: 500px;
   background-color: rgb(255, 255, 255);
   border-radius: 20px;
   box-sizing: border-box;
-
-
+  padding-bottom: 1rem;
 }
-
 
 ::ng-deep .modal-backdrop {
   z-index: 1020 !important;
 }
-.bg-aliceblue{
+.bg-aliceblue {
   background-color: aliceblue;
 }
 
-.modal-div{
+.modal-div {
   width: 30vw;
 }
 .switch {
@@ -72,10 +63,9 @@
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
-
 
 .slider:before {
   position: absolute;
@@ -85,16 +75,16 @@
   left: 4px;
   bottom: 4px;
   background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {
@@ -103,7 +93,6 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }

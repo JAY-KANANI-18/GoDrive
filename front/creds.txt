@@ -1,0 +1,65 @@
+
+////////------------ SETTINGS -------------------/////
+
+smsid = AC5a0e40ae9b47152c64a2318beb79061a
+
+smstoken = 30a15be9c2bfd2e7ba2012dcca221095
+
+
+stripe secret = sk_test_51N2piRJAU9zBfSBOhszeL5HWLkSKstapCQzk6dbn4ZUjR8xBLPYZPP64VvIUJEACl5COj23WPMpTMBjD400xVSzi00q0Ayujkw
+
+
+stripe public = pk_test_51N2piRJAU9zBfSBOixMp53BIFUU3aFXpACWos1Lvi2aM8H984bRSIf1aVoloiRnQNVCWU0Ckyg6SWuYyyXwlDT8000xGZO12wf
+
+
+email id = 1031912845591-gabidn4eeru204mat5pcjf3k7gt0h1fp.apps.googleusercontent.com
+
+email secret
+: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
+
+ email token:1//04DEh6f1gMuP2CgYIARAAGAQSNwF-L9Ir1n1WVZSb6JJueEoDPH_5GOPeHfNGZ8wWT06qDF40QhaULHWZToHw71kViwTC9ky9e3o
+
+
+////----------------- Pipes ---------- ////
+
+
+Driver's Status:
+
+0 : offline
+1 : online
+2 : hold
+3 : onRide
+
+
+Ride's AssignType :
+
+0 : auto
+1 : next
+2 : selected
+3 : rejected
+4 : reassign
+
+
+Ride's Status :
+
+0 : Pending
+1 : Assigning
+2 : Accepted
+3 : Arrived
+4 : Picked
+5 : Started
+6 : Completed
+7 : Cancelled
+
+
+Driver's Approval :
+
+0 : Pending
+1 : Approved
+2 : Declined
+
+
+Payment Types :
+
+0 : Cash
+1 : Card

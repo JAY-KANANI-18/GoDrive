@@ -2,76 +2,73 @@ var CronJob = require("cron").CronJob;
 const Driver = require("../../model/driver");
 const Ride = require("../../model/rides");
 const Settings = require("../../model/settings");
-const Sockets = require('../socket/socket')
+const Sockets = require("../socket/socket");
 
 const io = Sockets.getIO();
 
-let RideacceptenceTime
+let RideacceptenceTime;
+
 async function getSettingData() {
-  data = await Settings.findOne()
+  data = await Settings.findOne();
 
-  RideacceptenceTime = data.AcceptenceTimeForRide
-
+  RideacceptenceTime = data.AcceptenceTimeForRide;
+  return data
 }
 
-job = new CronJob('*/10 * * * * *', async () => {
-  console.log('job start');
-  let currentTime = new Date()
+job = new CronJob(`*/10 * * * * *`, async () => {
+  let currentTime = new Date();
+
+  //---> Found Rides With Assigning Status
   const rides = await Ride.aggregate([
     {
       $match: {
         status: { $in: [1] },
-        assignType: { $in: [1, 2] }
-      }
+      },
     },
+    // {
+    // $addFields: {
+    //   remainingSeconds: {
+    //     $add: [
+    //       {
+    //         $subtract: [
+    //           RideacceptenceTime * 1000,
+    //           {
+    //             $subtract: [currentTime, "$updatedAt"],
+    //           },
+    //         ],
+    //       },
+    //       currentTime,
+    //     ],
+    //   },
+    // },
+    // },
     {
-      $addFields: {
-        remainingSeconds: {
-          $add: [
-            {
-              $subtract: [RideacceptenceTime*1000, {
-                $subtract: [currentTime, '$updatedAt']
-              }]
-            },
-            currentTime
-          ],
-        }
-      }
+      $sort: { updatedAt: 1 },
     },
-
-    {
-      $sort: { updatedAt: 1 }
-    }
-
   ]);
-  const newRides = await Ride.find({ status: 1, assignType: 0 });
-  const rejectedRides = await Ride.find({ status: 1, assignType: 3 });
 
-  if (rejectedRides.length >= 1) {
-    await inPerfectRide(rejectedRides)
-    return
-  }
-  if (newRides.length >= 1) {
-    await inPerfectRide(newRides)
-    return
-
-  } else {
-    await inPerfectRide(rides, 1)
-
-  }
+  await handleTimeOut(rides);
 });
 
-async function waitForTime(desiredTime) {
+//---> Wait For Time TO Match Our Time
+async function waitForTime(ride) {
+  let resolved = false;
 
   function getCurrentTime() {
     const now = new Date();
-    return now.getTime()
+    return now.getTime();
   }
 
   await new Promise((resolve) => {
     const checkTime = () => {
       const currentTime = getCurrentTime();
-      if (currentTime >= desiredTime) {
+      if (
+        currentTime == ride.updatedAt.getTime() + RideacceptenceTime * 1000 &&
+        !resolved
+      ) {
+        resolved = true;
+        console.log("taru");
+
         resolve(currentTime);
       } else {
         setImmediate(checkTime);
@@ -82,108 +79,173 @@ async function waitForTime(desiredTime) {
   });
 }
 
-async function inPerfectRide(rides, type) {
-  for (let ride of rides) {
+//----> Check For Time-out  
+async function handleTimeOut(rides, type) {
+  for await (let ride of rides) {
+    try {
 
-    if (type === 1 && ride.remainingSeconds) {
-      await waitForTime(ride.remainingSeconds.getTime())
-    }
-    if (ride.assignType === 2) {
-      changedriverstatus({ _id: ride.driver }, 1)
-      changeRideStatus(ride, { $set: { rejected: [], status: 0 }, assignType: 4, $unset: { driver: 1 } })
-      continue
-    }
+      ride = await Ride.findById(ride._id)
 
-    await changeRideStatus(ride, { status:1})
 
-    if (ride.driver) {
-      console.log('driver freeee');
-      await changedriverstatus({ _id: ride.driver }, 1)
-    }
-
-    let freeDriver = await Driver.findOne({
-      status: 1, approval: 1,
-      _id: { $nin: ride.rejected },
-      vehicle: ride.vehicle
-    })
-
-    if (!freeDriver) {
-      console.log('no found');
-
-      if (ride.assignType == 2) {///here
-        changeRideStatus(ride, { $set: { rejected: [], status: 0 }, assignType: 4, $unset: { driver: 1 } })
-        return
+      if (ride.status != 1) {
+        continue
       }
 
-      let busyDriver = await Driver.find({
-        status: 2, approval: 1,
-        _id: { $not: { $in: ride.rejected } },
-        vehicle: ride.vehicle
-      })
-
-      if (busyDriver.length >= 1) {
-        
-        changedriverstatus({ _id: ride.driver }, 1)
-        console.log(ride.driver);
-
-        changeRideStatus(ride, { $unset: { driver: 1 } })
-
-      } else {
-        changeRideStatus(ride, { $set: { rejected: [], status: 0 }, assignType: 4, $unset: { driver: 1 } })
-        z = await Ride.find({ assignType: 4 }).count()
-        io.emit('notification', { msg: z })
-
+      if (new Date().getTime() > ride.updatedAt.getTime() + RideacceptenceTime * 1000) // already greater than time timeout
+      {
+        await changeRideStatus(ride, { status: 1 });
+        await assignDriver(ride);
+        continue;
       }
-      changedriverstatus({ _id: ride.driver }, 1)
-      // io.emit('notification', { msg: 'driver free'})
 
-      continue
-    }
-    assignDriver(ride, freeDriver)
-    if (ride.assignType == 0) {
-      await changeRideStatus(ride, { assignType:1 })
+      let test = 1;
+
+      // hold untill time to match our timeout time
+      await waitForTime(ride);
+      test++;
+      if (test == 2) {
+        await changeRideStatus(ride, { status: 1 });
+        await assignDriver(ride);
+      }else{
+        continue
+      }
+    } catch (e) {
+      console.log(e);
     }
   }
-
 }
 
+//----> Change driver's Details
 async function changedriverstatus(driver, status) {
   let driverobj = {
-    status
-  }
+    status,
+  };
   const ndriver = await Driver.findByIdAndUpdate(driver._id, driverobj, {
     new: true,
     runValidators: true,
   });
-  io.emit('driver_status_change', { driver: ndriver })
+  io.emit("driver_status_change", { driver: ndriver });
 }
 
-async function changeRideStatus(ride, change, unset = '') {
+
+//----> Change Ride's Details
+async function changeRideStatus(ride, change, unset = "") {
+  console.log("satus change");
   try {
-    const nride = await Ride.findByIdAndUpdate(ride._id, change,
-      {
-        new: true,
-        runValidators: true,
-        multi: true
-      });
-    io.emit('ride_status_change', nride)
+    const nride = await Ride.findByIdAndUpdate(ride._id, change, {
+      new: true,
+      runValidators: true,
+      multi: true,
+    });
+    io.emit("ride_status_change", nride);
   } catch (e) {
     console.log(e);
   }
-
-
 }
 
-async function assignDriver(ride, driver) {
-  changedriverstatus(driver, 2)
-  ride.driver = driver._id
-  ride.rejected.push(driver._id)
-  await changeRideStatus(ride, { driver: driver._id, rejected: ride.rejected })
+
+//----> Assign a New Driver
+async function assignDriver(ride) {
+
+  //----> Free the previous driver
+  if (ride.driver) {
+    changedriverstatus({ _id: ride.driver }, 1);
+  }
+
+  //----> If assign type is selected driver then  free the driver and change ride status to reassign
+  if (ride.assignType === 2) {
+    changedriverstatus({ _id: ride.driver }, 1);
+    changeRideStatus(ride, {
+      $set: { rejected: [], status: 0 },
+      assignType: 4,
+      $unset: { driver: 1 },
+    });
+    return;
+  }
+
+  //----> Find currently Available Driver
+  const availableDriver = await findDriver(ride);
+
+  //----> Not Found Any currently Available Driver
+  if (!availableDriver) {
+
+
+    //----> Get Driver which is currently on hold 
+    const remainingDriver = await findRemainingDriver(ride);
+
+    if (remainingDriver) {
+
+      //---> If Remaining Drivers Found Than Ride Continue with status Assigning
+      changeRideStatus(ride, {
+        $set: { driver: null },
+        assignType: 1,
+      });
+    } else {
+      //----> If Remaining Drivers Not Found Than Ride Status Chnage Into Re-assign
+    await  changeRideStatus(ride, {
+        $set: { rejected: [], status: 0 },
+        assignType: 4,
+        $unset: { driver: 1 },
+      });
+
+      //----> Send Notification with count
+      z = await Ride.aggregate([{
+        $match:{
+          status:0,
+          assignType:4
+        }
+      }])
+      console.log(z);
+      await io.emit("notification", { msg: z.length });
+    }
+    // changedriverstatus({ _id: ride.driver }, 1);
+    return;
+  }
+
+  //----> If Driver is Available , then Change Driver status 'hold'
+  changedriverstatus(availableDriver, 2);
+
+  //----> Add Driver to rejection list
+  ride.rejected.push(availableDriver._id);
+  await changeRideStatus(ride, {
+    $set: { driver: availableDriver._id, rejected: ride.rejected },
+  });
+
+  //---> If assign type is "assign" change into "next"
+  if (ride.assignType == 0) {
+    await changeRideStatus(ride, { assignType: 1 });
+  }
 }
 
+//----> Find a Driver For Ride
+async function findDriver(ride) {
+  let availableDriver = await Driver.findOne({
+    status: 1,
+    approval: 1,
+    _id: { $nin: ride?.rejected },
+    vehicle: ride.vehicle,
+  });
+
+  return availableDriver;
+}
+
+//----> Find Driver which is hold for Ride
+async function findRemainingDriver(ride) {
+  let remainingDrivers = await Driver.findOne({
+    status: 2,
+    approval: 1,
+    _id: { $not: { $in: ride.rejected } },
+    vehicle: ride.vehicle,
+  });
+
+  return remainingDrivers;
+}
 
 module.exports = {
   job,
   getSettingData,
-  assignDriver
-}
+  assignDriver,
+  findDriver,
+  changedriverstatus,
+  changeRideStatus,
+};

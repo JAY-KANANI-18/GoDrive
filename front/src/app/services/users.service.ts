@@ -1,94 +1,92 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-  HttpEventType
-} from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
-import { Subject, throwError } from 'rxjs';
-import { Router } from '@angular/router';
-
-// import { Post } from './post.model';
-
-@Injectable({ providedIn: 'root' })
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 
+@Injectable({ providedIn: "root" })
 export class UsersService {
-  zone:any
-    constructor(private http: HttpClient, private router: Router) { }
+  public stripe_public_key:any
+  public Max_stops:any
+  constructor(private http: HttpClient, private router: Router) {
+
+  }
 
 
-    addUser(data: any) {
-      return this.http.post(`http://localhost:3000/Users`, data)
+getSettings(){
+     this.http.get(`${environment.URL}/Settings`).subscribe({
+      next:(data:any)=>{
+        data = data.setting
+        this.stripe_public_key = data.stripe_public_key
+        this.Max_stops = data.MaxStopsForRide
+        return data.stripe_public_key
 
 
-    }
-    SaveUser(id:any,data: any) {
-      return this.http.post(`http://localhost:3000/Users/Update/Save?id=${id}`, data)
-
-
-    }
-    deleteUser(id: any) {
-      return this.http.get(`http://localhost:3000/Users/Delete/${id}`)
-
-
-    }
-    updateUser(id: any) {
-      return this.http.get(`http://localhost:3000/Users/Update?id=${id}`)
-
-
-    }
-    getUsers(page:any,option?:any) {
-
-      if(option?.field){
-        console.log('1');
-        return this.http.get(`http://localhost:3000/Users?page=${page}&field=${option.field}&order=${option.order}`)
-
-      }else if (option?.search){
-        console.log('2');
-        return this.http.get(`http://localhost:3000/Users?page=${page}&str=${option.search}`)
-
-      }else{
-        console.log('3');
-
-          return this.http.get(`http://localhost:3000/Users?page=${page}`)
+      },error:(error)=>{
+        console.log(error);
       }
+    })
 
+
+
+
+}
+  addUser(data: any) {
+    return this.http.post(`${environment.URL}/Users`, data);
+  }
+  SaveUser(id: any, data: any) {
+    return this.http.post(
+      `${environment.URL}/Users/Update/Save?id=${id}`,
+      data
+    );
+  }
+  deleteUser(id: any) {
+    return this.http.get(`${environment.URL}/Users/Delete/${id}`);
+  }
+  updateUser(id: any) {
+    return this.http.get(`${environment.URL}/Users/Update?id=${id}`);
+  }
+  getUsers(page: any, option?: any) {
+
+let params = {page}
+
+    if (option?.field) {
+
+      params['field'] = option.field
+
+    } else if (option?.search) {
+      console.log("2");
+      params['str'] = option.search
 
     }
+      return this.http.get(`${environment.URL}/Users`,{params});
+
+  }
 
   getAddedUser(data: any) {
-    return this.http.post(`http://localhost:3000/User/Data`,data)
+    return this.http.post(`${environment.URL}/User/Data`, data);
   }
   // searchUser(data:any){
   //   return this.http.get(`http://localhost:3000/Users/Search?search=${data}`)
 
-
   // }
-  addCard(id:any,token:any){
-    return this.http.post(`http://localhost:3000/User/Card?id=${id}`,token)
-
-
+  addCard(id: any, token: any) {
+    return this.http.post(`${environment.URL}/User/Card?id=${id}`, token);
   }
-  getCards(id:any){
-    return this.http.get(`http://localhost:3000/Users/Cards?id=${id}`)
-
+  getCards(id: any) {
+    return this.http.get(`${environment.URL}/Users/Cards?id=${id}`);
   }
-  getPayment(card:any,amount:any,userid:any){
-    return this.http.get(`http://localhost:3000/Users/Payment?card=${card}&amount=${amount}&userid=${userid}`)
-
-
+  getPayment(card: any, amount: any, userid: any) {
+    return this.http.get(
+      `${environment.URL}/Users/Payment?card=${card}&amount=${amount}&userid=${userid}`
+    );
   }
-  setDefaultCard(user:any,card:any){
-    return this.http.get(`http://localhost:3000/Users/Cards/default?card=${card}&user=${user}`)
-
-
+  setDefaultCard(user: any, card: any) {
+    return this.http.get(
+      `${environment.URL}/Users/Cards/default?card=${card}&user=${user}`
+    );
   }
-  deleteCard(card:any){
-    return this.http.get(`http://localhost:3000/Users/Cards/delete?card=${card}`)
-
-
+  deleteCard(card: any) {
+    return this.http.get(`${environment.URL}/Users/Cards/delete?card=${card}`);
   }
-
 }

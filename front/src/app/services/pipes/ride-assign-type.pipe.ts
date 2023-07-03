@@ -1,26 +1,24 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'rideAssignType'
+  name: "rideAssignType",
 })
 export class RideAssignTypePipe implements PipeTransform {
-
   transform(value: unknown, ...args: unknown[]): unknown {
     switch (value) {
       case 0:
-        return 'auto'
+        return "auto";
       case 1:
-        return 'next'
+        return "next";
       case 2:
-        return 'selected'
+        return "selected";
       case 3:
-        return 'rejected'
+        return "rejected";
       case 4:
-        return 'reassign'
+        return "reassign";
 
       default:
-        return 'reassign'
+        return "reassign";
     }
   }
-
 }

@@ -1,31 +1,29 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'rideStatus'
+  name: "rideStatus",
 })
 export class RideStatusPipe implements PipeTransform {
-
   transform(value: unknown, ...args: unknown[]): unknown {
     switch (value) {
       case 0:
-        return 'pending'
+        return "pending";
       case 1:
-        return 'assigning'
+        return "assigning";
       case 2:
-        return 'accepted'
+        return "accepted";
       case 3:
-        return 'arrived'
+        return "arrived";
       case 4:
-        return 'picked'
+        return "picked";
       case 5:
-        return 'started'
+        return "started";
       case 6:
-        return 'completed'
+        return "completed";
       case 7:
-        return 'cancelled'
+        return "cancelled";
       default:
-        return 'completed'
+        return "completed";
     }
   }
-
 }

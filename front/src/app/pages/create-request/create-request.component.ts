@@ -5,22 +5,31 @@ import {
   Renderer2,
   ViewChild,
 } from "@angular/core";
-import { DashService } from "src/app/services/dashboard.service";
 import { PricingService } from "src/app/services/pricing.servive";
 import { RidesService } from "src/app/services/rides.service";
 import { SocketService } from "src/app/services/soketio.service";
 import { UsersService } from "src/app/services/users.service";
 import { ChangeDetectorRef } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  Form,
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { ToastrService } from "ngx-toastr";
-import { Stripe, StripeCardElement, StripeCardElementOptions, StripeElements } from '@stripe/stripe-js';
+import {
+  Stripe,
+  StripeCardElement,
+  StripeCardElementOptions,
+  StripeElements,
+} from "@stripe/stripe-js";
 
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { Router } from "@angular/router";
 import { SettingsService } from "src/app/services/setting.service";
-
-const stripePromise = loadStripe('pk_test_51N2piRJAU9zBfSBOixMp53BIFUU3aFXpACWos1Lvi2aM8H984bRSIf1aVoloiRnQNVCWU0Ckyg6SWuYyyXwlDT8000xGZO12wf');
+import { environment } from "src/environments/environment";
 
 let infoWindow: google.maps.InfoWindow;
 let map!: google.maps.Map;
@@ -31,99 +40,108 @@ let marker: google.maps.Marker;
   styleUrls: ["./create-request.component.scss"],
 })
 export class CreateRequestComponent implements OnInit {
-  @ViewChild("stopContainer") stopContainer: ElementRef;
+  // @ViewChild("stopContainer") stopContainer: ElementRef;
 
   private city2: any;
   private city1: any;
   private UserId: any;
-  private city2Obj: any
-  private cardElement: any
+  private city2Obj: any;
+  private cardElement: any;
   private stops_array = [];
-  private selectedCard: any
+  private selectedCard: any;
   private DistanceInfo = {};
   private No_stops: any = 0;
-  private BookingForm: FormGroup
+  private BookingForm: FormGroup;
   private directionsRenderer = new google.maps.DirectionsRenderer();
   private directionsService = new google.maps.DirectionsService();
   private service = new google.maps.DistanceMatrixService();
   private geocoder = new google.maps.Geocoder();
-  private stripe: Stripe
-  private Max_stops:any
-
+  private stripe: Stripe;
+  private Max_stops: any;
+  private stripePromise = loadStripe(environment.stripe.apiKey);
+  private locObj: any = {};
 
   public vT: any = [];
-  public selectedOption: any ;
+  public selectedOption: any;
   public pickerr: any;
-  public group21: any
-  public allCards: any
+  public group21: any;
+  public allCards: any;
   public TotalTime: any;
   public ServiceFees: any;
   public TotalDistance: any;
   public allCallingCode: any;
-  public selectedbooking: any
+  public selectedbooking: any;
   public group3 = false;
   public group2 = false;
   public ccVal = false;
   public group1 = true;
-
-
-
+  public default_method :any;
 
   constructor(
-    private dashservice: DashService,
     private pricingService: PricingService,
     private usersService: UsersService,
     private ridesService: RidesService,
     private renderer: Renderer2,
     public cdRef: ChangeDetectorRef,
     private toster: ToastrService,
-    private router:Router,
+    private router: Router,
     private settingsService: SettingsService
   ) { }
 
   async ngOnInit() {
-
-    this.stripe = await stripePromise;
+    this.usersService.getSettings();
     this.initMap();
     this.getCallingCodes();
     this.forCurrentlocation();
-    this.getMaxStops()
-
+    this.getMaxStops();
+    this.createBookingForm();
   }
+  createBookingForm() {
+    this.BookingForm = new FormGroup({
+      pickup: new FormControl(null, [Validators.required]),
+      dropoff: new FormControl(null, [Validators.required]),
+      vehicle: new FormControl(null, [Validators.required]),
+      bookingtype: new FormControl(null, [Validators.required]),
+      date: new FormControl(null),
+      time: new FormControl(null),
+      stops: new FormArray([]),
+      paymentOption: new FormControl(null, [Validators.required]),
+      card: new FormControl(null),
+    });
+  }
+  @ViewChild("bookingform") bookingform: ElementRef;
 
-  forautostop() {
-    for (
-      let i = 1;
-      i < this.stopContainer.nativeElement.children.length + 1;
-      i++
-    ) {
-      const element = this.stopContainer.nativeElement.children.length[i];
+  forautostop(i: any) {
+    let autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById(`stop${i}`) as HTMLInputElement,
+      {
+        types: ["establishment"],
+      }
+    );
 
-      let autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById(`stop${i}`) as HTMLInputElement,
-        {
-          types: ["geocode"],
-        }
-      );
+    google.maps.event.addListener(autocomplete, "place_changed", () => {
+      var place = autocomplete.getPlace();
+      let lat = place.geometry?.location?.lat();
+      let lng = place.geometry?.location?.lng();
+      let selectedLocation: any = {
+        lat,
+        lng,
+      };
+      this.TotalTime = null
+      this.ServiceFees = null
+      this.TotalDistance = null
+      this.locObj[`stop${i}`] = selectedLocation;
+      let address = place.formatted_address;
 
-      this.stopContainer.nativeElement.children.length;
+      this.locObj[`stop${i}`]["address"] = address;
+      map.setCenter(selectedLocation);
+      this.addMarker({ cords: selectedLocation, data: `stop${i}` });
+    });
 
-      google.maps.event.addListener(autocomplete, "place_changed", () => {
-        var place = autocomplete.getPlace();
-        let lat = place.geometry?.location?.lat();
-        let lng = place.geometry?.location?.lng();
-        let selectedLocation: any = {
-          lat,
-          lng,
-        };
-        map.setCenter(selectedLocation);
-        this.addMarker({ cords: selectedLocation, data: `stop${i}` });
-      });
-    }
+    // }
   }
 
   forAutofordist() {
-
     let autocomplete = new google.maps.places.Autocomplete(
       document.getElementById("pickup") as HTMLInputElement,
       {
@@ -137,7 +155,7 @@ export class CreateRequestComponent implements OnInit {
       }
     );
 
-    this.stopContainer.nativeElement.children.length;
+    // this.stopContainer.nativeElement.children.length;
 
     google.maps.event.addListener(autocomplete, "place_changed", () => {
       var place = autocomplete.getPlace();
@@ -148,18 +166,19 @@ export class CreateRequestComponent implements OnInit {
         lat,
         lng,
       };
-      console.log('pick up change');
+      this.locObj[`pickup`] = selectedLocation;
+      let address = place.formatted_address;
+
+      this.locObj.pickup["address"] = address;
+
       this.getcity(selectedLocation, "pickup");
 
-
-      // this.initMap(selectedLocation);
       map.setCenter(selectedLocation);
 
       this.addMarker({ cords: selectedLocation, data: "pickup" });
     });
 
     google.maps.event.addListener(autocomplete2, "place_changed", () => {
-
       var place = autocomplete2.getPlace();
       let lat = place.geometry?.location?.lat();
       let lng = place.geometry?.location?.lng();
@@ -168,49 +187,42 @@ export class CreateRequestComponent implements OnInit {
         lat,
         lng,
       };
-      let address = place.formatted_address
-      let country = address.split(',')
-      console.log(this.city2);
-      this.city1 = address
-      let country2 = this.city2.split(',')
-      if (!this.city2) {
-        // this.toster.warning('drop location and pickup location should be in same country', '')
-        console.log('work');
-        this.group21 = false
-        this.pickerr = '*pickup and drop location must be in same country'
+      this.locObj[`dropoff`] = sselectedLocation;
 
-      } else {
-        this.pickerr = false
-        this.group21 = true
+      let address = place.formatted_address;
+      this.locObj.dropoff["address"] = address;
+
+      if (this.BookingForm) {
+        this.BookingForm.patchValue({
+          dropoff: address,
+        });
       }
 
-      this.cdRef.detectChanges()
-      this.getcity(sselectedLocation, "dropoff");
-      // map.setCenter(sselectedLocation)
-
-      // this.initMap(sselectedLocation);
+      this.cdRef.detectChanges();
+      // this.getcity(sselectedLocation, "dropoff");
 
       map.setCenter(sselectedLocation);
 
       this.addMarker({ cords: sselectedLocation, data: "dropoff" });
     });
-
   }
 
   addMarker(props: { cords: any; data?: any }) {
+    this.directionsRenderer.setMap(null);
+
     if (marker) {
       marker.setMap(null);
     }
     marker = new google.maps.Marker({
       position: props.cords,
       map: map,
-      draggable: true, // set draggable option to true
+      draggable: true,
       title: "Drag me!",
     });
 
-    marker.addListener("click", () => {
-      infoWindow.open(map, marker);
-    });
+    // marker.addListener("click", () => {
+    //   infoWindow.open(map, marker);
+    // });
 
     google.maps.event.addListener(marker, "dragend", () => {
       let newplace = marker.getPosition();
@@ -219,6 +231,22 @@ export class CreateRequestComponent implements OnInit {
           if (results[0]) {
             if (document.getElementById(props.data) as HTMLInputElement) {
               let ele = document.getElementById(props.data) as HTMLInputElement;
+              let lat = results[0].geometry?.location?.lat();
+              let lng = results[0].geometry?.location?.lng();
+
+              let sselectedLocation: any = {
+                lat,
+                lng,
+              };
+
+              this.locObj[props.data] = sselectedLocation;
+
+              let address = results[0].formatted_address;
+              this.locObj[props.data]["address"] = address;
+
+              if (props.data == "pickup") {
+                this.getcity(sselectedLocation, "pickup");
+              }
               ele.value = results[0].formatted_address;
             }
           } else {
@@ -237,8 +265,7 @@ export class CreateRequestComponent implements OnInit {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       };
-      // this.initMap(data);
-      map.setCenter(data)
+      map.setCenter(data);
       this.addMarker({ cords: data, data: "pickup" });
 
       let newplace = marker.getPosition();
@@ -246,19 +273,29 @@ export class CreateRequestComponent implements OnInit {
       this.geocoder.geocode({ location: newplace }, (results: any, status) => {
         if (status === "OK") {
           if (results[0]) {
-            setTimeout(() => {
-              if (document.getElementById("pickup") as HTMLInputElement) {
-                let ele = document.getElementById("pickup") as HTMLInputElement;
-                ele.value = results[0].formatted_address;
+            if (this.BookingForm) {
+              this.BookingForm.patchValue({
+                pickup: results[0].formatted_address,
+              });
+            }
 
-                let selectedLocation: any = {
-                  lat: results[0].geometry.location.lat(),
-                  lng: results[0].geometry.location.lng(),
-                };
-                this.getcity(selectedLocation, 'pickup')
+            // setTimeout(() => {
+            //   if (document.getElementById("pickup") as HTMLInputElement) {
+            //     let ele = document.getElementById("pickup") as HTMLInputElement;
+            //     ele.value = results[0].formatted_address;
+            //   }
+            // }, 100);
 
-              }
-            }, 100);
+            let selectedLocation: any = {
+              lat: results[0].geometry.location.lat(),
+              lng: results[0].geometry.location.lng(),
+            };
+
+            this.locObj[`pickup`] = selectedLocation;
+            let address = results[0].formatted_address;
+            this.locObj.pickup["address"] = address;
+
+            this.getcity(selectedLocation, "pickup");
           } else {
             window.alert("No results found");
           }
@@ -281,76 +318,116 @@ export class CreateRequestComponent implements OnInit {
   }
 
   showRoute() {
-    console.log(this.city1, this.city2);
+    // if (!this.city1 || !this.city2) {
+    //   return;
+    // }
 
-    if (!this.city1 || !this.city2) {
-      return;
+    let country1 = this.locObj.pickup.address.split(",");
+    let country2 = this.locObj.dropoff.address.split(",");
+    console.log(country1, country2);
+    if (country1[country1.length - 1] != country2[country2.length - 1]) {
+      this.pickupError();
+      this.toster.error('Ride Should be Within Country')
+      return
     }
+
     let fromEL = document.getElementById("pickup") as HTMLInputElement;
     let toEL = document.getElementById("dropoff") as HTMLInputElement;
+
     let origin = fromEL.value;
     let destination = toEL.value;
+
+    if (!origin) {
+      this.toster.error("Pick Up Location Required");
+      return;
+    } else if (!destination) {
+      this.toster.error("Drop Off Location Required");
+
+      return;
+    }
+
     this.forDrawPath(origin, destination);
   }
 
-  getDistance() {
-    let destArray = [];
-    let origin = [(document.getElementById("pickup") as HTMLInputElement).value];
-    this.stops_array.forEach((each) => {
-      destArray.push(each.location);
-    });
-    destArray.push((document.getElementById("dropoff") as HTMLInputElement).value);
-
-    this.service.getDistanceMatrix(
-      {
-        origins: origin,
-        destinations: destArray,
-        travelMode: google.maps.TravelMode.DRIVING,
-        avoidHighways: false,
-        avoidTolls: false,
-      } as google.maps.DistanceMatrixRequest,
-      (data: any) => {
-        let distance = data.rows[0].elements[0].distance.value / 1000;
-        let time = data.rows[0].elements[0].duration.value / 60;
-
-        this.DistanceInfo["distance"] = distance;
-        this.DistanceInfo["time"] = time;
-
-        this.getOneVehiclePricing(
-          this.city2Obj._id,
-          (document.getElementById("vehicle") as HTMLSelectElement).value
-        );
-      }
-    );
-  }
-
   forDrawPath(origin: any, destination: any) {
-    marker.setMap(null)
     this.stops_array = [];
+    let stops = [];
+    for (
+      let i = 0;
+      i < (this.BookingForm.get("stops") as FormArray).length;
+      i++
+    ) {
+      let val = (document.getElementById(`stop${i + 1}`) as HTMLInputElement)
+        .value;
 
-    for (let i = 0; i < this.No_stops; i++) {
-      let val = document.getElementById(`stop${i + 1}`) as HTMLInputElement;
-
-      if (val.value) {
-        this.stops_array.push({
-          location: val.value,
+      if (val) {
+        stops.push({
+          location: val,
           stopover: true,
         });
+        this.stops_array.push(val);
       }
     }
-
     this.directionsRenderer.setMap(map);
     var request: any = {
       origin: origin,
       destination: destination,
-      waypoints: this.stops_array,
+      waypoints: stops,
       travelMode: "DRIVING",
     };
 
     this.directionsService.route(request, (result: any, status) => {
       if (status == "OK") {
+        // marker.setMap(null);
+
+        let routes = result.routes[0].legs;
+        let distance = 0;
+        let time = 0;
+        for (let route of routes) {
+          let rdist = route.distance.value;
+          let rtime = route.duration.value;
+          distance = distance + rdist;
+          time = time + rtime;
+        }
+        if(marker){
+          marker.setMap(null)
+        }
         this.directionsRenderer.setDirections(result);
-        this.getDistance();
+
+
+
+        if(!this.group21){
+
+          let lat = this.locObj.pickup.lat
+          let lng = this.locObj.pickup.lng
+          let pickupLoc = {
+            lat,lng
+
+          }
+          this.getcity(pickupLoc, "pickup");
+
+        }
+
+
+
+
+        this.DistanceInfo["distance"] = distance / 1000;
+        this.DistanceInfo["time"] = time / 60;
+
+
+        if ((document.getElementById("vehicle") as HTMLSelectElement).value == 'null') {
+          return
+        }
+
+        this.getOneVehiclePricing(
+          this.city2Obj._id,
+          (document.getElementById("vehicle") as HTMLSelectElement).value
+        );
+
+
+      }
+      if (status == "ZERO_RESULTS") {
+        this.pickupError();
       }
     });
   }
@@ -366,46 +443,125 @@ export class CreateRequestComponent implements OnInit {
       let data = {
         number: cc.value + "-" + value,
       };
-      this.usersService.getAddedUser(data).subscribe((data: any) => {
-        let el1 = document.getElementById("email") as HTMLInputElement;
-        let el2 = document.getElementById("name") as HTMLInputElement;
-        if (!data) {
-          (
-            document.getElementById("nextbtn") as HTMLInputElement
-          ).style.display = "none";
-          el1.value = "";
-          el2.value = "";
-          this.toster.warning("You have to havn't registerd", "");
-          return;
-        } else {
-          this.UserId = data._id;
-          el1.value = data.email;
-          el2.value = data.name;
-          this.renderer.setAttribute(el1, "disabled", "true");
-          this.renderer.setAttribute(el2, "disabled", "true");
-          this.cdRef.detectChanges();
-          (
-            document.getElementById("nextbtn") as HTMLInputElement
-          ).style.display = "inline-block";
-        }
+      this.usersService.getAddedUser(data).subscribe({
+        next: (res: any) => {
+          this.toster.success(res.msg);
+          console.log(res);
+
+          let data = res.user;
+
+          let el1 = document.getElementById("email") as HTMLInputElement;
+          let el2 = document.getElementById("name") as HTMLInputElement;
+          // if (!data) {
+          //   (
+          //     document.getElementById("nextbtn") as HTMLInputElement
+          //   ).style.display = "none";
+          //   el1.value = "";
+          //   el2.value = "";
+          //   this.toster.warning("You have to havn't registerd", "");
+          //   return;
+          // } else {
+            this.UserId = data._id;
+          this.default_method = res.customer
+          this.selectedCard = res.customer
+
+            this.default_method =
+            el1.value = data.email;
+            el2.value = data.name;
+            this.renderer.setAttribute(el1, "disabled", "true");
+            this.renderer.setAttribute(el2, "disabled", "true");
+            this.cdRef.detectChanges();
+            (
+              document.getElementById("nextbtn") as HTMLInputElement
+            ).style.display = "inline-block";
+          // }
+        },
+        error: (error) => {
+         (document.getElementById("nextbtn") as HTMLInputElement).style.display = "none";
+         let el1 = document.getElementById("email") as HTMLInputElement;
+         let el2 = document.getElementById("name") as HTMLInputElement;
+            el1.value = "";
+            el2.value = "";
+
+          this.toster.error(error.error.msg);
+        },
       });
-    } else {
+    }else{
+      (document.getElementById("nextbtn") as HTMLInputElement).style.display = "none";
+      let el1 = document.getElementById("email") as HTMLInputElement;
+      let el2 = document.getElementById("name") as HTMLInputElement;
+         el1.value = "";
+         el2.value = "";
 
     }
   }
+  DeleteStop(index: any) {
+    (this.BookingForm.get("stops") as FormArray).controls.splice(index, 1);
+    this.showRoute();
+  }
+  focuson(id: any) {
+    console.log('wwww');
+    let pickup = (document.getElementById("pickup") as HTMLInputElement).value;
+    if (this.locObj[id]?.lat && this.locObj[id]?.lng) {
+      this.directionsRenderer.setMap(null);
+      let lat = this.locObj[id].lat;
+      let lng = this.locObj[id].lng;
 
-  BookRide(data: any) {
+      let cords = {
+        lat,
+        lng,
+      };
+      this.addMarker({ cords, data: id });
+    }
+  }
+
+  BookRide() {
     let pickup = document.getElementById("pickup") as HTMLInputElement;
     let dropoff = document.getElementById("dropoff") as HTMLInputElement;
     let vehicle = document.getElementById("vehicle") as HTMLInputElement;
     let date = document.getElementById("date") as HTMLInputElement;
     let stime = document.getElementById("stime") as HTMLInputElement;
-    if (!pickup.value || !dropoff.value || !vehicle.value) {
-      this.toster.error('Fill required fields', '')
-      return
-
+console.log(!pickup.value,  !dropoff.value, !vehicle.value , this.BookingForm);
+this.BookingForm.markAllAsTouched();
+if (
+      !pickup.value ||
+      !dropoff.value ||
+      !vehicle.value ||
+      this.BookingForm.invalid
+    ) {
+      this.cdRef.detectChanges();
+      this.toster.error("Fill required fields", "");
+      return;
+    }
+    if (
+      this.BookingForm.value.paymentOption == 1 &&
+      !this.BookingForm.value.card
+    ) {
+      this.toster.error("Select Card For Payment");
+      return;
+    }
+    if (
+      this.BookingForm.value.bookingtype === "scheduleride" &&
+      (!this.BookingForm.value.date ||
+        !this.BookingForm.value.time ||
+        new Date(this.BookingForm.value.date).getTime() < new Date().getTime())
+    ) {
+      this.toster.error("Select a valid Schedule date & time");
+      return;
     }
 
+    this.stops_array = [];
+    let stopsList = (this.BookingForm.get("stops") as FormArray).controls;
+
+    for (let i = 0; i < stopsList.length; i++) {
+      let val = (document.getElementById(`stop${i + 1}`) as HTMLInputElement)
+        .value;
+      if (val == "") {
+        this.toster.error("Enter Stops value");
+        return;
+      }
+      this.stops_array.push(val);
+    }
 
     let rideDetail = {
       user: this.UserId,
@@ -414,41 +570,43 @@ export class CreateRequestComponent implements OnInit {
       vehicle: vehicle.value,
       distance: this.TotalDistance,
       time: this.TotalTime,
-      bookingtime: Date.now(),
-      payment_type:this.selectedOption,
+      bookingtime: new Date().getTime(),
+      ride_fees: this.ServiceFees,
+      payment_type: this.selectedOption,
+
       status: 0,
     };
     if (this.stops_array.length >= 1) {
-      rideDetail['stops'] = this.stops_array
-
+      rideDetail["stop"] = this.stops_array;
+    }
+    if (this.selectedOption == 1) {
+      rideDetail["card_detail"] = this.selectedCard;
     }
     if (date && stime) {
-
-      rideDetail['scheduledate'] = date.value
-      rideDetail['scheduletime'] = stime.value
+      rideDetail["scheduledate"] = date.value;
+      rideDetail["scheduletime"] = stime.value;
     }
-    this.getPayment(this.selectedCard, this.ServiceFees, this.UserId)
 
     this.ridesService.addRide(rideDetail).subscribe({
-
       next: (data: any) => {
-        this.cdRef.detectChanges()
-        this.directionsRenderer.setMap(null)
-        this.router.navigate(['/rides/confirmed-rides'])
+        this.cdRef.detectChanges();
+        this.directionsRenderer.setMap(null);
+        this.router.navigate(["/rides/confirmed-rides"]);
 
-
-        this.toster.success("Booking Successfully", "")
-
-        console.log(this.selectedCard);
-      }, error: (error) => {
+        this.toster.success(data.msg);
+      },
+      error: (error) => {
+        this.toster.error(error.error.msg);
         console.log(error);
-      }
+      },
     });
   }
 
   getOneVehiclePricing(city: any, vehicle: any) {
     this.pricingService.getServicePricing(city, vehicle).subscribe({
-      next: (data: any) => {
+      next: (res: any) => {
+        let data = res.pricing;
+        this.toster.success(res.msg);
         let driverProfit = data.driverprofit;
         let minFare = data.minfare;
         let basePriceDistance = data.distanceforbaseprice;
@@ -468,242 +626,271 @@ export class CreateRequestComponent implements OnInit {
 
         let ServiceFees = DistancePrice + TimePrice + baseprice;
         this.TotalDistance = this.DistanceInfo["distance"];
+        this.TotalTime = this.DistanceInfo["time"];
         this.ServiceFees = Math.floor(ServiceFees);
         this.cdRef.detectChanges();
+      },
+      error: (error) => {
+        console.log(error);
+        this.toster.error(error.errro.msg);
       },
     });
   }
 
   getCityVehicles(city: any) {
-    this.pricingService.getVehiclesType(city).subscribe({
-      next: (data: any) => {
-        this.vT = data;
-        if (data.length <= 0) {
-          this.pickerr = '*service is not available ay your place';
-          this.group21 = false
+    this.pricingService.getVehiclesType(city,this.TotalDistance,this.TotalTime).subscribe({
+      next: (res: any) => {
+        let data = res.vehicle;
+        this.toster.success(res.msg);
 
+        this.vT = data;
+
+        if (data.length <= 0) {
+          this.pickerr = "*service is not available ay your place";
+          this.group21 = false;
         } else {
           this.pickerr = false;
-          this.group21 = true
-
-
+          this.group21 = true;
         }
         this.cdRef.detectChanges();
       },
-      error: (error) => { },
+      error: (error) => {
+        this.toster.error(error.error.msg);
+      },
     });
   }
 
   getCallingCodes() {
     this.pricingService.allCallingCodes().subscribe({
       next: (data: any) => {
-        this.allCallingCode = data;
+        this.toster.success(data.msg);
+        this.allCallingCode = data.allCollingCodes;
+      },
+      error: (error) => {
+        this.toster.error(error.error.msg);
       },
     });
   }
 
   async onNext() {
+    // this.stripePromise = loadStripe(this.usersService.stripe_public_key);
+    // this.stripe = await this.stripePromise;
 
-
-
-    this.BookingForm = new FormGroup({
-      pickup: new FormControl("", Validators.required),
-      dropoff: new FormControl("", [Validators.required]),
-
-    })
     this.group2 = true;
     this.group1 = false;
+
     setTimeout(() => {
       this.forAutofordist();
     }, 100);
     this.forCurrentlocation();
-    console.log(this.UserId);
-
-
 
     this.usersService.getCards(this.UserId).subscribe({
       next: (cards: any) => {
         console.log(cards);
-        this.allCards = cards.data
-        console.log(document.getElementById('cards'));
-
-      }, error: (error) => {
+        this.allCards = cards.cards.data;
+      },
+      error: (error) => {
         console.log(error);
-      }
-    })
-
+      },
+    });
   }
+  cards() {
+    this.usersService.getCards(this.UserId).subscribe({
+      next: (cards: any) => {
+        this.allCards = cards.cards.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+  get stopsFormArray(): FormArray {
+    return this.BookingForm.get("stops") as FormArray;
+  }
+  addStop() {
+    let stopsList = (this.BookingForm.get("stops") as FormArray).controls;
 
-  addStop(data: any) {
-    for (let i = 0; i < this.No_stops; i++) {
-      if (
-        (document.getElementById(`stop${i + 1}`) as HTMLInputElement) &&
-        !(document.getElementById(`stop${i + 1}`) as HTMLInputElement).value
-      ) {
-        this.toster.warning("you must fill previous stop before add", "");
-
+    for (let i = 0; i < stopsList.length; i++) {
+      let val = (document.getElementById(`stop${i + 1}`) as HTMLInputElement)
+        .value;
+      if (val == "") {
+        this.toster.error("Enter Stops value First");
         return;
       }
     }
-    this.No_stops++;
 
-    const stopNumber = this.stopContainer.nativeElement.children.length + 1;
-    const label = this.renderer.createElement("label");
-    const labelText = this.renderer.createText(`Stop ${stopNumber}: `);
-    const input = this.renderer.createElement("input");
-    this.renderer.setProperty(input, "type", "text");
-    this.renderer.setProperty(input, "id", `stop${stopNumber}`);
-    this.renderer.setProperty(input, "name", `stop${stopNumber}`);
-    this.renderer.setProperty(input, "required", true);
-
-    this.renderer.appendChild(label, labelText);
-    this.renderer.appendChild(label, input);
-    this.renderer.appendChild(this.stopContainer.nativeElement, label);
-
+    const stopFormControl = new FormControl("");
+    this.stopsFormArray.push(stopFormControl);
     setTimeout(() => {
-      this.forautostop();
-    }, 100);
+      this.forautostop(this.stopsFormArray.length);
+    }, 0);
   }
 
   onSelect(vehicle: any) {
-    console.log('work');
     this.showRoute();
   }
 
   getcity(point: any, type: any) {
     this.pricingService.getcityofpoint(point).subscribe({
-      next: (data: any) => {
-        console.log(data);
+      next: (res: any) => {
+        let data = res.city;
+
+        this.toster.success(res.msg);
+
         if (type == "pickup") {
-
-          if(!data){
-
-            this.pickupError()
-            return
+          if (!data) {
+            this.pickupError();
+            return;
           }
 
           this.city2 = data.city;
-          this.city2Obj = data
+          this.city2Obj = data;
           this.getCityVehicles(data._id);
-          console.log(data);
         }
-        // if (type == "dropoff") {
-        //   this.city1 = data.city;
-        // }
-      },error:(error)=>{
-        console.log(error);
-      }
-    });
-  }
-
-  onPay() {
-    this.ridesService.getPayment().subscribe({
-      next: async (data: any) => {
-        let stripe = await loadStripe(
-          "pk_test_51N2piRJAU9zBfSBOixMp53BIFUU3aFXpACWos1Lvi2aM8H984bRSIf1aVoloiRnQNVCWU0Ckyg6SWuYyyXwlDT8000xGZO12wf"
-        );
-        stripe?.redirectToCheckout({
-          sessionId: data.id,
-        });
       },
-      error: (error) => { },
+      error: (error) => {
+        console.log(error);
+        this.pickupError();
+      },
     });
   }
+  selectCode(cc: any, num: any) {
+    if (cc.value == "") {
+      this.ccVal = true;
+    }
 
+    if (num.length === 10) {
+      let data = {
+        number: cc.value + "-" + num,
+      };
+      this.usersService.getAddedUser(data).subscribe({
+        next: (data: any) => {
+          this.toster.success(data.msg);
+          data = data.user;
+          let el1 = document.getElementById("email") as HTMLInputElement;
+          let el2 = document.getElementById("name") as HTMLInputElement;
+          if (!data) {
+            (
+              document.getElementById("nextbtn") as HTMLInputElement
+            ).style.display = "none";
+            el1.value = "";
+            el2.value = "";
+            this.toster.warning("You have to havn't registerd", "");
+            return;
+          } else {
+            this.UserId = data._id;
+            el1.value = data.email;
+            el2.value = data.name;
+            this.renderer.setAttribute(el1, "disabled", "true");
+            this.renderer.setAttribute(el2, "disabled", "true");
+            this.cdRef.detectChanges();
+            (
+              document.getElementById("nextbtn") as HTMLInputElement
+            ).style.display = "inline-block";
+          }
+        },
+        error: (error) => {
+          this.toster.error(error.error.msg);
+        },
+      });
+    }
+  }
   onCancel() {
     this.group2 = false;
     this.group1 = true;
-    this.forCurrentlocation()
-
+    this.forCurrentlocation();
+    this.directionsRenderer.setMap(null);
   }
 
   onBooktype(val: any) {
-    this.selectedbooking = val
-    this.cdRef.detectChanges()
-
-
+    this.selectedbooking = val;
+    this.cdRef.detectChanges();
   }
 
   openAssignDialog() {
-    document.getElementById('modal').style.display = 'block';
-    document.body.classList.add('modal-open');
-
-
+    document.getElementById("modal").style.display = "block";
+    document.body.classList.add("modal-open");
   }
 
   closeAssignDialog() {
-    document.getElementById('modal').style.display = 'none';
+    document.getElementById("modal").style.display = "none";
 
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove("modal-open");
   }
 
-  async saveCard() {
+  // async saveCard() {
+  //   const { error, paymentMethod } = await this.stripe.createPaymentMethod({
+  //     type: "card",
+  //     card: this.cardElement,
+  //   });
 
+  //   if (error) {
+  //     console.error("Error creating payment method:", error);
+  //     return;
+  //   }
+  //   let token = paymentMethod;
 
+  //   this.usersService.addCard(this.UserId, token).subscribe({
+  //     next: (data: any) => {
+  //       console.log(data);
+  //       this.cards
+  //     },
+  //     error: (error) => {
+  //       console.log(error);
+  //     },
+  //   });
+  // }
 
+  // async addCard() {
+  //   let stripes = await this.stripePromise;
+  //   this.Max_stops = this.usersService.Max_stops;
 
-    const { error, paymentMethod } = await this.stripe.createPaymentMethod({
-      type: 'card',
-      card: this.cardElement,
-    });
+  //   const elements = stripes.elements();
+  //   const cardElement = elements.create("card");
+  //   this.cardElement = cardElement;
+  //   cardElement.mount("#card-element");
+  // }
 
-    if (error) {
-      console.error('Error creating payment method:', error);
-      return;
-    }
-    let token = paymentMethod
+  onPayment(val: any) {
+    this.selectedOption = val;
+    this.cdRef.detectChanges();
+  }
 
-    this.usersService.addCard(this.UserId, token).subscribe({
-      next: (data: any) => {
+  pickupError() {
+    this.directionsRenderer.setMap(null);
 
-        console.log(data);
-      }, error: (error) => {
-        console.log(error);
-      }
+    this.group21 = false;
+    this.BookingForm.patchValue({
+      vehicle:null
     })
+       this.TotalTime = null
+   this.ServiceFees = null
+   this.TotalDistance = null
+    this.pickerr = "*Service is not available at your place";
+    this.toster.error("Service is Not Available at you location");
+    this.cdRef.detectChanges();
   }
+  hideOtthers(){
+    this.directionsRenderer.setMap(null);
 
-  async addCard() {
-    let stripes = await stripePromise
-
-    const elements = stripes.elements();
-    const cardElement = elements.create('card');
-    this.cardElement = cardElement
-    cardElement.mount('#card-element');
-
-  }
-
-  getPayment(card: any, amount: any, userid: any) {
-    this.usersService.getPayment(card, amount, userid).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      }, error: (error) => {
-        console.log(error);
-      }
+    this.group21 = false;
+    this.BookingForm.patchValue({
+      vehicle:null
     })
+       this.TotalTime = null
+   this.ServiceFees = null
+   this.TotalDistance = null
   }
-  onPayment(val:any){
-    this.selectedOption = val
-    this.cdRef.detectChanges()
-
-  }
-
-  pickupError(){
-    this.group21 = false
-    this.pickerr = '*Service is not available at your place'
-    this.cdRef.detectChanges()
-  }
-  getMaxStops(){
+  getMaxStops() {
     this.settingsService.currentSettings().subscribe({
-      next:(data:any)=>{
+      next: (data: any) => {
+        this.Max_stops = data.setting.MaxStopsForRide;
+        console.log(data);
 
-        this.Max_stops = data.MaxStopsForRide
-        console.log(this.Max_stops);
-      },error:(error)=>{
+      },
+      error: (error) => {
         console.log(error);
-      }
-    })
-
+      },
+    });
   }
-
 }

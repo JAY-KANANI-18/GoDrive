@@ -1,52 +1,10 @@
-<!-- <div class="header bg-gradient-skyblue pt-5 pb-3 pt-md-8">
-  <div class="container">
-    <div class="header">
-
-      <form [formGroup]="SettingsForm"  (ngSubmit)="onSave()">
-        <div>
-
-          <label for="Stops">Stops : </label>
-
-          <select formControlName="MaxStopsForRide" name="Stops" id="Stops">
-            <option value="" selected disabled>Select Stops</option>
-
-            <option *ngFor="let item of Stops" value={{item}}>{{item}}</option>
-
-          </select>
-        </div>
-        <div>
-
-          <label for="TimeOut">TimeOut : </label>
-
-          <select formControlName="AcceptenceTimeForRide" name="TimeOut" id="TimeOut">
-            <option value="" selected disabled>Select TimeOut</option>
-            <option *ngFor="let item of TimeOut" value={{item}}>{{item}}</option>
-
-          </select>
-        </div>
-
-        <button type="submit" class="btn btn-success" >Save</button>
-
-      </form>
-
-
-
-      <div>
-
-      </div>
-    </div>
-  </div>
-</div> -->
 <div class="header bg-gradient-skyblue p-3 pt-7 pb-7">
   <div class="container-fluid">
     <div class="header">
       <h1>Settings</h1>
-
     </div>
   </div>
 </div>
-
-
 
 <div class="container mt--6">
   <div class="row">
@@ -56,89 +14,126 @@
           <!-- <img src="./assets/img/godrivePNG.png" alt="Logo"  width="50%" height="50%" style="float:right"> -->
 
           <form [formGroup]="SettingsForm" (ngSubmit)="onSave()">
-
-
             <div class="row">
-
               <label class="col-md-3" for="Stops">Stops : </label>
 
-              <select class="col-md-5" formControlName="MaxStopsForRide" name="Stops" id="Stops">
-                <option value="" selected disabled>Select Stops : </option>
+              <select
+                class="col-md-5"
+                formControlName="MaxStopsForRide"
+                name="Stops"
+                id="Stops"
+              >
+                <option value="" selected disabled>Select Stops :</option>
 
-                <option *ngFor="let item of Stops" value={{item}}>{{item}}</option>
-
+                <option *ngFor="let item of Stops" value="{{ item }}">
+                  {{ item }}
+                </option>
               </select>
-
             </div>
 
             <div class="row">
-
               <label class="col-md-3" for="sms_sid">SMS id : </label>
 
-              <input class="col-md-5" formControlName="sms_sid" name="sms_sid" id="sms_sid">
-
+              <input
+                class="col-md-5"
+                formControlName="sms_sid"
+                name="sms_sid"
+                id="sms_sid"
+              />
             </div>
 
             <div class="row">
-
               <label class="col-md-3" for="sms_token">SMS Token : </label>
 
-              <input class="col-md-5" formControlName="sms_token" name="sms_token" id="sms_token">
-
+              <input
+                class="col-md-5"
+                formControlName="sms_token"
+                name="sms_token"
+                id="sms_token"
+              />
             </div>
 
             <div class="row">
+              <label class="col-md-3" for="stripe_secret_key"
+                >Stripe secrete Key :
+              </label>
 
-              <label class="col-md-3" for="stripe_public_key">Stripe Key : </label>
+              <input
+                class="col-md-5"
+                formControlName="stripe_secret_key"
+                name="stripe_secret_key"
+                id="stripe_secret_key"
+              />
+            </div>
+            <div class="row">
+              <label class="col-md-3" for="stripe_public_key"
+                >Stripe public Key :
+              </label>
 
-              <input class="col-md-5" formControlName="stripe_public_key" name="stripe_public_key" id="stripe_public_key">
-
+              <input
+                class="col-md-5"
+                formControlName="stripe_public_key"
+                name="stripe_public_key"
+                id="stripe_public_key"
+              />
             </div>
 
             <div class="row">
-
               <label class="col-md-3" for="email_client_id">Email id : </label>
 
-              <input class="col-md-5" formControlName="email_client_id" name="email_client_id" id="email_client_id">
-
-
+              <input
+                class="col-md-5"
+                formControlName="email_client_id"
+                name="email_client_id"
+                id="email_client_id"
+              />
             </div>
 
             <div class="row">
-
               <label class="col-md-3" for="email_secret">Email secret : </label>
 
-              <input class="col-md-5" formControlName="email_secret" name="email_secret" id="email_secret">
-
-
+              <input
+                class="col-md-5"
+                formControlName="email_secret"
+                name="email_secret"
+                id="email_secret"
+              />
             </div>
 
             <div class="row">
+              <label class="col-md-3" for="email_refresh_token"
+                >Email Token :
+              </label>
 
-              <label class="col-md-3" for="email_refresh_token">Email Token : </label>
-
-              <input class="col-md-5" formControlName="email_refresh_token" name="email_refresh_token" id="email_refresh_token">
-
-
+              <input
+                class="col-md-5"
+                formControlName="email_refresh_token"
+                name="email_refresh_token"
+                id="email_refresh_token"
+              />
             </div>
 
             <div class="row">
-
               <label class="col-md-3" for="TimeOut">TimeOut</label>
 
-              <select class="col-md-5" formControlName="AcceptenceTimeForRide" name="TimeOut" id="TimeOut">
+              <select
+                class="col-md-5"
+                formControlName="AcceptenceTimeForRide"
+                name="TimeOut"
+                id="TimeOut"
+              >
                 <option value="" selected disabled>Select TimeOut</option>
-                <option *ngFor="let item of TimeOut" value={{item}}>{{item}} sec</option>
-
+                <option *ngFor="let item of TimeOut" value="{{ item }}">
+                  {{ item }} sec
+                </option>
               </select>
             </div>
 
-            <button type="submit" class="btn btn-success mt-5 row">Save</button>
-
+            <button type="submit" class="btn btn-success mt-5 ">Save</button>
+            <button type="button" class="btn btn-danger mt-5 "(click)="getSettings()" >Cancel</button>
           </form>
         </div>
       </div>
     </div>
   </div>
-
 </div>

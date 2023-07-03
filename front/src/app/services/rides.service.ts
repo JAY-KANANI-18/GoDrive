@@ -1,28 +1,19 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-  HttpEventType
-} from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
-import { Subject, throwError } from 'rxjs';
-import { Router } from '@angular/router';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Router } from "@angular/router";
+import { environment } from "src/environments/environment";
 
 // import { Post } from './post.model';
 
-@Injectable({ providedIn: 'root' })
-
-
+@Injectable({ providedIn: "root" })
 export class RidesService {
-  zone: any
-  constructor(private http: HttpClient, private router: Router) { }
+  zone: any;
+  constructor(private http: HttpClient, private router: Router) {}
   addRide(data: any) {
-    return this.http.post(`http://localhost:3000/addRide`, data)
+    return this.http.post(`${environment.URL}/addRide`, data);
   }
-  getRides(page:any,option?:any) {
+  getRides(page: any, option?: any) {
     // return this.http.get(`http://localhost:3000/Rides?page=${page}`)
-
 
     // if(option?.field){
     //   console.log('1');
@@ -32,10 +23,9 @@ export class RidesService {
     //   console.log('2');
     const params = new HttpParams({ fromObject: option?.search });
 
-    console.log(params);
-      return this.http.get(`http://localhost:3000/Rides?page=${page}`,{
-        params
-      })
+    return this.http.get(`${environment.URL}/Rides?page=${page}`, {
+      params,
+    });
 
     // }else{
     //   console.log('3');
@@ -44,25 +34,21 @@ export class RidesService {
     // }
   }
 
-  getCompletedRides(page:any,option?:any){
+  getCompletedRides(page: any, option?: any) {
     const params = new HttpParams({ fromObject: option?.search });
 
-    return this.http.get(`http://localhost:3000/Rides/Completed?page=${page}`,{
-      params
-    })
-
-
+    return this.http.get(`${environment.URL}/Rides/Completed?page=${page}`, {
+      params,
+    });
   }
-  getPayment(){
-    return this.http.get(`http://localhost:3000/Rides/Payment`)
-
+  getPayment() {
+    return this.http.get(`${environment.URL}/Rides/Payment`);
   }
-  getMail(){
-    return this.http.get(`http://localhost:3000/Rides/SendEmail`)
-
-
+  getMail() {
+    return this.http.get(`${environment.URL}/Rides/SendEmail`);
   }
+  updateRide(id:any,data:any){
 
-
-
+    return this.http.patch(`${environment.URL}/Rides/Update?id=${id}`,data);
+  }
 }

@@ -1,29 +1,21 @@
-const mongoose = require("mongoose")
-mongoose.set('strictQuery', true)
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", true);
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const VehicleSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        lowercase:true,
-        unique:true,
-        required: true,
-        trim: true,
-        
-
-    },file: {
-        type:String,
-        required: true,
-
-    }
-
-   
-
+  name: {
+    type: String,
+    lowercase: true,
+    unique: true,
+    required: true,
+    trim: true,
+  },
+  file: {
+    type: String,
+    required: true,
+  },
 });
-
-
 
 // LoginSchema.methods.generateAuthToken = async function () {
 //   const user = this
@@ -34,14 +26,13 @@ const VehicleSchema = new mongoose.Schema({
 //   return token
 // }
 
-
 // LoginSchema.statics.findByCredentials = async (email, password) => {
 //   const user = await Login.findOne({ email })
 //   if (!user) {
 //       throw new Error('Unable to login')
-      
+
 //     }
-    
+
 //     const isMatch = await bcrypt.compare(password, user.password)
 //   if (!isMatch) {
 //       throw new Error('Unable to login')
@@ -63,13 +54,6 @@ const VehicleSchema = new mongoose.Schema({
 //   next()
 // })
 
-
-
-
-
-
-const Vehicle = mongoose.model('Vehicle', VehicleSchema)
+const Vehicle = mongoose.model("Vehicle", VehicleSchema);
 
 module.exports = Vehicle;
-
-

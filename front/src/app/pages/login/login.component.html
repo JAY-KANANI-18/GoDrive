@@ -1,12 +1,9 @@
-<div class="header  py-7 py-lg-8">
+<div class="header py-7 py-lg-8">
   <div class="container">
     <div class="header-body text-center mb-7">
-      <div class="row justify-content-center">
-
-      </div>
+      <div class="row justify-content-center"></div>
     </div>
   </div>
-
 </div>
 <!-- Page content -->
 <div class="container mt--8 pb-5">
@@ -15,42 +12,76 @@
       <div class="card bg-secondary shadow border-0 text-center">
         <h1 class="mt-5">Login</h1>
         <div class="card-body px-lg-5 py-lg-5">
-
-
-          <form role="form" #loginForm="ngForm" (ngSubmit)="onLogin(loginForm.value)">
+          <form [formGroup]="LoginForm" role="form" (ngSubmit)="onLogin()">
             <div class="form-group mb-3">
               <div class="input-group input-group-alternative">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                  <span class="input-group-text"
+                    ><i class="ni ni-email-83"></i
+                  ></span>
                 </div>
-                <input class="form-control" placeholder="Email" type="email" required ngModel name="email">
+                <input
+                  class="form-control"
+                  placeholder="Email"
+                  type="email"
+                  ngModel
+                  name="email"
+                />
               </div>
+            </div>
+            <div
+              class="error"
+              *ngIf="
+                LoginForm.get('email').invalid && LoginForm.get('email').touched
+              "
+            >
+              *Please enter valid email
             </div>
             <div class="form-group">
               <div class="input-group input-group-alternative">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                  <span class="input-group-text"
+                    ><i class="ni ni-lock-circle-open"></i
+                  ></span>
                 </div>
-                <input class="form-control" placeholder="Password" type="password" required ngModel name="password">
+                <input
+                  class="form-control"
+                  placeholder="Password"
+                  type="password"
+                  ngModel
+                  name="password"
+                />
               </div>
             </div>
+            <div
+              class="error"
+              *ngIf="
+                LoginForm.get('password').invalid &&
+                LoginForm.get('password').touched
+              "
+            >
+              *Please enter valid password
+            </div>
+            <div class="error" *ngIf="Errmsg">*{{ Errmsg }}</div>
 
             <div class="text-center">
-              <button type="submit" class="btn btn-primary my-4">Sign in</button>
+              <button type="submit" class="btn btn-primary my-4">
+                Sign in
+              </button>
             </div>
-            <div class="text-center">
-              <a class="nav-link nav-link-icon" routerLinkActive="active" [routerLink]="['/register']">
-                <small>Create new account</small></a>
-            </div>
+            <!-- <div class="text-center">
+              <a
+                class="nav-link nav-link-icon"
+                routerLinkActive="active"
+                [routerLink]="['/register']"
+              >
+                <span class="text-primary">Create new account</span></a
+              >
+            </div> -->
           </form>
         </div>
       </div>
-      <div class="row mt-3">
-
-
-      </div>
-
-
+      <div class="row mt-3"></div>
     </div>
   </div>
 </div>

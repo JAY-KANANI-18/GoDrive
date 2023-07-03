@@ -3,135 +3,144 @@
     <div class="header">
       <h1>Vehicle Pricing</h1>
 
-
-
-      <div>
-
-      </div>
+      <div></div>
     </div>
   </div>
 </div>
 
 <ng-template #content let-modal>
-  <div class="bg-aliceblue modal-div ">
-
+  <div class="bg-aliceblue modal-div">
     <div class="modal-header">
-<h3>Vehicle Pricing details</h3>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"><span
-
-          aria-hidden="true">&times;</span></button>
+      <h3>Vehicle Pricing details</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
 
     <div class="modal-body">
-
-
-      <form role="form" #AddVehiclepricingForm="ngForm"
-        (ngSubmit)="onAdd(AddVehiclepricingForm.value);AddVehiclepricingForm.reset()" name="newForm">
-
-
-
+      <form role="form" [formGroup]="PricingForm"
+        name="newForm">
         <label for="country">Select Country:</label>&nbsp;&nbsp;&nbsp;
-        <select id="country" name="country" (change)="onselect(country.value)" #country required ngModel>
+        <select formControlName="country" id="country" name="country" (change)="onselect(country.value)" #country>
           <!-- <option value="" disabled selected> Select Country</option> -->
-          <option *ngFor="let country of countriesArray" [value]="country._id">{{ country.name }}</option>
+          <option *ngFor="let country of countriesArray" [value]="country._id">
+            {{ country.name }}
+          </option>
         </select>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['country']?.invalid && AddVehiclepricingForm.controls['country']?.touched">
-          *Please select a country</div>
+        <div class="error" *ngIf="
+        PricingForm.get('country').invalid && PricingForm.get('country').touched
 
+          ">
+          *Please select a country
+        </div>
 
-
-        <div *ngIf="citiesArray.length >=1 ">
-
+        <div *ngIf="citiesArray.length >= 1">
           <label for="city">Select City : </label>&nbsp;&nbsp;&nbsp;
-          <select id="city" name="city">
+          <select id="city" name="city" formControlName="city">
             <!-- <option selected disabled hidden>Select City</option> -->
-            <option *ngFor="let city of citiesArray" [value]="city._id">{{ city.city}}</option>
+            <option *ngFor="let city of citiesArray" [value]="city._id">
+              {{ city.city }}
+            </option>
           </select>
+        </div>
+        <div class="error" *ngIf="
+        PricingForm.get('city').invalid && PricingForm.get('city').touched && citiesArray.length >= 1
 
-
-
+          ">          *Please select a city
         </div>
 
         <label for="vehicle">Select Vehicle Type : </label>
-        <select id="vehicle" name="vehicle" ngModel required>
-          <option *ngFor="let vehicle of vehicleTypesArray" [value]="vehicle._id">{{ vehicle.name}}</option>
+        <select id="vehicle" name="vehicle" formControlName="vehicle">
+          <option *ngFor="let vehicle of vehicleTypesArray" [value]="vehicle._id">
+            {{ vehicle.name }}
+          </option>
         </select>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['vehicle']?.invalid && AddVehiclepricingForm.controls['vehicle']?.touched">
-          *Please select a vehicle</div>
+        <div class="error" *ngIf="
+        PricingForm.get('vehicle').invalid && PricingForm.get('vehicle').touched
 
-
+          ">
+          *Please select a vehicle
+        </div>
 
         <label for="driverprofit">Drivers Profit : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="driverprofit" ngModel name="driverprofit" required>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['driverprofit']?.invalid  && AddVehiclepricingForm.controls['driverprofit'].touched">
-          *Please enter a value</div>
+        <input formControlName="driverprofit" placeholder="Enter Driverprofit" (keypress)="numberLimit($event)" type="text" id="driverprofit"
+          name="driverprofit" />
+        <div class="error" *ngIf="
+        PricingForm.get('driverprofit').invalid && PricingForm.get('driverprofit').touched
 
 
-
+          ">
+          *Please enter a value
+        </div>
 
         <label for="minfare">Min. Fare : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="minfare" ngModel name="minfare" required>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['minfare']?.invalid  && AddVehiclepricingForm.controls['minfare'].touched">
-          *Please enter a value</div>
+        <input formControlName="minfare"  placeholder="Enter Minfare" type="text" (keypress)="numberLimit($event)" id="minfare" name="minfare" />
+        <div class="error" *ngIf="
+        PricingForm.get('minfare').invalid && PricingForm.get('minfare').touched
 
-
+          ">
+          *Please enter a value
+        </div>
 
         <label for="distanceforbaseprice">Distance for Base Price : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="distanceforbaseprice" ngModel name="distanceforbaseprice" required>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['distanceforbaseprice']?.invalid  && AddVehiclepricingForm.controls['distanceforbaseprice'].touched">
-          *Please enter a value</div>
+        <input (keypress)="numberLimit($event)"  placeholder="Enter Distanceforbaseprice" type="text" id="distanceforbaseprice"
+          formControlName="distanceforbaseprice" name="distanceforbaseprice" />
+        <div class="error" *ngIf="
+        PricingForm.get('distanceforbaseprice').invalid && PricingForm.get('distanceforbaseprice').touched
 
 
-
+          ">
+          *Please enter a value
+        </div>
 
         <label for="baseprice">Base Price : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="baseprice" ngModel name="baseprice" required>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['baseprice']?.invalid  && AddVehiclepricingForm.controls['baseprice'].touched">
-          *Please enter a value</div>
+        <input type="text"  placeholder="Enter Baseprice" (keypress)="numberLimit($event)" id="baseprice" name="baseprice"
+          formControlName="baseprice" />
+        <div class="error" *ngIf="
+        PricingForm.get('baseprice').invalid && PricingForm.get('baseprice').touched
 
+
+          ">
+          *Please enter a value
+        </div>
 
         <label for="priceperunitdistance">Price Per Unit Distance : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="priceperunitdistance" ngModel name="priceperunitdistance" required>
+        <input  placeholder="Enter Priceperunitdistance" (keypress)="numberLimit($event)" type="text" id="priceperunitdistance" name="priceperunitdistance"
+          formControlName="priceperunitdistance" />
 
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['priceperunitdistance']?.invalid  && AddVehiclepricingForm.controls['priceperunitdistance'].touched">
-          *Please enter a value</div>
+        <div class="error" *ngIf="
+        PricingForm.get('priceperunitdistance').invalid && PricingForm.get('priceperunitdistance').touched
+
+          ">
+          *Please enter a value
+        </div>
 
         <label for="priceperunittime">Price Per Unit Time(min) : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="priceperunittime" ngModel name="priceperunittime" required>
+        <input  placeholder="Enter Priceperunittime" (keypress)="numberLimit($event)" type="text" id="priceperunittime" formControlName="priceperunittime"
+          name="priceperunittime" />
 
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['priceperunittime']?.invalid  && AddVehiclepricingForm.controls['priceperunittime'].touched">
-          *Please enter a value</div>
+        <div class="error" *ngIf="
+        PricingForm.get('priceperunittime').invalid && PricingForm.get('priceperunittime').touched
+
+          ">
+          *Please enter a value
+        </div>
 
         <label for="maxspace">Max Space : </label>&nbsp;&nbsp;&nbsp;
-        <input type="text" id="maxspace" ngModel name="maxspace" required>
-        <div class="error"
-          *ngIf="AddVehiclepricingForm.controls['maxspace']?.invalid  && AddVehiclepricingForm.controls['maxspace'].touched">
-          *Please enter a value</div>
+        <input  placeholder="Enter Maxspace" (keypress)="integerOnly($event)" type="text" id="maxspace" formControlName="maxspace" name="maxspace" />
 
+        <div class="error" *ngIf="
+        PricingForm.get('maxspace').invalid && PricingForm.get('maxspace').touched
 
-        <button type="submit" class="btn btn-primary my-4">Add Vehicle Price</button>
-        <button *ngIf="UpdateActivate" type="button" class="btn btn-primary my-4"
-          (click)="onSave(AddVehicleForm.value);AddVehiclepricingForm.reset();">Update Vehicle</button>
-        <button *ngIf="UpdateActivate" type="button" class="btn btn-danger my-4"
-          (click)="onCancel(AddVehicleForm.value);AddVehiclepricingForm.reset();">cancel</button>
+          ">
+          *Please enter a value
+        </div>
 
-
-
-
+        <button  [disabled]="PricingForm.invalid" type="submit" class="btn btn-primary my-4" (click)="onAdd(modal)">
+          Add Vehicle Price
+        </button>
 
       </form>
-
-
-
-
     </div>
     <!--
     <div class="modal-footer">
@@ -139,7 +148,138 @@
       <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
     </div> -->
   </div>
+</ng-template>
+<ng-template #content2 let-modal>
+  <div class="bg-aliceblue modal-div">
+    <div class="modal-header">
+      <h3>Vehicle Pricing details</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
 
+    <div class="modal-body">
+      <form role="form" [formGroup]="UpdateForm"
+        name="newForm">
+        <label for="ucountry">Select Country:</label>&nbsp;&nbsp;&nbsp;
+
+        <input readonly type="text" formControlName="ucountry" id="ucountry" name="ucountry">
+
+        <div class="error" *ngIf="
+        UpdateForm.get('ucountry').invalid && UpdateForm.get('ucountry').touched
+
+          ">
+          *Please select a country
+        </div>
+
+        <div *ngIf="citiesArray.length >= 1">
+          <label for="ucity">Select City : </label>&nbsp;&nbsp;&nbsp;
+          <input readonly type="text" id="ucity" name="ucity" formControlName="ucity">
+
+        </div>
+        <div class="error" *ngIf="
+        UpdateForm.get('ucity').invalid && UpdateForm.get('ucity').touched && citiesArray.length >= 1
+
+          ">          *Please select a city
+        </div>
+
+        <label for="uvehicle">Select Vehicle Type : </label>
+
+        <input readonly type="text"  id="uvehicle" name="uvehicle" formControlName="uvehicle">
+        <div class="error" *ngIf="
+        UpdateForm.get('uvehicle').invalid && UpdateForm.get('uvehicle').touched
+
+          ">
+          *Please select a vehicle
+        </div>
+
+        <label for="udriverprofit">Drivers Profit : </label>&nbsp;&nbsp;&nbsp;
+        <input formControlName="udriverprofit" placeholder="Enter Driverprofit" (keypress)="numberLimit($event)" type="text" id="udriverprofit"
+          name="udriverprofit" />
+        <div class="error" *ngIf="
+        UpdateForm.get('udriverprofit').invalid && UpdateForm.get('udriverprofit').touched
+
+
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="uminfare">Min. Fare : </label>&nbsp;&nbsp;&nbsp;
+        <input formControlName="uminfare"  placeholder="Enter Minfare" type="text" (keypress)="numberLimit($event)" id="uminfare" name="uminfare" />
+        <div class="error" *ngIf="
+        UpdateForm.get('uminfare').invalid && UpdateForm.get('uminfare').touched
+
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="udistanceforbaseprice">Distance for Base Price : </label>&nbsp;&nbsp;&nbsp;
+        <input (keypress)="numberLimit($event)"  placeholder="Enter Distanceforbaseprice" type="text" id="udistanceforbaseprice"
+          formControlName="udistanceforbaseprice" name="duistanceforbaseprice" />
+        <div class="error" *ngIf="
+        UpdateForm.get('udistanceforbaseprice').invalid && UpdateForm.get('udistanceforbaseprice').touched
+
+
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="ubaseprice">Base Price : </label>&nbsp;&nbsp;&nbsp;
+        <input type="text"  placeholder="Enter Baseprice" (keypress)="numberLimit($event)" id="ubaseprice" name="ubaseprice"
+          formControlName="ubaseprice" />
+        <div class="error" *ngIf="
+        UpdateForm.get('ubaseprice').invalid && UpdateForm.get('ubaseprice').touched
+
+
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="upriceperunitdistance">Price Per Unit Distance : </label>&nbsp;&nbsp;&nbsp;
+        <input  placeholder="Enter Priceperunitdistance" (keypress)="numberLimit($event)" type="text" id="upriceperunitdistance" name="upriceperunitdistance"
+          formControlName="upriceperunitdistance" />
+
+        <div class="error" *ngIf="
+        UpdateForm.get('upriceperunitdistance').invalid && UpdateForm.get('upriceperunitdistance').touched
+
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="upriceperunittime">Price Per Unit Time(min) : </label>&nbsp;&nbsp;&nbsp;
+        <input  placeholder="Enter Priceperunittime" (keypress)="numberLimit($event)" type="text" id="upriceperunittime" formControlName="upriceperunittime"
+          name="upriceperunittime" />
+
+        <div class="error" *ngIf="
+        UpdateForm.get('upriceperunittime').invalid && UpdateForm.get('upriceperunittime').touched
+
+          ">
+          *Please enter a value
+        </div>
+
+        <label for="umaxspace">Max Space : </label>&nbsp;&nbsp;&nbsp;
+        <input  placeholder="Enter Maxspace" (keypress)="integerOnly($event)" type="text" id="umaxspace" formControlName="umaxspace" name="umaxspace" />
+
+        <div class="error" *ngIf="
+        UpdateForm.get('umaxspace').invalid && UpdateForm.get('umaxspace').touched
+
+          ">
+          *Please enter a value
+        </div>
+
+
+        <button type="button" class="btn btn-success my-4"
+          (click)="onSave(modal); ">
+Save        </button>
+        <button  type="button" class="btn btn-danger my-4" (click)="
+            onCancel(modal)
+          ">
+          cancel
+        </button>
+      </form>
+    </div>
+
+  </div>
 </ng-template>
 
 <div class="container-fluid mt--5">
@@ -148,30 +288,25 @@
     <div class="col">
       <div class="card shadow">
         <div class="card-header border-0 row mr-0 ml-0">
-
           <div class="col-sm-4">
-
-
-            <div class="form-control-search d-flex  align-items-center">
-              <input type="search" class="form-control" placeholder="Search" #search>
+            <div class="form-control-search d-flex align-items-center">
+              <input type="search" class="form-control" placeholder="Search" #search />
               <div class="btn-group">
                 <button class="btn" (click)="onSearch(search.value)">
                   <i class="search-icon fas fa-search"></i>
                 </button>
-                <button class="btn refresh" (click)="getAllPricing(1);search.value = ''">⟳</button>
+                <button class="btn refresh" (click)="getAllPricing(1); search.value = ''">
+                  ⟳
+                </button>
               </div>
             </div>
-
           </div>
-
-
-
 
           <div class="col-sm-8 text-right">
-
-            <button class="btn btn-outline-primary add-dialog" (click)="openModel(content)"> + Add </button>
+            <button class="btn btn-outline-primary add-dialog" (click)="openModel(content)">
+              + Add
+            </button>
           </div>
-
         </div>
         <div class="table-responsive">
           <table class="table align-items-center table-flush text-center">
@@ -187,36 +322,29 @@
                 <th scope="col">price perunit distance</th>
                 <th scope="col">price per unit time</th>
                 <th scope="col">max space</th>
-                <th scope="col">Action</th>
+                <!-- <th scope="col">Action</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let data of allPricing" (click)="openModel(content);onUpdate(data._id)">
+              <tr *ngFor="let data of allPricing" (click)=" onUpdate(data._id,content2);">
+                <td>{{ data.country.name }}</td>
+                <td>{{ data.city.city }}</td>
+                <td>{{ data.vehicle.name }}</td>
+                <td>{{ data.driverprofit }}</td>
 
-
-
-
-                <td>{{data.country.name}}
-                <td>{{data.city.city}}</td>
-                <td>{{data.vehicle.name}}</td>
-                <td>{{data.driverprofit}}</td>
-
-                <td>{{data.distanceforbaseprice}}
-                <td>{{data.baseprice}}</td>
-                <td>{{data.minfare}}</td>
-                <td>{{data.priceperunitdistance}}</td>
-                <td>{{data.priceperunittime }}</td>
-                <td>{{data.maxspace }}</td>
-                <td id="b'+ user._id + '">
-                  <button class="update-button btn btn-outline-primary" (click)="onUpdate(data._id)"> UPDATE</button>
+                <td>{{ data.distanceforbaseprice }}</td>
+                <td>{{ data.baseprice }}</td>
+                <td>{{ data.minfare }}</td>
+                <td>{{ data.priceperunitdistance }}</td>
+                <td>{{ data.priceperunittime }}</td>
+                <td>{{ data.maxspace }}</td>
+                <!-- <td id="b'+ user._id + '">
                   <button class="delete-button btn btn-outline-danger" (click)="onDelete(data._id)"> DELETE</button>
-                </td>
-
+                </td> -->
               </tr>
-              <tr *ngIf="allPricing?.length <= 0 ">
+              <tr *ngIf="allPricing?.length <= 0">
                 <td class="p-5" colspan="11">
-
-                  <strong> Driver Not Found</strong>
+                  <strong> Vehicle Pricing Not Found</strong>
                 </td>
               </tr>
             </tbody>
@@ -227,19 +355,18 @@
           <div class="card-footer py-4">
             <nav aria-label="...">
               <ul class="pagination justify-content-end mb-0">
-
-                <li class="page-item disabled" *ngIf="currentPage!==1" (click)="onPrevious()">
+                <li class="page-item disabled" *ngIf="currentPage !== 1" (click)="onPrevious()">
                   <a class="page-link">
                     <i class="fas fa-angle-left"></i>
                     <span class="sr-only">Previous</span>
                   </a>
                 </li>
-                <li class="page-item" [ngClass]="{'active' : currentPage == i+1}"
-                  [hidden]="currentPage <i || currentPage-1 > i+1" *ngFor="let item of NoOfPages; let i = index"> <a
-                    class="page-link" (click)="onPage(i+1)">{{i+1}}</a>
+                <li class="page-item" [ngClass]="{ active: currentPage == i + 1 }"
+                  [hidden]="currentPage < i || currentPage - 1 > i + 1" *ngFor="let item of NoOfPages; let i = index">
+                  <a class="page-link" (click)="onPage(i + 1)">{{ i + 1 }}</a>
                 </li>
 
-                <li class="page-item" [ngClass]="{'vh':currentPage==NoOfPages.length }" (click)="onNext()">
+                <li class="page-item" [ngClass]="{ vh: currentPage == NoOfPages.length }" (click)="onNext()">
                   <a class="page-link">
                     <i class="fas fa-angle-right"></i>
                     <span class="sr-only">Next</span>
@@ -252,5 +379,5 @@
       </div>
     </div>
     <!-- Dark table -->
-
   </div>
+</div>

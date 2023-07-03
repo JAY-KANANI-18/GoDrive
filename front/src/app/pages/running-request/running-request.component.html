@@ -1,85 +1,17 @@
 <div class="header bg-gradient-skyblue pb-3 pb-7 pt-7">
   <div class="container-fluid">
     <div class="header">
-<h1>Running Request</h1>
-      <!-- Card stats -->
-
-      <!-- <div class="modal" id="modals" #modals >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header" >
-              <h5 class="modal-title">Assign Driver</h5>
-
-
-
-
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-              (click)="closeAssignDialog()">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" *ngIf="currentRide">
-           <h2>Trip Details:</h2>
-
-            <p>PickUp Location : {{currentRide.pickup}}</p>
-            <p>DropOff Location : {{currentRide.dropoff}}</p>
-            <p>distance : {{currentRide.distance}}</p>
-
-
-
-            <p><strong>Available Drivers:</strong></p>
-
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="assign-selected-driver"
-            (click)="onAccept(currentRide._id);closeAssignDialog()">Accept Ride</button>
-            <button type="button" class="btn btn-secondary" id="assign-nearest-driver" (click)="onReject(currentRide._id)">Decline Ride</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-
+      <h1>Running Request</h1>
     </div>
   </div>
 </div>
 
 <!-- Page content -->
 <div class="container-fluid mt--5">
-
   <!-- Table -->
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <!-- <div class="modal" id="modal">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Assign Driver</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="closeAssignDialog()">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body" *ngIf="currentRide">
-              <p><strong>Trip Details:</strong></p>
-
-
-              <p>PickUp Location : {{currentRide.pickup}}</p>
-              <p>DropOff Location : {{currentRide.dropoff}}</p>
-
-
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="assign-selected-driver"
-              (click)="closeAssignDialog()">Assign Selected Driver</button>
-              <button type="button" class="btn btn-secondary" id="assign-nearest-driver">Assign Nearest
-                Driver</button>
-              </div>
-            </div>
-          </div>
-        </div> -->
-
         <div class="table-responsive">
           <table class="table align-items-center table-flush">
             <thead class="thead-light">
@@ -90,43 +22,55 @@
                 <th scope="col">dropoff</th>
                 <th scope="col">distance</th>
                 <th scope="col">Status</th>
-                <th>Time</th>
+                <!-- <th>Time</th> -->
                 <th>Driver</th>
                 <th scope="col">Buttons</th>
               </tr>
             </thead>
             <tbody *ngIf="allrides">
-
-
-
               <tr class="table-row" *ngFor="let ride of allrides">
                 <!-- <ng-template hidden *ngFor="let timers of timers"> -->
 
+                <td class="nametd">{{ ride._id }}</td>
+                <td class="nametd">{{ ride.user.name }}</td>
 
-                  <td class="nametd">{{ride._id}}</td>
-                  <td class="nametd">{{ride.user.name}}</td>
-
-                  <td class="nametd">{{ride.pickup}}</td>
-                  <td class="nametd">{{ride.dropoff}}</td>
-                  <td class="nametd">{{ride.distance}}
-                  </td>
-                  <td class="nametd">{{ride.status | rideStatus}}</td>
-                  <td class="timer countdown">{{countDowns$[ride._id] | async }}</td>
-                  <td>{{ride.driver[0]?.name || 'No Driver'}}<lord-icon src="https://cdn.lordicon.com/yhtqafjk.json"
-                      trigger="loop" colors="primary:#121331,secondary:#08a88a,tertiary:#ebe6ef"
-                      style="width:20px;height:20px">
-                    </lord-icon>
+                <td class="nametd">{{ ride.pickup }}</td>
+                <td class="nametd">{{ ride.dropoff }}</td>
+                <td class="nametd">{{ ride.distance }}</td>
+                <td class="nametd">{{ ride.status | rideStatus }}</td>
+                <td class="timer countdown">
+                  <!-- {{ countDowns$[ride._id] | async }} -->
+                </td>
+                <td>
+                  {{ ride.driver[0]?.name || "No Driver"
+                  }}<lord-icon
+                    src="https://cdn.lordicon.com/yhtqafjk.json"
+                    trigger="loop"
+                    colors="primary:#121331,secondary:#08a88a,tertiary:#ebe6ef"
+                    style="width: 20px; height: 20px"
+                  >
+                  </lord-icon>
                 </td>
                 <td id="b'+ driver._id + '">
-                  <button class="update-button btn btn-outline-primary" *ngIf="ride.driver[0]?.name" (click)="onAccept(ride._id)"> Accept</button>
-                  <button class="delete-button btn btn-outline-danger" *ngIf="ride.driver[0]?.name" (click)="onReject(ride)"> Reject</button>
+                  <button
+                    class="update-button btn btn-outline-primary"
+                    *ngIf="ride.driver[0]?.name"
+                    (click)="onAccept(ride)"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    class="delete-button btn btn-outline-danger"
+                    *ngIf="ride.driver[0]?.name"
+                    (click)="onReject(ride)"
+                  >
+                    Reject
+                  </button>
                 </td>
                 <!-- </ng-template> -->
-
               </tr>
-              <tr *ngIf="allrides.length <= 0 ">
+              <tr *ngIf="allrides.length <= 0">
                 <td class="Empty p-5" colspan="9">
-
                   <strong> Rides Not Found</strong>
                 </td>
               </tr>
@@ -147,9 +91,13 @@
                 <a class="page-link" href="javascript:void(0)">1</a>
               </li>
               <li class="page-item">
-                <a class="page-link" href="javascript:void(0)">2 <span class="sr-only">(current)</span></a>
+                <a class="page-link" href="javascript:void(0)"
+                  >2 <span class="sr-only">(current)</span></a
+                >
               </li>
-              <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="javascript:void(0)">3</a>
+              </li>
               <li class="page-item">
                 <a class="page-link" href="javascript:void(0)">
                   <i class="fas fa-angle-right"></i>
@@ -163,11 +111,7 @@
     </div>
   </div>
   <!-- Dark table -->
-
 </div>
 <!-- <input type="text" id="cpos" #cpos> -->
 <div id="cpos"></div>
-<div id="map">
-
-
-</div>
+<div id="map"></div>

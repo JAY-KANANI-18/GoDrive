@@ -6,9 +6,20 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class LoadingServiceService {
 
-  private loadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  loading$ = this.loadingSubject.asObservable();
 
-  setLoading(loading: boolean) {
-    this.loadingSubject.next(loading);
-  }}
+  public loadingCount = false;
+
+  showLoading() {
+    this.loadingCount = true
+    // Show loading indicator
+  }
+
+  hideLoading() {
+    this.loadingCount  =false
+
+  }
+
+
+
+
+}

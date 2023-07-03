@@ -10,6 +10,7 @@ import { DashboardComponent } from '../../pages/dashboard/dashboard.component';
 import { MapsComponent } from '../../pages/maps/maps.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { VehicleType } from 'src/app/pages/vehical type/vehical-type.component';
+import { BnNgIdleService } from 'bn-ng-idle';
 
 @NgModule({
   imports: [
@@ -25,7 +26,8 @@ import { VehicleType } from 'src/app/pages/vehical type/vehical-type.component';
     DashboardComponent,
     MapsComponent,
     VehicleType
-  ]
+  ],
+  providers:[BnNgIdleService]
 })
 
 export class AdminLayoutModule {}
