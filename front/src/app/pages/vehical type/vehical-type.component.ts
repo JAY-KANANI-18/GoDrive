@@ -64,7 +64,7 @@ export class VehicleType implements OnInit {
           if (this.Vehicles.length == 0) {
             this.toster.error('Vehicles Not Found')
           } else {
-            this.toster.success(data.msg)
+            // this.toster.success(data.msg)
 
           }
 
@@ -93,7 +93,10 @@ export class VehicleType implements OnInit {
     formDataObj.append("file", file);
 
     this.pricingService.addVehicle(formDataObj).subscribe({
-      next: (data) => {
+      next: (data:any) => {
+        if(data.msg){
+          this.toster.success(data.msg)
+        }
         this.getVehicles();
         modal.dismiss('Click')
         this.vehicleForm.reset()
@@ -121,7 +124,7 @@ export class VehicleType implements OnInit {
         this.updateId = id;
         this.UpdateActivate = true;
         this.SubmitActivate = false;
-        this.toster.success(res.msg)
+        // this.toster.success(res.msg)
 
       },
       error: (error) => {

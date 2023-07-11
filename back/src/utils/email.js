@@ -1,6 +1,8 @@
 const { google } = require("googleapis");
 const nodemailer = require("nodemailer");
 const Settings = require("../model/settings");
+
+
 let CLIENT_ID 
 let  CLIENT_SECRET 
 let REDIRECT_URI
@@ -23,6 +25,8 @@ let oAuth2Client
    CLIENT_SECRET,
    REDIRECT_URI
  );
+
+ 
  oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
    

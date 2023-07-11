@@ -32,13 +32,13 @@
             name="payment_mode"
             id="payment_mode"
           >
-            <option value='' selected>All</option>
+            <option value="" selected>All</option>
             <option value="0">Cash</option>
             <option value="1">Card</option>
           </select>
           <select class="form-control col-sm-1" name="status" id="status">
-            <option value='' selected>All</option>
-            <option value="6" >Completed</option>
+            <option value="" selected>All</option>
+            <option value="6">Completed</option>
             <option value="7">Cancelled</option>
           </select>
           <input
@@ -96,33 +96,33 @@
                 <th>Pickup Address</th>
                 <th>Drop Off Address</th>
                 <th>Service Type</th>
-                <th>Driver</th>
+                <!-- <th>Driver</th> -->
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody >
+            <tbody>
               <tr
                 *ngFor="let ride of allConfirmedrides"
                 (click)="openModel(content, ride)"
               >
                 <td class="text-wrap">{{ ride._id }}</td>
                 <td class="text-wrap">{{ ride.user.name }}</td>
-                <td class="text-wrap">{{ride.createdAt | utcDate}}</td>
+                <td class="text-wrap">{{ ride.createdAt | utcDate }}</td>
                 <td class="text-wrap">{{ ride.pickup }}</td>
                 <td class="text-wrap">{{ ride.dropoff }}</td>
                 <td class="text-wrap">{{ ride.vehicle.name }}</td>
-                <td class="text-wrap">Driver</td>
+                <!-- <td class="text-wrap">Driver</td> -->
                 <td class="text-wrap">{{ ride.status | rideStatus }}</td>
               </tr>
               <tr *ngIf="allConfirmedrides?.length <= 0">
-                <td class="Empty p-5 " colspan="8">
+                <td class="Empty p-5" colspan="8">
                   <strong> Rides Not Found</strong>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="card-footer py-4">
+        <div class="card-footer py-4" *ngIf="allConfirmedrides?.length >0">
           <nav aria-label="...">
             <ul class="pagination justify-content-end mb-0">
               <li
@@ -176,37 +176,59 @@
       </div>
 
       <div class="modal-body row ml-0 mr-0 text-left align-middle">
-        <div class="col-sm-5">Ride ID</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo._id }}</div>
-        <div class="col-sm-5">User</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.user.name }}</div>
-        <div class="col-sm-5">Vehicle</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.vehicle.name }}</div>
-        <div class="col-sm-5">Payment Type</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.payment_type | paymentType}}</div>
-        <div *ngIf="rideInfo.scheduledate" class="col-sm-5">Schedule Time</div>
-        <div *ngIf="rideInfo.scheduledate" class="col-sm-2">:</div>
-        <div *ngIf="rideInfo.scheduledate"  class="col-sm-5">{{ rideInfo.scheduledate }}{{scheduletime}}</div>
-        <div  class="col-sm-5">Booking Time</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.createdAt | utcDate }}</div>
-        <div class="col-sm-5">Total Distance</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.distance }} km</div>
-        <div class="col-sm-5">Total Time</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.time }} min</div>
-        <div class="col-sm-5">Ride Fees</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5"> Rs. {{ rideInfo.ride_fees }} </div>
-        <div class="col-sm-5">Status</div>
-        <div class="col-sm-2">:</div>
-        <div class="col-sm-5">{{ rideInfo.status | rideStatus}}</div>
-        <div>Route</div>
+        <div class="col-sm-3">Ride ID</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo._id }}</div>
+        <div class="col-sm-3">User</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.user.name }}</div>
+        <div class="col-sm-3">Pickup Location</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.pickup }}</div>
+        <div class="col-sm-3">DropOff Location</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.dropoff}}</div>
+        <div class="col-sm-3">Vehicle</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.vehicle.name }}</div>
+        <div class="col-sm-3">Payment Type</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.payment_type | paymentType }}</div>
+
+        <div *ngIf="rideInfo.scheduledate" class="col-sm-3">Schedule Time</div>
+        <div *ngIf="rideInfo.scheduledate" class="col-sm-1">:</div>
+        <div *ngIf="rideInfo.scheduledate" class="col-sm-8">
+          {{ rideInfo.scheduledate }}{{ scheduletime }}
+        </div>
+        <div class="col-sm-3" *ngIf="rideInfo.stop.length > 0">Stops</div>
+        <div class="col-sm-1" *ngIf="rideInfo.stop.length > 0">:</div>
+        <div class="col-sm-8" *ngIf="rideInfo.stop.length > 0">
+          <div
+            class="mt-3 mb-3"
+            *ngFor="let stp of rideInfo.stop; let i = index"
+          >
+            {{ i + 1 }}. {{ stp }}
+          </div>
+        </div>
+        <!-- <div>{{rideInfo.stop}}</div> -->
+        <div class="col-sm-3">Booking Time</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.createdAt | utcDate }}</div>
+        <div class="col-sm-3">Total Distance</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.distance }} km</div>
+        <div class="col-sm-3">Total Time</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.time }} min</div>
+        <div class="col-sm-3">Ride Fees</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">Rs. {{ rideInfo.ride_fees }}</div>
+        <div class="col-sm-3">Status</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.status | rideStatus }}</div>
+        <div class="col-sm-3">Feedback</div>
+        <div class="col-sm-1">:</div>
+        <div class="col-sm-8">{{ rideInfo.feedback }}</div>
         <div id="map"></div>
       </div>
     </div>

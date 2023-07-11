@@ -41,7 +41,11 @@ let marker: google.maps.Marker;
 })
 export class CreateRequestComponent implements OnInit {
   // @ViewChild("stopContainer") stopContainer: ElementRef;
-
+  options = [
+    { value: 1, label: 'Option 1', image: '/src/assets/img/godrivePNG.png' },
+    { value: 2, label: 'Option 2', image: '/src/assets/img/godrivePNG.png' },
+    { value: 3, label: 'Option 3', image: '/src/assets/img/godrivePNG.png' }
+  ];
   private city2: any;
   private city1: any;
   private UserId: any;
@@ -75,7 +79,7 @@ export class CreateRequestComponent implements OnInit {
   public group2 = false;
   public ccVal = false;
   public group1 = true;
-  public default_method :any;
+  public default_method: any;
 
   constructor(
     private pricingService: PricingService,
@@ -192,11 +196,11 @@ export class CreateRequestComponent implements OnInit {
       let address = place.formatted_address;
       this.locObj.dropoff["address"] = address;
 
-      if (this.BookingForm) {
-        this.BookingForm.patchValue({
-          dropoff: address,
-        });
-      }
+      // if (this.BookingForm) {
+      //   this.BookingForm.patchValue({
+      //     dropoff: address,
+      //   });
+      // }
 
       this.cdRef.detectChanges();
       // this.getcity(sselectedLocation, "dropoff");
@@ -350,6 +354,8 @@ export class CreateRequestComponent implements OnInit {
   }
 
   forDrawPath(origin: any, destination: any) {
+
+    console.log(origin,destination);
     this.stops_array = [];
     let stops = [];
     for (
@@ -377,7 +383,16 @@ export class CreateRequestComponent implements OnInit {
     };
 
     this.directionsService.route(request, (result: any, status) => {
+
+      console.log(status);
       if (status == "OK") {
+
+          this.BookingForm.patchValue({
+      vehicle:null
+    })
+    this.TotalTime = null
+    this.ServiceFees = null
+    this.TotalDistance = null
         // marker.setMap(null);
 
         let routes = result.routes[0].legs;
@@ -389,22 +404,24 @@ export class CreateRequestComponent implements OnInit {
           distance = distance + rdist;
           time = time + rtime;
         }
-        if(marker){
+        if (marker) {
           marker.setMap(null)
         }
+
         this.directionsRenderer.setDirections(result);
 
 
 
-        if(!this.group21){
+        if (!this.group21) {
 
           let lat = this.locObj.pickup.lat
           let lng = this.locObj.pickup.lng
           let pickupLoc = {
-            lat,lng
+            lat, lng
 
           }
           this.getcity(pickupLoc, "pickup");
+          this.group21 = true
 
         }
 
@@ -415,18 +432,35 @@ export class CreateRequestComponent implements OnInit {
         this.DistanceInfo["time"] = time / 60;
 
 
-        if ((document.getElementById("vehicle") as HTMLSelectElement).value == 'null') {
+        this.TotalDistance = this.DistanceInfo['distance']
+        this.TotalTime = this.DistanceInfo['time'].toFixed(2)
+
+
+
+        if (this.BookingForm.value.vehicle == 'null') {
           return
         }
 
-        this.getOneVehiclePricing(
-          this.city2Obj._id,
-          (document.getElementById("vehicle") as HTMLSelectElement).value
-        );
+        this.getCityVehicles(this.city2Obj._id, this.DistanceInfo["distance"], this.DistanceInfo["time"]);
+
+
+        // this.getOneVehiclePricing(
+        //   this.city2Obj._id,
+        //   this.BookingForm.value.vehicle
+        // );
+
+        // if ((document.getElementById("vehicle") as HTMLSelectElement).value == 'null') {
+        //   return
+        // }
+
+        // this.getOneVehiclePricing(
+        //   this.city2Obj._id,
+        //   (document.getElementById("vehicle") as HTMLSelectElement).value
+        // );
 
 
       }
-      if (status == "ZERO_RESULTS") {
+      if (status != "OK") {
         this.pickupError();
       }
     });
@@ -445,7 +479,7 @@ export class CreateRequestComponent implements OnInit {
       };
       this.usersService.getAddedUser(data).subscribe({
         next: (res: any) => {
-          this.toster.success(res.msg);
+          // this.toster.success(res.msg);
           console.log(res);
 
           let data = res.user;
@@ -461,46 +495,53 @@ export class CreateRequestComponent implements OnInit {
           //   this.toster.warning("You have to havn't registerd", "");
           //   return;
           // } else {
-            this.UserId = data._id;
+          this.UserId = data._id;
           this.default_method = res.customer
           this.selectedCard = res.customer
 
-            this.default_method =
+          this.default_method =
             el1.value = data.email;
-            el2.value = data.name;
-            this.renderer.setAttribute(el1, "disabled", "true");
-            this.renderer.setAttribute(el2, "disabled", "true");
-            this.cdRef.detectChanges();
-            (
-              document.getElementById("nextbtn") as HTMLInputElement
-            ).style.display = "inline-block";
+          el2.value = data.name;
+          this.renderer.setAttribute(el1, "disabled", "true");
+          this.renderer.setAttribute(el2, "disabled", "true");
+          this.cdRef.detectChanges();
+          (
+            document.getElementById("nextbtn") as HTMLInputElement
+          ).style.display = "inline-block";
           // }
         },
         error: (error) => {
-         (document.getElementById("nextbtn") as HTMLInputElement).style.display = "none";
-         let el1 = document.getElementById("email") as HTMLInputElement;
-         let el2 = document.getElementById("name") as HTMLInputElement;
-            el1.value = "";
-            el2.value = "";
+          (document.getElementById("nextbtn") as HTMLInputElement).style.display = "none";
+          let el1 = document.getElementById("email") as HTMLInputElement;
+          let el2 = document.getElementById("name") as HTMLInputElement;
+          el1.value = "";
+          el2.value = "";
 
           this.toster.error(error.error.msg);
         },
       });
-    }else{
+    } else {
       (document.getElementById("nextbtn") as HTMLInputElement).style.display = "none";
       let el1 = document.getElementById("email") as HTMLInputElement;
       let el2 = document.getElementById("name") as HTMLInputElement;
-         el1.value = "";
-         el2.value = "";
+      el1.value = "";
+      el2.value = "";
 
     }
   }
   DeleteStop(index: any) {
     (this.BookingForm.get("stops") as FormArray).controls.splice(index, 1);
     this.showRoute();
+    // this.BookingForm.patchValue({
+    //   vehicle:null
+    // })
+    // this.TotalTime = null
+    // this.ServiceFees = null
+    // this.TotalDistance = null
+
   }
   focuson(id: any) {
-    console.log('wwww');
+    this.hideOtthers()
     let pickup = (document.getElementById("pickup") as HTMLInputElement).value;
     if (this.locObj[id]?.lat && this.locObj[id]?.lng) {
       this.directionsRenderer.setMap(null);
@@ -521,12 +562,11 @@ export class CreateRequestComponent implements OnInit {
     let vehicle = document.getElementById("vehicle") as HTMLInputElement;
     let date = document.getElementById("date") as HTMLInputElement;
     let stime = document.getElementById("stime") as HTMLInputElement;
-console.log(!pickup.value,  !dropoff.value, !vehicle.value , this.BookingForm);
-this.BookingForm.markAllAsTouched();
-if (
+    console.log(!pickup.value, !dropoff.value, !vehicle.value, this.BookingForm);
+    this.BookingForm.markAllAsTouched();
+    if (
       !pickup.value ||
       !dropoff.value ||
-      !vehicle.value ||
       this.BookingForm.invalid
     ) {
       this.cdRef.detectChanges();
@@ -567,7 +607,7 @@ if (
       user: this.UserId,
       pickup: pickup.value,
       dropoff: dropoff.value,
-      vehicle: vehicle.value,
+      vehicle: this.BookingForm.value.vehicle,
       distance: this.TotalDistance,
       time: this.TotalTime,
       bookingtime: new Date().getTime(),
@@ -602,46 +642,51 @@ if (
     });
   }
 
-  getOneVehiclePricing(city: any, vehicle: any) {
-    this.pricingService.getServicePricing(city, vehicle).subscribe({
-      next: (res: any) => {
-        let data = res.pricing;
-        this.toster.success(res.msg);
-        let driverProfit = data.driverprofit;
-        let minFare = data.minfare;
-        let basePriceDistance = data.distanceforbaseprice;
-        let baseprice: number = data.baseprice;
-        let unitDistancePrice = data.priceperunitdistance;
-        let unitTimePrice = data.priceperunittime;
+  // getOneVehiclePricing(city: any, vehicle: any) {
 
-        let DistancePrice: number;
-        let TimePrice: number = this.DistanceInfo["time"];
+  //   console.log(city,vehicle);
+  //   this.pricingService.getServicePricing(city, vehicle).subscribe({
+  //     next: (res: any) => {
+  //       // return
+  //       let data = res.pricing;
+  //       // this.toster.success(res.msg);
+  //       let driverProfit = data.driverprofit;
+  //       let minFare = data.minfare;
+  //       let basePriceDistance = data.distanceforbaseprice;
+  //       let baseprice: number = data.baseprice;
+  //       let unitDistancePrice = data.priceperunitdistance;
+  //       let unitTimePrice = data.priceperunittime;
 
-        if (this.DistanceInfo["distance"] <= 1) {
-          DistancePrice = 0;
-        } else {
-          DistancePrice =
-            (this.DistanceInfo["distance"] - 1) * unitDistancePrice;
-        }
+  //       let DistancePrice: number;
+  //       let TimePrice: number = this.DistanceInfo["time"];
 
-        let ServiceFees = DistancePrice + TimePrice + baseprice;
-        this.TotalDistance = this.DistanceInfo["distance"];
-        this.TotalTime = this.DistanceInfo["time"];
-        this.ServiceFees = Math.floor(ServiceFees);
-        this.cdRef.detectChanges();
-      },
-      error: (error) => {
-        console.log(error);
-        this.toster.error(error.errro.msg);
-      },
-    });
-  }
+  //       if (this.DistanceInfo["distance"] <= 1) {
+  //         DistancePrice = 0;
+  //       } else {
+  //         DistancePrice =
+  //           (this.DistanceInfo["distance"] - 1) * unitDistancePrice;
+  //       }
 
-  getCityVehicles(city: any) {
-    this.pricingService.getVehiclesType(city,this.TotalDistance,this.TotalTime).subscribe({
+  //       let ServiceFees = DistancePrice + TimePrice + baseprice;
+  //       this.TotalDistance = this.DistanceInfo["distance"];
+  //       this.TotalTime = this.DistanceInfo["time"];
+  //       this.ServiceFees = Math.floor(ServiceFees);
+  //       this.cdRef.detectChanges();
+  //     },
+  //     error: (error) => {
+  //       console.log(error);
+  //       this.toster.error(error.errro.msg);
+  //     },
+  //   });
+  // }
+
+  getCityVehicles(city: any, distance: any, time: any) {
+    this.pricingService.getVehiclesType(city, distance, time).subscribe({
       next: (res: any) => {
         let data = res.vehicle;
-        this.toster.success(res.msg);
+
+        console.log(res);
+        // this.toster.success(res.msg);
 
         this.vT = data;
 
@@ -650,11 +695,12 @@ if (
           this.group21 = false;
         } else {
           this.pickerr = false;
-          this.group21 = true;
+          // this.group21 = true;
         }
         this.cdRef.detectChanges();
       },
       error: (error) => {
+        this.vT = []
         this.toster.error(error.error.msg);
       },
     });
@@ -663,7 +709,7 @@ if (
   getCallingCodes() {
     this.pricingService.allCallingCodes().subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg);
+        // this.toster.success(data.msg);
         this.allCallingCode = data.allCollingCodes;
       },
       error: (error) => {
@@ -672,7 +718,7 @@ if (
     });
   }
 
-  async onNext() {
+  onNext() {
     // this.stripePromise = loadStripe(this.usersService.stripe_public_key);
     // this.stripe = await this.stripePromise;
 
@@ -708,6 +754,8 @@ if (
     return this.BookingForm.get("stops") as FormArray;
   }
   addStop() {
+
+    this.hideOtthers()
     let stopsList = (this.BookingForm.get("stops") as FormArray).controls;
 
     for (let i = 0; i < stopsList.length; i++) {
@@ -727,7 +775,14 @@ if (
   }
 
   onSelect(vehicle: any) {
-    this.showRoute();
+    // this.showRoute();
+    console.log(vehicle);
+
+    let index = this.vT.findIndex((element: any) => element.vehicle._id === vehicle);
+    this.ServiceFees = this.vT[index].pricing.ServiceFees
+
+
+
   }
 
   getcity(point: any, type: any) {
@@ -735,7 +790,7 @@ if (
       next: (res: any) => {
         let data = res.city;
 
-        this.toster.success(res.msg);
+        // this.toster.success(res.msg);
 
         if (type == "pickup") {
           if (!data) {
@@ -745,7 +800,7 @@ if (
 
           this.city2 = data.city;
           this.city2Obj = data;
-          this.getCityVehicles(data._id);
+          // this.getCityVehicles(data._id,this.TotalDistance,this.TotalTime);
         }
       },
       error: (error) => {
@@ -765,7 +820,7 @@ if (
       };
       this.usersService.getAddedUser(data).subscribe({
         next: (data: any) => {
-          this.toster.success(data.msg);
+          // this.toster.success(data.msg);
           data = data.user;
           let el1 = document.getElementById("email") as HTMLInputElement;
           let el2 = document.getElementById("name") as HTMLInputElement;
@@ -861,25 +916,25 @@ if (
 
     this.group21 = false;
     this.BookingForm.patchValue({
-      vehicle:null
+      vehicle: null
     })
-       this.TotalTime = null
-   this.ServiceFees = null
-   this.TotalDistance = null
+    this.TotalTime = null
+    this.ServiceFees = null
+    this.TotalDistance = null
     this.pickerr = "*Service is not available at your place";
     this.toster.error("Service is Not Available at you location");
     this.cdRef.detectChanges();
   }
-  hideOtthers(){
+  hideOtthers() {
     this.directionsRenderer.setMap(null);
 
     this.group21 = false;
-    this.BookingForm.patchValue({
-      vehicle:null
-    })
-       this.TotalTime = null
-   this.ServiceFees = null
-   this.TotalDistance = null
+    // this.BookingForm.patchValue({
+    //   vehicle:null
+    // })
+    this.TotalTime = null
+    this.ServiceFees = null
+    this.TotalDistance = null
   }
   getMaxStops() {
     this.settingsService.currentSettings().subscribe({

@@ -121,7 +121,7 @@ export class VehiclePricingComponent implements OnInit {
     this.pricingService.getCities(val).subscribe({
       next: (res: any) => {
         let data = res.city
-        this.toster.success(res.msg)
+        // this.toster.success(res.msg)
 
         this.citiesArray = data;
 
@@ -155,7 +155,7 @@ export class VehiclePricingComponent implements OnInit {
   getCountryandCities() {
     this.pricingService.getallCities().subscribe((data: any) => {
       console.log(data);
-      this.toster.success(data.msg)
+      // this.toster.success(data.msg)
 
       this.countriesArray = []
       data.data.forEach((element: any) => {
@@ -187,7 +187,7 @@ export class VehiclePricingComponent implements OnInit {
         if (this.vehicleTypesArray.length == 0) {
           this.toster.error('Vehicles Not Found')
         } else {
-          this.toster.success(data.msg)
+          // this.toster.success(data.msg)
 
         }
       },
@@ -202,7 +202,7 @@ export class VehiclePricingComponent implements OnInit {
   getAllPricing(page: any) {
     this.pricingService.getVehiclesPricing(page).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.allPricing = data.pricings;
         this.NoOfPages = new Array(data.pages);
       },
@@ -219,7 +219,7 @@ export class VehiclePricingComponent implements OnInit {
 
     this.pricingService.updateVehiclePricing(id).subscribe({
       next: (res: any) => {
-        this.toster.success(res.msg)
+        // this.toster.success(res.msg)
 
        let data = res.pricing
         this.updateid = data._id
@@ -265,7 +265,7 @@ export class VehiclePricingComponent implements OnInit {
     this.pricingService.getVehiclesPricing(1, { search }).subscribe({
       next: (data: any) => {
         console.log(data);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.allPricing = data.pricings;
         this.NoOfPages = new Array(data.pages);
         this.currentPage = 1;

@@ -37,7 +37,10 @@ import { PaymentModesPipe } from './services/pipes/payment-modes.pipe';
 import { SafeResourceUrlPipe } from './services/pipes/safe-resource-url.pipe';
 import { AppNumericOnlyDirective } from './services/directives/app-numeric-only.directive';
 import { PaymentTypePipe } from './services/pipes/payment-type.pipe';
+import { OnlyMobileDirective } from './services/directives/only-mobile.directive';
 
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -57,6 +60,8 @@ import { PaymentTypePipe } from './services/pipes/payment-type.pipe';
     ReactiveFormsModule,
     NgbModule,
     NgIdleModule.forRoot(),
+    MatSelectModule,
+    MatIconModule,
 
 
 
@@ -88,6 +93,7 @@ import { PaymentTypePipe } from './services/pipes/payment-type.pipe';
     SafeResourceUrlPipe,
     AppNumericOnlyDirective,
     PaymentTypePipe,
+    OnlyMobileDirective
   ],
   providers: [{provide:HTTP_INTERCEPTORS,        useClass:AuthInterceptorInterceptor,
     multi:true}],

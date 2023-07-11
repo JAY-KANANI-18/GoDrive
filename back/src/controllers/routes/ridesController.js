@@ -20,7 +20,7 @@ class ridesController {
     let sortCriteria;
 
     const currentPage = req.query.page || 1;
-    const limits = req.query.size || 3;
+    const limits =  10;
 
     if ((req.query.field && req.query.order) !== "undefined") {
       const field = req.query.field;
@@ -78,11 +78,10 @@ class ridesController {
         },
       },]
    
+      let  pipeline3 = []
 
       if (req.query.search_type) {
 
-        console.log(req.query);
-        console.log("wokk");
         const str = req.query.search_value;
         regext = new RegExp(str, "i");
         let options = {};
@@ -110,14 +109,14 @@ class ridesController {
         
 
 
-        pipeline1.push({
+        pipeline3.push({
           $match: options,
         });
 
       }
        if (req.query.download) {
         console.log("FOr Download");
-        const data = await Rides.aggregate([...pipeline1])
+        const data = await Rides.aggregate([...pipeline3])
         if(data.length === 0){
           res.status(400).send({ msg: "Confirmed Rides's List Not Found" })
         }else{
@@ -129,7 +128,7 @@ class ridesController {
 
       }
 
-      const data = await Rides.aggregate([...pipeline1,...pipeline2]).sort(sortCriteria);
+      const data = await Rides.aggregate([...pipeline1,...pipeline3,...pipeline2]).sort(sortCriteria);
 
 
       if (data[0]?.count.length === 0) {
@@ -155,7 +154,6 @@ class ridesController {
 
   static getConfirmedRides = async (req, res) => {
     // console.log('try to get confirmed rides');
-    console.log(req.query);
     // console.log(req.params);
     try {
       let regext;
@@ -164,7 +162,7 @@ class ridesController {
       // console.log(req.query.page);
 
       const currentPage = req.query.page || 1;
-      const limits = req.query.size || 3;
+      const limits =  10;
 
       if ((req.query.field && req.query.order) !== "undefined") {
         const field = req.query.field;
@@ -172,7 +170,7 @@ class ridesController {
         sortCriteria = {};
         sortCriteria[field] = order;
       } else {
-        sortCriteria = { name: -1 };
+        sortCriteria = { createdAt: -1 };
       }
 
       let pipeline1 = [
@@ -193,6 +191,7 @@ class ridesController {
             localField: "user",
             foreignField: "_id",
             as: "user",
+            
           },
         },
         {
@@ -217,6 +216,7 @@ class ridesController {
               {
                 $limit: limits, // Limit the number of documents per page
               },
+              
               // Retrieve the whole document
             ],
             count: [
@@ -226,8 +226,9 @@ class ridesController {
         },
       ];
 
+   let  pipeline3 = []
+
       if (req.query.search_type) {
-        console.log("wokk");
         const str = req.query.search_value;
         regext = new RegExp(str, "i");
         let options = {};
@@ -252,13 +253,12 @@ class ridesController {
         } 
         options["payment_type"] = +req.query.payment_mode;
 
-        pipeline1.push({
+        pipeline3.push({
           $match: options,
         });
       }
       if (req.query.download) {
-        console.log("FOr Download");
-        const data = await Rides.aggregate([...pipeline1])
+        const data = await Rides.aggregate([...pipeline3])
         if(data.length === 0){
           res.status(400).send({ msg: "Confirmed Rides's List Not Found" })
         }else{
@@ -270,7 +270,7 @@ class ridesController {
 
       }
 
-      const data = await Rides.aggregate([...pipeline1, ...pipeline2]).sort(sortCriteria);
+      const data = await Rides.aggregate([...pipeline1,...pipeline3 ,...pipeline2]).sort(sortCriteria);
 
 
       if (data[0]?.count.length === 0) {

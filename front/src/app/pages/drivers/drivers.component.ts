@@ -149,7 +149,7 @@ this.toster.success(data.msg)
       {
         next:(data:any)=>{
 
-            this.toster.success(data.msg)
+            // this.toster.success(data.msg)
 
           this.allDrivers = data.drivers;
           this.NoOfPages = new Array(data.pages);
@@ -164,7 +164,7 @@ this.toster.success(data.msg)
       {
         next:(data:any)=>{
           this.citiesArray = data.city
-          this.toster.success(data.msg);
+          // this.toster.success(data.msg);
         },error:(error)=>{
           this.toster.error(error.error.msg)
         }
@@ -185,7 +185,7 @@ this.toster.success(data.msg)
       next: (data: any) => {
         console.log(data);
         this.getDrivers(this.currentPage);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
       },
       error: (error) => {
         this.toster.error(error.error.msg)
@@ -198,7 +198,7 @@ this.toster.success(data.msg)
     this.createUpdateForm()
     this.driversService.updateDriver(id).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
 
 
         data = data.driver
@@ -266,7 +266,7 @@ this.toster.success(data.msg)
     };
     this.driversService.approveDriver(id, data).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.getDrivers(this.currentPage);
         this.cdRef.detectChanges();
       },
@@ -283,7 +283,7 @@ this.toster.success(data.msg)
     };
     this.driversService.approveDriver(id, data).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
 
         this.getDrivers(this.currentPage);
         this.cdRef.detectChanges();
@@ -299,7 +299,7 @@ this.toster.success(data.msg)
     this.pricingService.allCallingCodes().subscribe({
       next: (data:any) => {
         console.log(data);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         console.log(data);
 
         this.allCallingCode = data.allCollingCodes;
@@ -320,7 +320,7 @@ this.toster.success(data.msg)
           if(this.vehicleTypesArray.length == 0 ){
             this.toster.error('Vehicles Not Found')
           }else{
-            this.toster.success(data.msg)
+            // this.toster.success(data.msg)
 
           }
 
@@ -406,7 +406,7 @@ this.toster.success(data.msg)
     this.pricingService.getallCities().subscribe({
       next: (countries: any) => {
         console.log(countries);
-        this.toster.success(countries.msg)
+        // this.toster.success(countries.msg)
 
         this.countriesArray = []
 

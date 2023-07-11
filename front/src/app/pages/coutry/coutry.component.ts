@@ -49,7 +49,7 @@ export class CoutryComponent implements OnInit {
     this.pricingService.getAddedCountry().subscribe({
       next: (data: any) => {
         console.log(data);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.allAddedCountries = data.country;
         this.addedCountry = this.allAddedCountries;
         let newarray = [];
@@ -141,7 +141,7 @@ export class CoutryComponent implements OnInit {
   getAllCountries() {
     this.pricingService.getCountry().subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.countriesArray = data.allCountries;
         this.countryObj = data.countriesObject;
       },

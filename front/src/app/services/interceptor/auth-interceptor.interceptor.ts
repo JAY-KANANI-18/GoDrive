@@ -26,11 +26,13 @@ export class AuthInterceptorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<unknown>> {
     let localtoken = localStorage.getItem("newToken");
     // this.loginService.autoLogout();
-    this.loadingService.showLoading();
 
     // request = request.clone({headers:request.headers.set('Authorization',localStorage.getItem('newToken'))})
     if (request.url.includes("fcm.googleapis.com/fcm/send")) {
       return next.handle(request);
+    }else{
+      this.loadingService.showLoading();
+
     }
     request = request.clone({
       headers: request.headers.set("Authorization", "Bearer " + localtoken),

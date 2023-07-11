@@ -13,15 +13,15 @@ class pricingController {
   static getAllCountriesfromModule = async (req, res) => {
     try {
 
-     
-      if(allCountries.length == 0 ||countriesObject.length == 0){
-        res.status(400).send({msg:"Can't get Countries Data"});
+
+      if (allCountries.length == 0 || countriesObject.length == 0) {
+        res.status(400).send({ msg: "Can't get Countries Data" });
         return
       }
 
-      res.status(200).send({msg:'Data Found', allCountries, countriesObject });
+      res.status(200).send({ msg: 'Data Found', allCountries, countriesObject });
     } catch (e) {
-    res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
       console.log(e);
     }
   };
@@ -30,14 +30,14 @@ class pricingController {
     try {
 
 
-         
-      if(allCollingCodes.length == 0 ){
-        res.status(400).send({msg:"Can't get CallingCodes"});
+
+      if (allCollingCodes.length == 0) {
+        res.status(400).send({ msg: "Can't get CallingCodes" });
         return
       }
-      res.status(200).send({allCollingCodes,msg:'Calling Code Found'});
+      res.status(200).send({ allCollingCodes, msg: 'Calling Code Found' });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
@@ -49,9 +49,9 @@ class pricingController {
 
       await country.save();
 
-      await res.status(200).send({msg:"Country Added Successfully",country});
+      await res.status(200).send({ msg: "Country Added Successfully", country });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
@@ -61,20 +61,20 @@ class pricingController {
     try {
       const country = await Country.find();
 
-      if(country.length === 0){
-        res.status(400).send({msg:"Added Country's List Not Found"})
+      if (country.length === 0) {
+        res.status(400).send({ msg: "Added Country's List Not Found" })
         return
       }
 
-      await res.send({country,msg:"Get Added Country's List"});
+      await res.send({ country, msg: "Get Added Country's List" });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
   };
 
- 
+
 
   //--------------- Methods For Vehicle Type -------------//
 
@@ -99,9 +99,9 @@ class pricingController {
 
       if (e.keyPattern && e.keyValue) {
         res.status(400).send({ msg: "Vehicle Type Already Exist", e });
-      }else{
+      } else {
 
-        res.status(400).send({msg:"Something Went Wrong"});
+        res.status(400).send({ msg: "Something Went Wrong" });
       }
 
     }
@@ -112,14 +112,14 @@ class pricingController {
       const vehicle = await Vehicle.find({});
 
 
-      if(vehicle.length === 0){
-        res.status(400).send({msg:"Added Vehicle's List Not Found"})
+      if (vehicle.length === 0) {
+        res.status(400).send({ msg: "Added Vehicle's List Not Found" })
         return
       }
 
-      await res.status(200).send({msg:"Added Vehicle's List Found",vehicle});
+      await res.status(200).send({ msg: "Added Vehicle's List Found", vehicle });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
@@ -131,16 +131,16 @@ class pricingController {
 
 
 
-      if(!vehicle){
-        res.status(400).send({msg:"Vehicle's Data Not Found"})
+      if (!vehicle) {
+        res.status(400).send({ msg: "Vehicle's Data Not Found" })
         return
       }
 
 
-      await res.status(200).json({vehicle,msg:"Vehicle's Data Found"});
+      await res.status(200).json({ vehicle, msg: "Vehicle's Data Found" });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
     }
   };
@@ -161,19 +161,19 @@ class pricingController {
 
 
 
-      if(!vehicle){
-        res.status(400).send({msg:"Vehicle Not Found"})
+      if (!vehicle) {
+        res.status(400).send({ msg: "Vehicle Not Found" })
         return
       }
 
       await vehicle.save();
-      res.status(200).send({vehicle,msg:"Vehicle's Deatils Updated"});
+      res.status(200).send({ vehicle, msg: "Vehicle's Deatils Updated" });
     } catch (e) {
       if (e.keyPattern && e.keyValue) {
         res.status(400).send({ msg: "Vehicle Type Already Exist", e });
-      }else{
+      } else {
 
-        res.status(400).send({msg:"Something Wenmt Wrong"});
+        res.status(400).send({ msg: "Something Wenmt Wrong" });
       }
 
     }
@@ -211,10 +211,10 @@ class pricingController {
 
 
         await vp.save();
-        await res.status(200).json({msg:"Pricing Added Succefully",vp});
+        await res.status(200).json({ msg: "Pricing Added Succefully", vp });
       }
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
@@ -224,20 +224,20 @@ class pricingController {
     let city = req.query.city;
     let type = req.query.type;
     try {
-    const pricing = await VehiclePricing.findOne({ city: city, vehicle: type });
+      const pricing = await VehiclePricing.findOne({ city: city, vehicle: type });
 
 
 
 
-    if(!pricing){
-      res.status(400).send({msg:"Pricing's Details Not Found"})
-      return
-    }
+      if (!pricing) {
+        res.status(400).send({ msg: "Pricing's Details Not Found" })
+        return
+      }
 
 
-      res.status(200).send({pricing,msg:"Pricing's Details Found"});
+      res.status(200).send({ pricing, msg: "Pricing's Details Found" });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
@@ -289,13 +289,13 @@ class pricingController {
     try {
       const vp = await VehiclePricing.aggregate(pipeline);
 
-      if(vp.length===0){
-        res.status(400).send({msg:"Pricing's Data Not Found"})
+      if (vp.length === 0) {
+        res.status(400).send({ msg: "Pricing's Data Not Found" })
         return
       }
-      res.status(200).send({pricing:vp[0],msg:"Pricing's Data Found"});
+      res.status(200).send({ pricing: vp[0], msg: "Pricing's Data Found" });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
       console.log(e);
     }
@@ -386,10 +386,11 @@ class pricingController {
       data = await VehiclePricing.aggregate(pipeline);
 
       let totalCounts = data[0]?.count[0]?.total;
-      if(data[0]?.count.length ===0){
+      if (data[0]?.count.length === 0) {
         console.log(true);
-        res.status(400).send({msg:"Pricing's Not List Found"
-})
+        res.status(400).send({
+          msg: "Pricing's Not List Found"
+        })
         return
       }
 
@@ -399,11 +400,11 @@ class pricingController {
         count: totalCounts,
         pricings: data[0].documents,
         pages,
-        msg:"Pricing's List Found"
+        msg: "Pricing's List Found"
       });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:"Something Went Wrong"});
+      res.status(400).send({ msg: "Something Went Wrong" });
     }
   };
 
@@ -411,7 +412,6 @@ class pricingController {
   static getAllvehiclesofCity = async (req, res) => {
     try {
 
-      console.log(req.query);
       let city = req.query.city;
       const vehicle = await VehiclePricing.aggregate([
         {
@@ -430,22 +430,61 @@ class pricingController {
         {
           $unwind: "$vehicle",
         },
-        {
-          $project: {
-            vehicle: 1,
-          },
-        },
+        // {
+        //   $project: {
+        //     vehicle: 1,
+        //   },
+        // },
       ]);
 
-      if(vehicle.length===0){
-        res.status(400).send({msg:"Vehicle Not Found In City"})
+
+
+      vehicle.forEach((data,index) => {
+
+        let DistancePrice;
+        let minFare = data.minfare;
+        let baseprice = data.baseprice;
+        let driverProfit = data.driverprofit;
+        let unitTimePrice = data.priceperunittime;
+        let basePriceDistance = data.distanceforbaseprice;
+        let unitDistancePrice = data.priceperunitdistance;
+
+
+
+        if (req.query.dist <= 1) {
+          DistancePrice = 0;
+        } else {
+          DistancePrice =
+            (req.query.dist - basePriceDistance) * unitDistancePrice;
+        }
+
+
+
+        let TimePrice = req.query.time * unitTimePrice
+
+        let ServiceFees = +DistancePrice + +TimePrice + +baseprice;
+
+        if (ServiceFees < minFare) {
+          ServiceFees = minFare
+        }
+       let driverCharges = (ServiceFees * driverProfit) / 100
+        vehicle[index].pricing = 
+         {   ServiceFees:ServiceFees.toFixed(2),
+            driverCharges}
+
+
+
+      })
+
+      if (vehicle.length === 0) {
+        res.status(400).send({ msg: "Vehicle Not Found In City" })
         return
       }
 
-      res.status(200).send({vehicle,msg:'Vehicle Found In City'});
+      res.status(200).send({ vehicle, msg: 'Vehicle Found In City' });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
 
     }
   };
@@ -461,16 +500,16 @@ class pricingController {
         }
       );
 
-      if(!pricing){
-        res.status(400).send({msg:"Pricing Not Found"})
+      if (!pricing) {
+        res.status(400).send({ msg: "Pricing Not Found" })
         return
       }
 
-      
+
       await pricing.save();
-      res.status(200).send({pricing,msg:"Pricing's Details Updated"});
+      res.status(200).send({ pricing, msg: "Pricing's Details Updated" });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"});
+      res.status(400).send({ msg: "Something Went Wrong" });
 
       console.log(e);
     }
@@ -485,7 +524,7 @@ class pricingController {
       await zone.save();
       await res.status(200).send(zone);
     } catch (e) {
-      let errors = {msg:'Something Went Wrong'};
+      let errors = { msg: 'Something Went Wrong' };
 
       if (e.keyPattern?.city && e.keyValue?.city) {
 
@@ -514,16 +553,16 @@ class pricingController {
 
       ]);
 
-      if(zone.length === 0){
-        res.status(400).send({msg:"City's Details Not Found"})
+      if (zone.length === 0) {
+        res.status(400).send({ msg: "City's Details Not Found" })
         return
       }
 
       console.log(zone, 'anjmsj');
-      res.status(200).send({msg:"City's Details Found",city:zone[0]});
+      res.status(200).send({ msg: "City's Details Found", city: zone[0] });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:'Something Went Wrong'});
+      res.status(400).send({ msg: 'Something Went Wrong' });
     }
   };
 
@@ -535,7 +574,7 @@ class pricingController {
 
       for (let i = 0; i < vp.length; i++) {
         if (findCityWithPoint(point, vp[i])) {
-          return res.status(200).send({city:vp[i],msg:'City Found At Your Location'});
+          return res.status(200).send({ city: vp[i], msg: 'City Found At Your Location' });
         }
       }
       return res.status(400).send({ msg: "City Not Found" });
@@ -554,7 +593,7 @@ class pricingController {
         return (intersectCount % 2 == 1);
       }
     } catch (e) {
-      res.status(400).send({msg:'Something Went Wrong'});
+      res.status(400).send({ msg: 'Something Went Wrong' });
 
       console.log(e);
     }
@@ -567,14 +606,14 @@ class pricingController {
         runValidators: true,
       });
 
-      if(!city){
-        res.status(400).send({msg:"City's Details Not Found for save"})
+      if (!city) {
+        res.status(400).send({ msg: "City's Details Not Found for save" })
         return
       }
       await city.save();
-      res.status(200).send({city,msg:"City's Details Updated"});
+      res.status(200).send({ city, msg: "City's Details Updated" });
     } catch (e) {
-      let errors = { msg:"Something Went Wrong"};
+      let errors = { msg: "Something Went Wrong" };
 
       if (e.keyPattern?.city && e.keyValue?.city) {
         errors.city = "city already exist";
@@ -613,14 +652,14 @@ class pricingController {
                 $unwind: "$country",
               },
               {
-                $skip: (currentPage - 1) * limits, 
+                $skip: (currentPage - 1) * limits,
               },
               {
-                $limit: limits, 
+                $limit: limits,
               },
             ],
             count: [
-              { $count: "total" }, 
+              { $count: "total" },
             ],
           },
         },
@@ -650,8 +689,8 @@ class pricingController {
       data = await Zone.aggregate(pipeline);
 
 
-      if(data[0]?.count.length === 0){
-        res.status(400).send({msg:"Cities List Not Found"})
+      if (data[0]?.count.length === 0) {
+        res.status(400).send({ msg: "Cities List Not Found" })
         return
       }
 
@@ -663,11 +702,11 @@ class pricingController {
         count: totalCounts,
         cities: data[0]?.documents,
         pages,
-        msg:'Cities List Found'
+        msg: 'Cities List Found'
       });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:'Something Went Wrong'});
+      res.status(400).send({ msg: 'Something Went Wrong' });
 
     }
   };
@@ -677,15 +716,15 @@ class pricingController {
 
     try {
       const city = await Zone.find({ country: req.query.country });
-      if(city.length === 0){
-        res.status(400).send({msg:"Country's Cities  Not Found"})
+      if (city.length === 0) {
+        res.status(400).send({ msg: "Country's Cities  Not Found" })
         return
       }
 
-      await res.status(200).send({city,msg:"Country's Cities Found"});
+      await res.status(200).send({ city, msg: "Country's Cities Found" });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:"Something Went Wrong"})
+      res.status(400).send({ msg: "Something Went Wrong" })
     }
   };
 
@@ -707,8 +746,8 @@ class pricingController {
       },])
 
 
-      if(cities.length === 0){
-        res.status(400).send({msg:"all City's list Not Found"})
+      if (cities.length === 0) {
+        res.status(400).send({ msg: "all City's list Not Found" })
         return
       }
       res.status(200).send({ msg: 'get all Cities Successfully', data: cities })

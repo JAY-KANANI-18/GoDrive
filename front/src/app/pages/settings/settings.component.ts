@@ -57,7 +57,7 @@ export class SettingsComponent implements OnInit {
   getSettings() {
     this.settingsService.currentSettings().subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         data = data.setting
         this.SettingsForm.patchValue({
           AcceptenceTimeForRide: data.AcceptenceTimeForRide,

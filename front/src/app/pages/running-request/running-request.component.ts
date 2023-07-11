@@ -27,6 +27,8 @@ export class RunningRequestComponent {
   z: any;
   TotalDistance: any;
   TotalTime: any;
+  currentPage = 1
+  NoOfPages: any
 
   accepted: any;
   driverLocationSubscription: Subscription;
@@ -50,8 +52,38 @@ export class RunningRequestComponent {
   ) {
     this.socketService.changeRideStatusOn().subscribe({
       next: (data: any) => {
-        this.getRunningRequest();
-        // console.log(data);
+        this.getRunningRequest(this.currentPage);
+        console.log(data);
+        // let index = this.allrides.findIndex((element: any) => {
+        //   // console.log(element);
+        //   // console.log(data._id);
+        //   return element._id === data._id
+
+        // }
+        // );
+
+        // console.log(index);
+
+        // if (index !== -1) {
+
+
+        //   console.log(data.status,"status");
+
+        //   if(+data.status != 1){
+        //     this.allrides.splice(index)
+
+        //     if(this.allrides.length === 0 && this.currentPage !=1){
+
+        //       this.getRunningRequest(this.currentPage-1)
+
+
+
+        //     }
+        //     return
+        //   }
+        //   this.allrides[index] = data
+
+        // }
 
         // data['remainingSeconds'] = 0
 
@@ -94,18 +126,33 @@ export class RunningRequestComponent {
     });
     this.socketService.driversResponseOn().subscribe({
       next: (data: any) => {
-        this.getRunningRequest();
+        this.getRunningRequest(this.currentPage);
       },
     });
   }
 
   ngOnInit(): void {
-    this.getRunningRequest();
+    this.getRunningRequest(this.currentPage);
   }
 
   onAccept(ride: any) {
-    this.socketService.changeRideStatusEmit({ ride: { status: 2, id:ride._id } });
-    this.socketService.changeDriverStatusEmit({id:ride.driver, status: 3 })
+    this.getRunningRequest(this.currentPage);
+    // let index = this.allrides.findIndex((element: any) => {
+    //   // console.log(element);
+    //   // console.log(data._id);
+    //   return element._id === ride._id
+
+    // });
+    // this.allrides.splice(index)
+    // if(this.allrides.length === 0 && this.currentPage !=1){
+
+    //   this.getRunningRequest(this.currentPage-1)
+
+
+
+    // }
+    this.socketService.changeRideStatusEmit({ ride: { status: 2, id: ride._id } });
+    this.socketService.changeDriverStatusEmit({ id: ride.driver, status: 3 })
 
     // let data = {
     //   status: "accepted"
@@ -338,11 +385,16 @@ export class RunningRequestComponent {
 
   // }
 
-  getRunningRequest() {
-    this.driverService.getRunningRequest().subscribe({
+  getRunningRequest(page: any) {
+    this.driverService.getRunningRequest(page).subscribe({
       next: (data: any) => {
         // this.toster.success(data.msg)
         this.allrides = data.rides;
+        if (data.pages > 1 && data.rides.length == 0) {
+          this.getRunningRequest(page - 1)
+        }
+        this.NoOfPages = new Array(data.pages);
+
 
         this.allrides.forEach((each) => {
           this.timer(each._id);
@@ -350,7 +402,8 @@ export class RunningRequestComponent {
         });
       },
       error: (error) => {
-        this.toster.error(error.error.msg)
+        // this.toster.error(error.error.msg)
+        this.allrides = []
         console.log(error);
       },
     });
@@ -364,7 +417,6 @@ export class RunningRequestComponent {
       let z = setInterval(() => {
         count++;
         if (this.allrides[index]?.remainingSeconds == 29) {
-          console.log("done");
           clearInterval(z);
           return;
         } else {
@@ -406,5 +458,19 @@ export class RunningRequestComponent {
   stopCountdown(id: number) {
     delete this.countDowns$[id];
     this.timers = this.timers.filter((timer) => timer.id !== id);
+  }
+  onPage(page: any) {
+    this.currentPage = page;
+    this.getRunningRequest(this.currentPage);
+  }
+  onPrevious() {
+    this.currentPage--;
+    this.getRunningRequest(this.currentPage);
+  }
+  onNext() {
+    this.currentPage++;
+
+
+    this.getRunningRequest(this.currentPage);
   }
 }

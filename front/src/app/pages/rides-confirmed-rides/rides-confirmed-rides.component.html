@@ -2,6 +2,7 @@
   <div class="container-fluid">
     <div class="header">
       <h1>Confirmed Rides</h1>
+
     </div>
   </div>
 </div>
@@ -58,6 +59,48 @@
     </div> -->
   </div>
 </ng-template>
+<ng-template #content5 let-modal>
+  <div class="bg-aliceblue modal-div">
+    <div class="modal-header">
+      <h4>Service Type</h4>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="modal-body text-center">
+
+      <form           [formGroup]="feedBackForm"
+      >
+
+      <label id="lbl">FeedBack :</label>
+      <textarea name="feedback" id="feedback" formControlName="feedback" rows="10"></textarea>
+
+      <button type="button" class="btn btn-primary" (click)="submitFeedBack(modal);">Submit</button>
+      <button class="btn btn-danger" (click)="modal.close('Close click')">Cancel</button>
+    </form>
+
+
+
+
+    </div>
+
+    <!--
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="updateService(vehicle.value)">Save Updates</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Delete Service</button>
+    </div> -->
+  </div>
+</ng-template>
+
+
+
+
 
 <div class="container-fluid mt--5">
   <!-- Table -->
@@ -184,7 +227,8 @@
 
                 <td>{{ ride._id || "--" }}</td>
                 <td>{{ ride.user.name || "--" }}</td>
-                <td>{{ ride.driver || "--" }}</td>
+                <td *ngIf="ride.driver">{{ ride?.driver[0]?.name || "--" }}</td>
+                <td *ngIf="!ride.driver">{{  "--" }}</td>
                 <td>{{ ride.vehicle.name || "--" }}</td>
                 <td>
                   <span
@@ -217,7 +261,7 @@
                     class="btn btn btn-success"
                     id="b{{ ride._id }}"
                     *ngIf="ride.status >= 2"
-                    (click)="StatusNext(ride)"
+                    (click)="StatusNext(ride,content5)"
                   >
                     Next
                   </button>
@@ -250,17 +294,21 @@
 
                         <div>Pick Up : {{ ride.pickup }}</div>
                         <div>Drop Off : {{ ride.dropoff }}</div>
-                        <div>Vehicle : {{ ride.vehicle }}</div>
+                        <div>Vehicle : {{ ride.vehicle.name }}</div>
+                        <div>Time : {{ ride.time }}</div>
+                        <div>Distance : {{ ride.distance }}</div>
+                        <div>paymentType : {{ ride.payment_type | paymentModes }}</div>
+                        <div> Stops : {{ride.stop.length}}</div>
 
                         <p>
-                          <strong>Booking Time:</strong> {{ ride.bookingtime }}
+                          <strong>Booking Time:</strong> {{ ride.bookingtime |utcDate }}
                         </p>
-                        <p>
+                        <!-- <p>
                           <strong>Schedule Time:</strong> [insert schedule time
                           here]
-                        </p>
+                        </p> -->
                         <p><strong>Available Drivers:</strong></p>
-                        <table class="table table-striped">
+                        <table class="table table-striped text-center">
                           <thead>
                             <tr>
                               <th class="text-wrap">Driver ID</th>
@@ -282,25 +330,27 @@
                               <td>{{ driver.mobile }}</td>
                               <td>{{ driver.email }}</td>
                             </tr>
-                            <!-- <tr  *ngIf="OnlineDrivers.length == 0" > <td colspan="4">Driver's Not Found</td></tr> -->
+                            <tr class="text-center"  *ngIf="OnlineDrivers.length == 0" > <td colspan="4">Driver's Not Found</td></tr>
                           </tbody>
                         </table>
 
                         <div class="modal-footer">
                           <button
+                          *ngIf="OnlineDrivers.length >0"
                             type="button"
-                            class="btn btn-primary"
+                            class="btn btn-info"
                             id="assign-selected-driver"
                             (click)="
-                              onSelectAssign(ride, selectedDriver);
-                              modal.close('Close click')
+                              onSelectAssign(ride, selectedDriver,modal);
                             "
                           >
                             Assign Selected Driver
                           </button>
                           <button
+                          *ngIf="OnlineDrivers.length >0"
+
                             type="button"
-                            class="btn btn-secondary"
+                            class="btn btn-secondary "
                             id="assign-nearest-driver"
 
                             (click)="
@@ -309,6 +359,10 @@
                           >
                             Assign Nearest Driver
                           </button>
+                          <button class="btn btn-danger" (click)=" modal.close('Close click')">Cancel</button>
+                          <span id="randomButton"  *ngIf="OnlineDrivers.length == 0" (mouseenter)="moveButton()" class="btn btn-secondary"> Assign Driver</span>
+
+
                         </div>
                       </div>
                     </div>
@@ -359,7 +413,7 @@
             </tbody>
           </table>
         </div>
-        <div class="card-footer py-4">
+        <div class="card-footer py-4" *ngIf="ridesArray?.length>0">
           <nav aria-label="...">
             <ul class="pagination justify-content-end mb-0">
               <li
@@ -415,36 +469,50 @@
     </div>
 
     <div class="modal-body row ml-0 mr-0 text-left align-middle">
-      <div class="col-sm-5">Ride ID</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo._id }}</div>
-      <div class="col-sm-5">User</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.user.name }}</div>
-      <div class="col-sm-5">Vehicle</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.vehicle.name }}</div>
-      <div class="col-sm-5">Payment Type</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.payment_type | paymentType}}</div>
-      <div *ngIf="rideInfo.scheduledate" class="col-sm-5">Schedule Time</div>
-      <div *ngIf="rideInfo.scheduledate" class="col-sm-2">:</div>
-      <div *ngIf="rideInfo.scheduledate"  class="col-sm-5">{{ rideInfo.scheduledate  }}{{scheduletime}}</div>
-      <div  class="col-sm-5">Booking Time</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.createdAt | utcDate }}</div>
-      <div class="col-sm-5">Total Distance</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.distance }} km</div>
-      <div class="col-sm-5">Total Time</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.time }} min</div>
-      <div class="col-sm-5">Ride Fees</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5"> Rs. {{ rideInfo.ride_fees }} </div>
-      <div class="col-sm-5">Status</div>
-      <div class="col-sm-2">:</div>
-      <div class="col-sm-5">{{ rideInfo.status | rideStatus}}</div>
+      <div class="col-sm-3">Ride ID</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo._id }}</div>
+      <div class="col-sm-3">User</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.user.name }}</div>
+      <div class="col-sm-3">Pickup Location</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.pickup }}</div>
+      <div class="col-sm-3">DropOff Location</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.dropoff}}</div>
+      <div class="col-sm-3">Vehicle</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.vehicle.name }}</div>
+      <div class="col-sm-3">Payment Type</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.payment_type | paymentType}}</div>
+      <div *ngIf="rideInfo.scheduledate" class="col-sm-3">Schedule Time</div>
+      <div *ngIf="rideInfo.scheduledate" class="col-sm-1">:</div>
+      <div *ngIf="rideInfo.scheduledate"  class="col-sm-8">{{ rideInfo.scheduledate }}{{scheduletime}}</div>
+      <div  class="col-sm-3" *ngIf="rideInfo.stop.length >0">Stops</div>
+      <div class="col-sm-1" *ngIf="rideInfo.stop.length >0">:</div>
+      <div class="col-sm-8" *ngIf="rideInfo.stop.length >0">
+
+          <div class="mt-3 mb-3" *ngFor="let stp of rideInfo.stop; let i = index"> {{ i+1 }}.  {{ stp }}</div>
+      </div>
+      <!-- <div>{{rideInfo.stop}}</div> -->
+      <div  class="col-sm-3">Booking Time</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.createdAt | utcDate }}</div>
+      <div class="col-sm-3">Total Distance</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.distance }} km</div>
+      <div class="col-sm-3">Total Time</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.time }} min</div>
+      <div class="col-sm-3">Ride Fees</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8"> Rs. {{ rideInfo.ride_fees }} </div>
+      <div class="col-sm-3">Status</div>
+      <div class="col-sm-1">:</div>
+      <div class="col-sm-8">{{ rideInfo.status | rideStatus}}</div>
+      <div id="map"></div>
     </div>
   </div>
 </ng-template>

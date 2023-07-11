@@ -3,11 +3,11 @@ const { sendMail } = require("../../utils/email");
 const { sendSMS } = require("../../utils/sms");
 
 let stripe
-async function aa (){
-  
-   stripe = await require("../stripe/stripe")()
+async function aa() {
+
+  stripe = await require("../stripe/stripe")()
   // console.log(stripe);
-  
+
 }
 aa()
 // let stripe_secret_key
@@ -19,7 +19,7 @@ aa()
 //   const settings = require("../settings/settings");
 //    settingData = await settings()
 //    stripe_secret_key = settingData.stripe_secret_key 
-  
+
 //    stripe = require("stripe")(
 //     stripe_secret_key
 //   );
@@ -45,28 +45,28 @@ class usersController {
 
       const user = new User(req.body);
 
-      
-     let ress =  await user.save();
-     let emailError = await sendMail("jaykanani28887@gmail.com", "Welcome", "welcome to Godrive");
-     let er = await sendSMS("+917043714531", "welcome to Godrive");
 
-     
-      if(emailError){
-        await res.status(200).json({ msg:'User Added Successfully But' + emailError});
+      let ress = await user.save();
+      let emailError = await sendMail("jaykanani28887@gmail.com", "Welcome", "welcome to Godrive");
+      let er = await sendSMS("+917043714531", "welcome to Godrive");
+
+
+      if (emailError) {
+        await res.status(200).json({ msg: 'User Added Successfully But' + emailError });
         return
-       }
-      if(er){
+      }
+      if (er) {
         console.log('msg errr');
-        await res.status(200).json({ msg:'User Added Successfully But ' + er});
+        await res.status(200).json({ msg: 'User Added Successfully But ' + er });
         return
 
       }
-      await res.status(200).json({ user, customer,msg:"User Added Successfully" });
+      await res.status(200).json({ user, customer, msg: "User Added Successfully" });
     } catch (e) {
+      console.log(e);
 
 
-      
-      let errors = {msg:"Something Went Wrong"};
+      let errors = { msg: "Something Went Wrong" };
 
       if (e.keyPattern?.email && e.keyValue?.email) {
         errors.email = "email already exist";
@@ -87,22 +87,24 @@ class usersController {
 
     console.log("currentPage", req.query);
 
-    if (req.query.field !== undefined ) {
-      console.log(req.query.field);
+    if (req.query.field !== undefined) {
+
+
       const field = req.query.field;
+
       sortCriteria = {};
       sortCriteria[field] = 1;
 
     } else {
-      console.log('nai');
-      sortCriteria = { name: -1 };
+      console.log('else ma che');
+      sortCriteria = { "createdAt": -1 };
     }
-
+    console.log(sortCriteria ,typeof(req.query.field),req.query.field,"dhjdhjd");
     try {
       let pipeline = [
         {
           $lookup: {
-            from: "countries", // Name of the SUV collection
+            from: "countries", 
             localField: "country",
             foreignField: "_id",
             as: "country",
@@ -111,25 +113,23 @@ class usersController {
         {
           $unwind: "$country",
         },
-
+        {
+          $sort: sortCriteria
+        },
         {
           $facet: {
             documents: [
               { $match: {} },
 
               {
-                $skip: (currentPage - 1) * limits, // Skip documents based on the current page
+                $skip: (currentPage - 1) * limits, 
               },
               {
-                $limit: limits, // Limit the number of documents per page
-              },
-              {
-                  $sort:sortCriteria
+                $limit: limits,
               }
-              // Retrieve the whole document
             ],
             count: [
-              { $count: "total" }, // Count the documents
+              { $count: "total" },
             ],
           },
         },
@@ -155,8 +155,8 @@ class usersController {
 
       data = await User.aggregate(pipeline);
 
-      if(data[0]?.count.length === 0){
-        res.status(400).send({msg:"Added USer's List Not Found"})
+      if (data[0]?.count.length === 0) {
+        res.status(400).send({ msg: "Added USer's List Not Found" })
         return
       }
       let totalCounts = data[0]?.count[0]?.total;
@@ -167,11 +167,11 @@ class usersController {
         count: totalCounts,
         users: data[0].documents,
         pages,
-        msg:"Added USer's List Found"
+        msg: "Added USer's List Found"
       });
     } catch (e) {
       console.log(e);
-      res.status(400).send({msg:"Something Went Wrong"});
+      res.status(400).send({ msg: "Something Went Wrong" });
     }
   };
 
@@ -179,58 +179,62 @@ class usersController {
     try {
       let user = await User.findOneAndRemove({ _id: req.params.id });
 
-      if(!user){
-        res.status(400).send({msg:"User's Data Not Found"})
+      if (!user) {
+        res.status(400).send({ msg: "User's Data Not Found" })
         return
       }
 
-      res.status(200).send({user,msg:"User Deleted"});
+      res.status(200).send({ user, msg: "User Deleted" });
     } catch (e) {
       console.log(e);
-      res.status(404).send({msg:"Something Went Wrong"});
+      res.status(404).send({ msg: "Something Went Wrong" });
     }
   };
 
   static getAddedUser = async (req, res) => {
     try {
+
+      let customer
       let user = await User.findOne({ mobile: req.body.number });
-      let customer = await getCustomer(user.stripeid)
+      if(user){
+        customer = await getCustomer(user.stripeid)
+      }
       if (!user || !customer) {
-        res.status(400).send({msg:"User Not Rigistered"});
+        res.status(400).send({ msg: "User Not Rigistered" });
 
         return;
       }
-      res.status(200).send({user,msg:"User's Details Found",customer:customer.invoice_settings.default_payment_method});
+      res.status(200).send({ user, msg: "User's Details Found", customer: customer.invoice_settings.default_payment_method });
 
     } catch (e) {
       console.log(e);
-     let  errors = {msg:"Something Went Wrong"};
+      let errors = { msg: "Something Went Wrong" };
 
-     res.status(400).send(errors)
+      res.status(400).send(errors)
     }
   };
 
   static saveUpdatedUser = async (req, res) => {
 
-  
+
     if (req.fileValidationError) {
       return res.status(400).json({ error: req.fileValidationError.message });
     }
     if (req.file) {
       req.body.avatar = req.file.filename;
-    } 
+    }
     try {
       const user = await User.findByIdAndUpdate(req.query.id, req.body, {
         new: true,
         runValidators: true,
       });
-      if(!user){
-        res.status(400).send({msg:"User's Data Not Found"})
+      if (!user) {
+        res.status(400).send({ msg: "User's Data Not Found" })
         return
       }
-      res.status(400).send({user,msg:"User's Deatails Updated Successfully"});
+      res.status(200).send({ user, msg: "User's Deatails Updated Successfully" });
     } catch (e) {
-      let errors = {msg:"Something Went Wrong"};
+      let errors = { msg: "Something Went Wrong" };
 
       if (e.keyPattern?.email && e.keyValue?.email) {
         errors.email = "email already exist";
@@ -248,23 +252,23 @@ class usersController {
       let customer = await getCustomer(user.stripeid)
 
 
-      if(!user || !customer){
-        res.status(400).send({msg:"User's Data Not Found"})
+      if (!user || !customer) {
+        res.status(400).send({ msg: "User's Data Not Found" })
         return
       }
 
-      await res.status(200).json({ user,msg:"User's Data Found" ,customer});
+      await res.status(200).json({ user, msg: "User's Data Found", customer });
     } catch (e) {
-      res.status(400).send({msg:"Something Went Wrong"});
+      res.status(400).send({ msg: "Something Went Wrong" });
     }
   };
 
   static addUserCard = async (req, res) => {
     try {
-    
+
       const user = await User.findById(req.query.id);
-      if(!user ){
-        res.status(400).send({msg:"User's Data Not Found"})
+      if (!user) {
+        res.status(400).send({ msg: "User's Data Not Found" })
         return
       }
 
@@ -292,11 +296,11 @@ class usersController {
         customer: user.stripeid, // replace with your customer ID
         confirm: true,
       });
-      if(!paymentIntent){
-        res.status(400).send({msg:"Something Went Wrong"})
+      if (!paymentIntent) {
+        res.status(400).send({ msg: "Something Went Wrong" })
         return
       }
-      
+
       // try {
       //   const transfer = await stripe.transfers.create({
       //     amount: req.query.amount, // Amount in cents/pennies
@@ -370,13 +374,13 @@ class usersController {
 
   static getUserCards = async (req, res) => {
     const user = await User.findById(req.query.id);
-    
+
     const customerId = user.stripeid;
 
     try {
-      
-      if(stripe.status==500){
-        res.status(400).send({msg:stripe.msg})
+
+      if (stripe.status == 500) {
+        res.status(400).send({ msg: stripe.msg })
         return
 
       }
@@ -385,15 +389,15 @@ class usersController {
         type: "card",
       });
 
-      if(cards.length === 0 ){
-        res.status(400).send({msg:"User's Added Cards Not Found"})
+      if (cards.length === 0) {
+        res.status(400).send({ msg: "User's Added Cards Not Found" })
         return
       }
 
-      res.status(200).json({cards,msg:"User's Added Cards Found"});
+      res.status(200).json({ cards, msg: "User's Added Cards Found" });
     } catch (error) {
-      console.log(error.message,'jofwejf');
-      res.status(400).json({ error: error.message,msg:"Something Went Wrong" });
+      console.log(error.message, 'jofwejf');
+      res.status(400).json({ error: error.message, msg: "Something Went Wrong" });
     }
   };
 
@@ -402,8 +406,8 @@ class usersController {
     try {
       let user = await User.findById(req.query.user);
 
-      if(!user){
-        res.status(400).send({msg:"User's Data Not Found"})
+      if (!user) {
+        res.status(400).send({ msg: "User's Data Not Found" })
       }
 
       await stripe.customers.update(user.stripeid, {
@@ -453,7 +457,8 @@ async function getCustomer(customerId) {
   }
 }
 
-module.exports = {usersController,
+module.exports = {
+  usersController,
   // UpdateSettingsofUser
 
 }

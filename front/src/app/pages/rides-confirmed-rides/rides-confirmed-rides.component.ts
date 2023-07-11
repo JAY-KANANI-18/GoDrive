@@ -18,6 +18,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { saveAs } from "file-saver";
 import * as Papa from "papaparse";
 import { ToastrService } from "ngx-toastr";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-rides-confirmed-rides",
@@ -36,7 +37,6 @@ export class RidesConfirmedRidesComponent implements OnInit {
   ) {
     this.sockServivce.notificationOn().subscribe({
       next: (data: any) => {
-        console.log(data);
 
         this.messagingService.getTokenandSend(data.msg);
       },
@@ -47,11 +47,35 @@ export class RidesConfirmedRidesComponent implements OnInit {
 
     this.sockServivce.changeRideStatusOn().subscribe({
       next: (data: any) => {
-        this.showRides(this.currentPage);
+        // this.showRides(this.currentPage);
+        let index = this.ridesArray.findIndex((element: any) => {
+
+          return element._id === data._id
+
+        }
+        );
+
+        // console.log(index);
+
+        if (index !== -1) {
+
+          // if(this.ridesArray[index].status === 2 , 6,7 ){
+          //   this.ridesArray.splice(index,0)
+          // }
+          this.ridesArray[index] = data
+
+        }
+        // console.log(data);
 
         // console.log(data);
         // console.log('goti ne ayo');
-        // let index = this.ridesArray.findIndex(element => element._id === data._id);
+        // let index = this.ridesArray.findIndex((element:any) =>{
+        //   console.log(element);
+        //   element._id === data._id
+
+        // }
+        // );
+        // console.log(index);
         // if (index !== -1) {
         //   this.ridesArray[index].status = data.status;
         //   if(data.driver){
@@ -90,8 +114,9 @@ export class RidesConfirmedRidesComponent implements OnInit {
   public NoOfPages: any;
   public rideInfo: any;
   public currentPage: any = 1;
-
+public feedBackForm :FormGroup
   private socket: any;
+  public feedbackride:any
 
   ngOnInit(): void {
     this.showRides(this.currentPage);
@@ -153,6 +178,12 @@ export class RidesConfirmedRidesComponent implements OnInit {
   // }
 
   onCancel(id: any) {
+
+    let res = confirm("Are You Sure about Cancel Ride ?")
+
+    if(!res){
+      return
+    }
     let data = {
       id,
       status: 7, // cancelled
@@ -178,7 +209,7 @@ export class RidesConfirmedRidesComponent implements OnInit {
     //   }
     // })
   }
-  onSelectAssign(ride: any, driver: any) {
+  onSelectAssign(ride: any, driver: any,modal:any) {
     // let data = {
     //   ride,
     //   status: 'assigning'
@@ -198,6 +229,8 @@ export class RidesConfirmedRidesComponent implements OnInit {
     // this.sockServivce.fromAdminassign({ ride, driver })
     this.sockServivce.changeRideStatusEmit({ ride: data2 });
     this.sockServivce.changeDriverStatusEmit({ id: driver._id, status: 2 });
+    modal.close('Close click')
+
 
     // this.sockServivce.changeRideStatusOn().subscribe({
     //   next: (data: any) => {
@@ -231,9 +264,16 @@ export class RidesConfirmedRidesComponent implements OnInit {
 
     // }
     // this.sockServivce.changeRideStatusEmit({ ride: data2 })
+
+    if(this.OnlineDrivers.length <= 0){
+      this.toster.error('No Driver Found')
+      return
+    }
     this.sockServivce.rideAutoAssignEmit(ride);
   }
   openModel(content: any, ride: any, options?: any) {
+
+    this.OnlineDrivers = []
 
     this.selectedDriver = undefined
     console.log('rfff');
@@ -304,6 +344,12 @@ export class RidesConfirmedRidesComponent implements OnInit {
     if (from_date && to_date) {
       option.search["from_date"] = from_date;
       option.search["to_date"] = to_date;
+
+      if(new Date(from_date) > new Date(to_date)){
+
+        this.toster.error('Enter a valid Date Range')
+          return
+      }
     }
 
     this.ridesService.getRides(1, option).subscribe({
@@ -358,7 +404,7 @@ export class RidesConfirmedRidesComponent implements OnInit {
         const csv = Papa.unparse(data.rides);
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
         saveAs(blob, "tableData.csv");
-        this.NoOfPages = new Array(data.pages);
+        // this.NoOfPages = new Array(data.pages);
       },
       error: (error) => {
         console.log(error);
@@ -373,9 +419,23 @@ export class RidesConfirmedRidesComponent implements OnInit {
 
 
   }
-  StatusNext(ride:any){
+  StatusNext(ride:any,content?:any){
    let data = {
       status: ride.status + 1
+    }
+
+
+    if(data.status === 6){
+      this.feedbackride = null
+      this.createFeedbackForm()
+      this.ngbService.open(content, {
+        centered: true,
+        size: "lg",
+        scrollable: true,
+      });
+      this.feedbackride = ride._id
+
+      return
     }
 
 
@@ -390,5 +450,52 @@ export class RidesConfirmedRidesComponent implements OnInit {
     })
 
 
+  }
+  submitFeedBack(modal:any){
+
+    let text = (document.getElementById('feedback')as HTMLTextAreaElement).value
+    let data = {
+      status: 6,
+      feedback:this.feedBackForm.value.feedback
+    }
+
+    if( this.feedBackForm.invalid){
+      this.toster.error('Fill FeedBack Form')
+      return
+
+    }
+
+    this.ridesService.updateRide(this.feedbackride,data).subscribe({
+      next:(data:any)=>{
+        console.log(data);
+        modal.close('Close click')
+        this.showRides(this.currentPage)
+      },error:(error)=>{
+        console.log(error);
+      }
+    })
+
+
+
+
+  }
+  createFeedbackForm(){
+
+    this.feedBackForm = new FormGroup({
+      feedback: new FormControl(null, [Validators.required]),
+
+    });
+
+  }
+  moveButton() {
+    console.log('fuuhg');
+    const button = document.getElementById('randomButton');
+    this.toster.error("No Drives'found 😜")
+    if (button) {
+      const randomTop = Math.floor(Math.random() * 80) + 10 + '%';
+      const randomLeft = Math.floor(Math.random() * 80) + 10 + '%';
+      button.style.top = randomTop;
+      button.style.left = randomLeft;
+    }
   }
 }

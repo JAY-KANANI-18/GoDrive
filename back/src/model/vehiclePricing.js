@@ -45,7 +45,8 @@ const VehiclePricingSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-});
+},  { timestamps: true }
+);
 
 const VehiclePricing = mongoose.model("VehiclePricing", VehiclePricingSchema);
 

@@ -17,247 +17,178 @@
             <div class="row">
               <div id="formdiv">
                 <div *ngIf="group1">
-                <form   >
+                  <form>
                     <div class="form-field">
                       <label for="mobile">Number : </label>
                       <div>
-                        <select
-                        (change)="selectCode($event.target,num.value)"
-                          name="CallingCode"
-                          id="CallingCode"
+                        <select (change)="selectCode($event.target, num.value)" name="CallingCode" id="CallingCode"
                           style="
                             width: 30%;
                             border-top-right-radius: 0px;
                             border-bottom-right-radius: 0px;
-                          "
-                          #cc
-                        >
-                          <option
-                            *ngFor="let item of allCallingCode"
-                            value="{{ item }}"
-                          >
+                          " #cc>
+                          <option *ngFor="let item of allCallingCode" value="{{ item }}">
                             {{ item }}
                           </option>
                         </select>
 
-                        <input
-                          id="mobile"
-                          name="mobile"
-                          type="number"
-                          placeholder="Phone number"
-                          (input)="onInput($event.target.value)"
+                        <input id="mobile" name="mobile" type="number" placeholder="Phone number"
+                          (input)="onInput($event.target.value)" maxlength="10"
                           onkeypress="if (this.value.length >= this.maxLength  )return false ;"
-                          maxlength="10"
-                          ngModel
-                          required
-                          #num
-                          style="
+                          appOnlyMobile ngModel required #num style="
                             width: 70%;
                             border-top-left-radius: 0px;
                             border-bottom-left-radius: 0px;
-                          "
-                        />
+                          " />
                       </div>
                       <div class="error" *ngIf="ccVal">
                         *Please select countrycode
                       </div>
-                      <!-- <div
-                        class="error"
-                        *ngIf="
-                          group1Form.controls['mobile']?.invalid &&
-                          group1Form.controls['mobile'].touched
-                        "
-                      >
-                        *Please enter a value
-                      </div> -->
 
                       <div class="form-field">
                         <label for="name">Name:</label>
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          required
-                          ngModel
-                          #name
-                          placeholder="name"
-                          disabled
-                        />
+                        <input type="text" id="name" name="name" required ngModel #name placeholder="name" disabled />
                       </div>
                       <div class="form-field">
                         <label for="email">Email:</label>
-                        <input
-                          type="text"
-                          id="email"
-                          name="email"
-                          required
-                          ngModel
-                          #email
-                          placeholder="email"
-                          disabled
-                        />
+                        <input type="text" id="email" name="email" required ngModel #email placeholder="email"
+                          disabled />
                       </div>
                     </div>
-                    <button
-                      id="nextbtn"
-                      class="btn btn-secondary mt-5"
-                      (click)="onNext()"
-                    >
+                    <button type="button" id="nextbtn" class="btn btn-secondary mt-5" (click)="onNext()">
                       Next
                     </button>
                   </form>
                 </div>
 
                 <div *ngIf="group2 == true">
-                <form  [formGroup]="BookingForm" #bookingform>
+                  <form [formGroup]="BookingForm" #bookingform>
                     <div class="form-field">
                       <label for="pickup">Pickup Location:</label>
 
-                      <input
-                        type="text"
-                        style="width: 90%"
-                        id="pickup"
-                        name="pickup"
-                        formControlName = 'pickup'
-                        (focus)="focuson($event.target.id)"
-                      />&nbsp;<img
-                        (click)="forCurrentlocation()"
-                        src="../../../assets/img/place.png"
-                        width="8%"
-                        alt="Icon"
-                      />
+                      <input type="text" style="width: 90%" id="pickup" name="pickup" formControlName="pickup"
+                        (focus)="focuson($event.target.id)" />&nbsp;<img (click)="forCurrentlocation()"
+                        src="../../../assets/img/place.png" width="8%" alt="Icon" />
                     </div>
-                    <div
-                    class="error"
-                    *ngIf="BookingForm.get('pickup').invalid && BookingForm.get('pickup').touched"
-                  >
-                    *Please enter a PickUp Location
-                  </div>
-
-
-                    <div class="form-field" *ngFor="let stop of  BookingForm.get('stops').controls;let i=index">
-                      <label for="dropoff">Stop {{i+1}}</label>
-                      <input
-                        type="text"
-                        id="stop{{i+1}}"
-                        name="stop{{i+1}}"
-                        placeholder="Enter Location"
-                        (focus)="focuson($event.target.id)"
-
-
-
-                      >
-                      <img (click)="DeleteStop(i)" class="ml-2" src="../../../assets/img/icons/57165.png" width="10rem" height="10rem" alt="">
+                    <div class="error" *ngIf="
+                        BookingForm.get('pickup').invalid &&
+                        BookingForm.get('pickup').touched
+                      ">
+                      *Please enter a PickUp Location
                     </div>
-                    <div
-                    class="error"
-                    *ngIf="BookingForm.get('stops').invalid && BookingForm.get('stops').touched"
-                  >
-                    *Please enter a Stop Location
-                  </div>
+
+                    <div class="form-field" *ngFor="
+                        let stop of BookingForm.get('stops').controls;
+                        let i = index
+                      ">
+                      <label for="dropoff">Stop {{ i + 1 }}</label>
+                      <input type="text" id="stop{{ i + 1 }}" name="stop{{ i + 1 }}" placeholder="Enter Location"
+                        (focus)="focuson($event.target.id)" />
+                      <img (click)="DeleteStop(i)" class="ml-2" src="../../../assets/img/icons/57165.png" width="10rem"
+                        height="10rem" alt="" />
+                    </div>
+                    <div class="error" *ngIf="
+                        BookingForm.get('stops').invalid &&
+                        BookingForm.get('stops').touched
+                      ">
+                      *Please enter a Stop Location
+                    </div>
                     <div class="form-field">
                       <label for="dropoff">Drop-off Location:</label>
-                      <input
-                        type="text"
-                        id="dropoff"
-                        name="dropoff"
-                        formControlName = 'dropoff'
-                        (focus)="focuson($event.target.id)"
-
-
-                      />
+                      <input type="text" id="dropoff" name="dropoff" formControlName="dropoff"
+                        (focus)="focuson($event.target.id)" />
                     </div>
-                    <div
-                    class="error"
-                    *ngIf="BookingForm.get('dropoff').invalid && BookingForm.get('dropoff').touched"
-                  >
-                    *Please enter Dropoff Location
-                  </div>
+                    <div class="error" *ngIf="
+                        BookingForm.get('dropoff').invalid &&
+                        BookingForm.get('dropoff').touched
+                      ">
+                      *Please enter Dropoff Location
+                    </div>
                     <!-- <div class="error" *ngIf="pickerr">
                       {{ pickerr }}
                     </div> -->
-                    <button
-                    class="btn btn-secondary mt-3"
-                    (click)="showRoute()"
-                  >
-                    Confirm Details
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary mt-3"
-                    (click)="addStop()"
-                    *ngIf=" BookingForm.get('stops').controls.length <= Max_stops - 1"
-                  >
-                    add stop
-                  </button>
+                    <button class="btn btn-secondary mt-3" (click)="showRoute()">
+                      Confirm Details
+                    </button>
+                    <button type="button" class="btn btn-secondary mt-3" (click)="addStop()" *ngIf="
+                        BookingForm.get('stops').controls.length <=
+                        Max_stops - 1
+                      ">
+                      add stop
+                    </button>
                     <div *ngIf="group21">
-                      <div class="form-field mt-3" *ngIf="vT.length >= 1">
-                        <label for="vehicle">Select Vehicle Type : </label
-                        >&nbsp;&nbsp;&nbsp;
-                        <select
-                          id="vehicle"
-                          name="vehicle"
-                          id="vehicle"
-                          formControlName = 'vehicle'
-
-                          (change)="onSelect(vehicle.value)"
-                          #vehicle
-                        >
-                        <option [value]="null" selected hidden>Select Vehicle</option>
-                          <option
-                            *ngFor="let vehicle of vT"
-                            [value]="vehicle.vehicle._id"
-                          >
+                      <!-- <div class="form-field mt-3" *ngIf="vT.length >= 1">
+                        <label for="vehicle">Select Vehicle Type : </label>&nbsp;&nbsp;&nbsp;
+                        <select>
+                          <option [value]="null" selected hidden>
+                            Select Vehicle
+                          </option>
+                          <option *ngFor="let vehicle of vT" [value]="vehicle.vehicle._id">
                             {{ vehicle.vehicle.name }}
                           </option>
                         </select>
+                      </div> -->
+                      <mat-form-field class="mt-3">
+                        <mat-label>Select an Vehicle</mat-label>
+                        <mat-select  id="vehicle" name="vehicle"  formControlName="vehicle"
+                        (selectionChange)="onSelect(vehicle.value)" #vehicle>
+                          <ng-container  *ngFor="let vehicle of vT" >
+                            <mat-option [value]="vehicle.vehicle._id">
+                              <img src="http://localhost:3000/avatars/{{ vehicle.vehicle.file }}" width="100px" height="100px" class="select-img" />
+                              {{ vehicle.vehicle.name }}&nbsp;&nbsp;&nbsp; - &nbsp; Rs.{{vehicle.pricing.ServiceFees}}
+                            </mat-option>
+                          </ng-container>
+                        </mat-select>
+                      </mat-form-field>
+
+
+                      <div class="error" *ngIf="
+                          BookingForm.get('vehicle').invalid &&
+                          BookingForm.get('vehicle').touched
+                        ">
+                        *Please select a vehicle
                       </div>
-                      <div
-                      class="error"
-                      *ngIf="BookingForm.get('vehicle').invalid && BookingForm.get('vehicle').touched"
-                    >
-                      *Please select a vehicle
-                    </div>
 
                       <div class="form-field mt-3">
                         <label> Select an bookingtype: </label>
-                        <select (change)="onBooktype($event.target.value)" formControlName = 'bookingtype'>
-                          <option [value]="null" selected hidden >Select Booking Type</option>
-                          <option value="booknow" selected >Book Now</option>
+                        <select (change)="onBooktype($event.target.value)" formControlName="bookingtype">
+                          <option [value]="null" selected hidden>
+                            Select Booking Type
+                          </option>
+                          <option value="booknow" selected>Book Now</option>
                           <option value="scheduleride">Schedule Ride</option>
                         </select>
                       </div>
-                      <div
-                      class="error"
-                      *ngIf="BookingForm.get('bookingtype').invalid && BookingForm.get('bookingtype').touched"
-                    >
-                      *Please enter a Bookingtype
-                    </div>
+                      <div class="error" *ngIf="
+                          BookingForm.get('bookingtype').invalid &&
+                          BookingForm.get('bookingtype').touched
+                        ">
+                        *Please enter a Bookingtype
+                      </div>
 
                       <div *ngIf="selectedbooking === 'scheduleride'">
                         <div class="form-field">
                           <label for="date">Date:</label>
-                          <input type="date" id="date" name="date"  formControlName = 'date' />
+                          <input type="date" id="date" name="date" formControlName="date" />
                         </div>
-                        <div
-                        class="error"
-                        *ngIf="BookingForm.get('date').invalid && BookingForm.get('date').touched"
-                      >
-                        *Please selectt Date
-                      </div>
+                        <div class="error" *ngIf="
+                            BookingForm.get('date').invalid &&
+                            BookingForm.get('date').touched
+                          ">
+                          *Please selectt Date
+                        </div>
                         <div class="form-field">
                           <label for="stime">Time:</label>
-                          <input type="time" id="stime" name="stime"  formControlName = 'time'  />
+                          <input type="time" id="stime" name="stime" formControlName="time" />
                         </div>
                       </div>
                       <div class="form-field"></div>
-                      <div
-                      class="error"
-                      *ngIf="BookingForm.get('time').invalid && BookingForm.get('time').touched"
-                    >
-                      *Please select time
-                    </div>
-
+                      <div class="error" *ngIf="
+                          BookingForm.get('time').invalid &&
+                          BookingForm.get('time').touched
+                        ">
+                        *Please select time
+                      </div>
 
                       <div id="estimate">
                         <p class="mt-3" *ngIf="TotalTime">
@@ -271,30 +202,19 @@
                         </p>
                       </div>
 
-                      <input
-                        type="radio"
-                        name="paymentOption"
-                        (click)="onPayment($event.target.value)"
-                        value="0"
-                        formControlName = 'paymentOption'
-                      />
+                      <input type="radio" name="paymentOption" (click)="onPayment($event.target.value)" value="0"
+                        formControlName="paymentOption" />
                       <label for="cash">Cash</label>
 
-                      <input
-                        type="radio"
-                        name="paymentOption"
-                        (click)="onPayment($event.target.value)"
-                        value="1"
-                        formControlName = 'paymentOption'
-
-                      />
-                      <label for="card">Card</label>
-                      <div
-                      class="error"
-                      *ngIf="BookingForm.get('paymentOption').invalid && BookingForm.get('paymentOption').touched"
-                    >
-                      *Please select paymentOption
-                    </div>
+                      <input *ngIf="allCards.length > 0" type="radio" name="paymentOption"
+                        (click)="onPayment($event.target.value)" value="1" formControlName="paymentOption" />
+                      <label *ngIf="allCards.length > 0" for="card">Card</label>
+                      <div class="error" *ngIf="
+                          BookingForm.get('paymentOption').invalid &&
+                          BookingForm.get('paymentOption').touched
+                        ">
+                        *Please select paymentOption
+                      </div>
                       <div *ngIf="selectedOption == 1">
                         <!-- <button
                           class="btn btn-link"
@@ -304,14 +224,8 @@
                         </button> -->
                         <div id="cards">
                           <div *ngFor="let card of allCards">
-                            <input
-                              type="radio"
-                              name="card"
-                              [(ngModel)]="selectedCard"
-                              [value]="card.id"
-                              formControlName = 'card'
-
-                            />
+                            <input type="radio" name="card" [(ngModel)]="selectedCard" [value]="card.id"
+                              formControlName="card" />
                             <label>
                               xxxx-xxxx-xxxx-{{ card.card.last4 }}
                             </label>
@@ -319,22 +233,10 @@
                         </div>
                       </div>
                       <div class="mt-3">
-                        <button
-                          class="btn btn-dark"
-                          type="button"
-                          name="myButton"
-                          id="myButton"
-                          (click)="
-                            BookRide();
-                          "
-                        >
+                        <button class="btn btn-dark" type="button" name="myButton" id="myButton" (click)="BookRide()">
                           Book Ride
                         </button>
-                        <button
-                          type="button"
-                          class="btn btn-danger"
-                          (click)="onCancel()"
-                        >
+                        <button type="button" class="btn btn-danger" (click)="onCancel()">
                           cancel
                         </button>
                       </div>

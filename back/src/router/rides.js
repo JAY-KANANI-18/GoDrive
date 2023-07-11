@@ -165,21 +165,26 @@ router.patch("/Rides/Update", async (req, res) => {
 async function CompleteRIde(ride) {
 
   try{
-    console.log(ride);
     const user = await User.findById(ride.user)
     const vehiclepricing = await VehiclePricing.findOne({vehicle:ride.vehicle})
-    
-    
-    let paymentIntent = await stripe.paymentIntents.create({
-      amount: ride.ride_fees,
-      currency: "usd",
-      payment_method_types: ["card"],
-      payment_method: ride.card_detail,
-      customer: user.stripeid,
-      confirm: true,
-    });
+
+    if(ride.payment_type === 1){
+
+      
+      
+      let paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round( +ride.ride_fees) * 100,
+        currency: "usd",
+        payment_method_types: ["card"],
+        payment_method: ride.card_detail,
+        customer: user.stripeid,
+        confirm: true,
+      });
+
+      console.log(paymentIntent);
+    }
     console.log('completed');
-    io.emit("ride_status_change");
+    // io.emit("ride_status_change");
     
     
     // sendMail(user.email, "Welcome", "welcome to Godrive");
@@ -229,7 +234,7 @@ async function CompleteRIde(ride) {
   </body>`
   
   let email = await sendMail('jaykanani28887@gmail.com', "Welcome", "welcome to Godrive",html);
-  let sms = await sendSMS("+917043714531", "welcome to Godrive");
+  let sms = await sendSMS("+917043714531", "Ride is Comleted");
   
 }catch(e){
   console.log(e);

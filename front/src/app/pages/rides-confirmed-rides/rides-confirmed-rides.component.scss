@@ -19,3 +19,25 @@
   justify-content: center;
   // height: 100vh; /* Optional: Set a height for the container */
 }
+#randomButton {
+  position: absolute;
+  // top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: top 0.3s, left 0.3s;
+}
+
+#randomButton:hover {
+  cursor: pointer;
+}
+
+.modal-div{
+  position: relative
+
+}
+textarea{
+  width: 100%;
+}
+#lbl{
+  float: left;
+}

@@ -180,7 +180,7 @@ export class MapsComponent implements OnInit {
       next: (res: any) => {
 
         let data = res.city
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.removePolygons();
 
         data.forEach((city: any) => {
@@ -299,7 +299,7 @@ export class MapsComponent implements OnInit {
     this.pricingService.getZone(page).subscribe({
       next: (data: any) => {
         console.log(data);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.allzones = data.cities;
         this.NoOfPages = new Array(data.pages);
         if (this.allzones.length == 0) {
@@ -323,7 +323,7 @@ export class MapsComponent implements OnInit {
     this.pricingService.updateCity(id).subscribe({
       next: (res: any) => {
         let data = res.city;
-        this.toster.success(res.msg);
+        // this.toster.success(res.msg);
         console.log(data);
 
         this.updateId = data._id;
@@ -369,6 +369,10 @@ export class MapsComponent implements OnInit {
     console.log(zoneData);
     this.pricingService.saveCity(this.updateId, zoneData).subscribe({
       next: (data: any) => {
+        if(data.msg){
+
+          this.toster.success(data.msg)
+        }
         this.forCurrentlocation();
         modal.dismiss("Click");
 
@@ -430,7 +434,7 @@ export class MapsComponent implements OnInit {
   getAvailableCountries() {
     this.pricingService.getAddedCountry().subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg);
+        // this.toster.success(data.msg);
 
         this.countriesArray = data.country;
       },
@@ -444,7 +448,7 @@ export class MapsComponent implements OnInit {
     console.log(search);
     this.pricingService.getZone(1, { search }).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
 
         this.allzones = data.cities;
         this.NoOfPages = new Array(data.pages);

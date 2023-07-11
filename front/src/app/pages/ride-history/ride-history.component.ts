@@ -26,7 +26,7 @@ export class RideHistoryComponent implements OnInit {
     private toster: ToastrService,
 
 
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getRides(this.currentPage);
@@ -36,7 +36,7 @@ export class RideHistoryComponent implements OnInit {
     this.ridesService.getCompletedRides(page).subscribe({
       next: (data: any) => {
         console.log(data);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
 
         this.allConfirmedrides = data.rides;
         this.NoOfPages = new Array(data.pages);
@@ -44,6 +44,8 @@ export class RideHistoryComponent implements OnInit {
       error: (error) => {
         this.toster.error(error.error.msg)
         this.allConfirmedrides = []
+        this.NoOfPages = []
+
 
         console.log(error);
       },
@@ -91,12 +93,17 @@ export class RideHistoryComponent implements OnInit {
     if (from_date && to_date) {
       option.search["from_date"] = from_date;
       option.search["to_date"] = to_date;
+      if(new Date(from_date) > new Date(to_date)){
+
+        this.toster.error('Enter a valid Date Range')
+          return
+      }
     }
 
     this.ridesService.getCompletedRides(1, option).subscribe({
       next: (data: any) => {
         console.log(data);
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.allConfirmedrides = data.rides;
         this.NoOfPages = new Array(data.pages);
       },
@@ -136,7 +143,7 @@ export class RideHistoryComponent implements OnInit {
         search_value: search_value,
         payment_mode: payment_mode,
         status,
-        download:true
+        download: true
       },
     };
     if (from_date && to_date) {
@@ -147,13 +154,13 @@ export class RideHistoryComponent implements OnInit {
     this.ridesService.getCompletedRides(1, option).subscribe({
       next: (data: any) => {
         console.log(data);
-       data.rides;
+        data.rides;
 
 
-    const csv = Papa.unparse(  data.rides);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, "tableData.csv");
-        this.NoOfPages = new Array(data.pages);
+        const csv = Papa.unparse(data.rides);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        saveAs(blob, "tableData.csv");
+        // this.NoOfPages = new Array(data.pages);
       },
       error: (error) => {
         console.log(error);
@@ -161,6 +168,7 @@ export class RideHistoryComponent implements OnInit {
     });
   }
   openModel(content: any, ride: any) {
+    console.log('sss');
     this.ngbService.open(content, { centered: true });
 
     this.rideInfo = ride;
@@ -183,8 +191,8 @@ export class RideHistoryComponent implements OnInit {
 
     var request: any = {
       origin: ride.pickup,
-      destination: ride.dropoff,
       waypoints: stops,
+      destination: ride.dropoff,
       travelMode: "DRIVING",
     };
 
@@ -192,9 +200,12 @@ export class RideHistoryComponent implements OnInit {
       if (status == "OK") {
         var route = result.routes[0];
         var path = [];
+        console.log(result);
 
         for (var i = 0; i < route.legs.length; i++) {
           var leg = route.legs[i];
+
+          console.log(leg.steps.length);
           for (var j = 0; j < leg.steps.length; j++) {
             var step = leg.steps[j];
             for (var k = 0; k < step.path.length; k++) {
@@ -203,26 +214,56 @@ export class RideHistoryComponent implements OnInit {
           }
         }
 
+        let rout = []
+        console.log(route.legs);
+
+
+        for (let i = 0; i < route.legs.length; i++) {
+
+          let val
+          if (i == 0) {
+            val = ride.pickup
+          }
+          else if (i == stops.length + 2) {
+            val = ride.dropoff
+          }
+          else {
+            val = stops[i - 1]
+          }
+
+
+
+          var startPointMarker = new google.maps.Marker({
+            position: {
+              lat: route.legs[i].start_location.lat(),
+              lng: route.legs[i].start_location.lng()
+            },
+            map: map,
+            label: (i + 1).toString(),
+            title: "Start Point",
+          });
+
+
+        }
+
+        var startPointMarker = new google.maps.Marker({
+          position: {
+            lat: route.legs[route.legs.length - 1].end_location.lat(),
+            lng: route.legs[route.legs.length - 1].end_location.lng()
+          },
+          map: map,
+          label: (route.legs.length + 1).toString(),
+          title: "Start Point",
+        });
+
+
+
         var polyline = new google.maps.Polyline({
           path: path,
           geodesic: true,
           strokeColor: "#000000",
           strokeOpacity: 1.0,
           strokeWeight: 2,
-        });
-
-        var startPointMarker = new google.maps.Marker({
-          position: path[0],
-          map: map,
-          label:'p',
-          title: "Start Point",
-        });
-
-        // Create a marker for the end point
-        var endPointMarker = new google.maps.Marker({
-          position: path[path.length - 1],
-          map: map,
-          title: "End Point",
         });
 
         polyline.setMap(map);

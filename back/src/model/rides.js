@@ -75,6 +75,9 @@ const RidesSchema = new mongoose.Schema(
     rejected: {
       type: Array,
     },
+    feedback:{
+      type:String,
+    }
   },
   { timestamps: true }
 );

@@ -15,7 +15,8 @@ const VehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-});
+},  { timestamps: true }
+);
 
 // LoginSchema.methods.generateAuthToken = async function () {
 //   const user = this

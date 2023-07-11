@@ -70,7 +70,8 @@ const DriverSchema = new mongoose.Schema(
       type: String,
     },
   },
-  { validateBeforeSave: true }
+  { timestamps: true ,validateBeforeSave: true }
+
 );
 
 const Driver = mongoose.model("Driver", DriverSchema);

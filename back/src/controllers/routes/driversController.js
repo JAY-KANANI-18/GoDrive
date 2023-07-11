@@ -74,7 +74,7 @@ class driversController {
         const field = req.query.field;
         sortCriteria[field] = 1;
       } else {
-        sortCriteria = { name: -1 };
+        sortCriteria = { createdAt: -1 };
       }
 
       let pipeline = [
@@ -238,20 +238,19 @@ class driversController {
   static getOnlineDriver = async (req, res) => {
 
     try {
-      console.log(req.body);
-      
-      
-      const data = await Driver.find({ status: 1 ,vehicle:req.body.vehicle._id,approval:1 });
+
+
+      const data = await Driver.find({ status: 1, vehicle: req.body.vehicle._id, approval: 1 });
       if (data.length === 0) {
         throw Error("Driver's list Not Found")
       }
-      
+
       res.status(200).send({ msg: "Driver's list Found", data });
     } catch (e) {
-      
+
       console.log(e);
       if (e.message === "Driver's list Not Found") {
-        
+
         res.status(400).send({ msg: e.message })
       } else {
         res.status(400).send({ msg: 'Something went Wrong' })
@@ -301,8 +300,28 @@ class driversController {
 
   static getRunningRequest = async (req, res) => {
     try {
+      const currentPage = req.query.page || 1;
+      const limits = req.query.size || 10;
+      let pipeline2 = [
 
-      const rides = await Ride.aggregate([
+        {
+          $facet: {
+            documents: [
+              {
+                $skip: (currentPage - 1) * limits, // Skip documents based on the current page
+              },
+              {
+                $limit: limits, // Limit the number of documents per page
+              },
+              // Retrieve the whole document
+            ],
+            count: [
+              { $count: "total" }, // Count the documents
+            ],
+          },
+        },
+      ];
+      let pipeline1 = [
         {
           $match: {
             status: {
@@ -355,17 +374,32 @@ class driversController {
             },
           },
         },
-      ]);
+      ]
 
+      const data = await Ride.aggregate([...pipeline1, ...pipeline2]);
 
-      if (rides.length === 0) {
-        throw Error("Running Ride's list Not Found")
+      if (data[0]?.count.length === 0) {
+        res.status(400).send({ msg: "Running Ride's list Not Found" })
+        return
 
 
       }
 
-      res.status(200).send({ rides, msg: "Rides List Found" })
+      let totalCounts = data[0]?.count[0]?.total;
+
+      const pages = Math.ceil(totalCounts / limits);
+      // console.log(pages, data[0].documents.length, limits, pages, data[0]?.count[0].total);
+
+      res.json({
+        count: totalCounts,
+        rides: data[0].documents,
+        pages,
+        msg: " Rides's List  Found"
+
+      });
+
     } catch (error) {
+      console.log(error);
       if (error.message === "Running Ride's list Not Found") {
 
         res.status(400).send({ msg: error.message })

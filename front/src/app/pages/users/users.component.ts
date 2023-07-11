@@ -143,7 +143,7 @@ this.toster.error('Form is Invalid')
     this.currentUser = id;
     this.usersService.updateUser(id).subscribe({
       next: (obj: any) => {
-        this.toster.success(obj.msg)
+        // this.toster.success(obj.msg)
         let data = obj.user;
 
         if(  obj.customer.invoice_settings.default_payment_method){
@@ -189,7 +189,7 @@ this.toster.error('Form is Invalid')
     this.usersService.deleteUser(id).subscribe({
       next: (data: any) => {
         this.showUsers(this.currentPage);
-        this.toster.success("Deleted Successfully", "");
+        // this.toster.success("Deleted Successfully", "");
       },
       error: (error) => {
         console.log(error);
@@ -199,7 +199,7 @@ this.toster.error('Form is Invalid')
   getCallingCodes() {
     this.pricingService.allCallingCodes().subscribe({
       next: (data:any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
 
         this.allCallingCode = data.allCollingCodes;;
         console.log(data);
@@ -218,7 +218,6 @@ this.toster.error('Form is Invalid')
   }
   onSave(file: any, modal?: any) {
     let data = this.UpdateForm.value;
-    console.log(data);
     file = file.files[0];
 
     const formObj = new FormData();
@@ -236,7 +235,7 @@ this.toster.error('Form is Invalid')
           this.toster.success(data.msg)
           modal.dismiss('Click')
           this.UpdateForm.reset()
-          this.toster.success("Update Successfully", "");
+          // this.toster.success("Update Successfully", "");
           this.UpdateActivate = !this.UpdateActivate;
           this.showUsers(this.currentPage);
         },
@@ -279,7 +278,7 @@ this.toster.error('Form is Invalid')
   getCountries() {
     this.pricingService.getAddedCountry().subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
 
         this.countriesArray = data.country;
       },
@@ -371,7 +370,7 @@ this.toster.error('Form is Invalid')
 
       this.usersService.addCard(this.currentUser, paymentMethod).subscribe({
         next: (data: any) => {
-          this.toster.success(data.msg)
+          // this.toster.success(data.msg)
           console.log(data, "card");
           this.getCards();
         },
@@ -394,7 +393,7 @@ this.toster.error('Form is Invalid')
     this.usersService.getCards(this.currentUser).subscribe({
       next: (cards: any) => {
         console.log(cards);
-        this.toster.success(cards.msg)
+        // this.toster.success(cards.msg)
         this.allCards = cards.cards.data;
       },
       error: (error) => {
@@ -406,7 +405,7 @@ this.toster.error('Form is Invalid')
   setDefault(card: any) {
     this.usersService.setDefaultCard(this.currentUser, card.id).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         this.updateUser(this.currentUser);
       },
       error: (error) => {
@@ -421,7 +420,7 @@ this.toster.error('Form is Invalid')
     console.log(card);
     this.usersService.deleteCard(card.id).subscribe({
       next: (data: any) => {
-        this.toster.success(data.msg)
+        // this.toster.success(data.msg)
         console.log(data);
         this.getCards();
       },

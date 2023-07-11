@@ -52,7 +52,7 @@ export class DriversService {
     return this.http.post(`${environment.URL}/Drivers/Online`,ride);
   }
 
-  getRunningRequest() {
-    return this.http.get(`${environment.URL}/Drivers/RunningRequest`);
+  getRunningRequest(page:any) {
+    return this.http.get(`${environment.URL}/Drivers/RunningRequest?page=${page}`);
   }
 }
