@@ -289,7 +289,7 @@ export class CreateRequestComponent implements OnInit {
             //     ele.value = results[0].formatted_address;
             //   }
             // }, 100);
-
+            
             let selectedLocation: any = {
               lat: results[0].geometry.location.lat(),
               lng: results[0].geometry.location.lng(),

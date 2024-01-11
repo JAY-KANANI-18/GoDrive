@@ -18,6 +18,8 @@ import { environment } from "src/environments/environment";
 export class PostsService {
   private encryptionKey = "user123";
 
+  userData:any = localStorage.getItem("User")
+
   error = new Subject<string>();
 
   constructor(
@@ -54,6 +56,9 @@ export class PostsService {
       next:(data:any)=>{
         console.log(data);
         this.toster.success(data.msg)
+        localStorage.setItem("newToken", '');
+        localStorage.setItem("User", '');
+        this.userData =''
       },error:(error)=>{
         console.log(error);
         this.toster.error(error.error.msg)

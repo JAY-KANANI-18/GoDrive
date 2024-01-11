@@ -35,6 +35,17 @@ export class SocketService {
       });
     });
   }
+  msg_emit(data: any) {
+    this.socket.emit("message", data);
+  }
+
+  msg_on(): Observable<any> {
+    return new Observable<any>((observer) => {
+      this.socket.on("message", (data: any) => {
+        observer.next(data);
+      });
+    });
+  }
 
   changeDriverStatusOn() {
     return new Observable<any>((observer) => {

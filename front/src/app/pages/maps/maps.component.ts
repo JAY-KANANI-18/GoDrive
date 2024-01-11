@@ -49,12 +49,14 @@ export class MapsComponent implements OnInit {
     private toster: ToastrService
   ) {}
 
-  ngOnInit() {
+  public ngOnInit() {
+    console.log('sss');
+
     this.getZones(this.currentPage);
     this.getAvailableCountries();
   }
 
-  initMap() {
+ public initMap() {
     let option = {
       zoom: 8,
       animation: google.maps.Animation.DROP,

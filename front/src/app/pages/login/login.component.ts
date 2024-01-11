@@ -49,9 +49,14 @@ private toster: ToastrService,
         const newToken = this.loginSErvice.logginToken;
         localStorage.setItem("newToken", data.token);
         localStorage.setItem("User", data.user._id);
+        localStorage.setItem("UserObj", JSON.stringify(data.user));
+        this.loginSErvice.userData = data.user._id
       },
       error: (error) => {
         console.log(error);
+        localStorage.setItem("newToken", '');
+        localStorage.setItem("User", '');
+        this.loginSErvice.userData = ''
         if (error.status == 401) {
           this.toster.error(error.error.message)
           // this.Errmsg = error.error;

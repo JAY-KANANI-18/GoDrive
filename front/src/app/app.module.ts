@@ -81,7 +81,7 @@ import { MatIconModule } from '@angular/material/icon';
     DriversComponent,
     CreateRequestComponent,
     RidesConfirmedRidesComponent,
-    RunningRequestComponent,
+    // RunningRequestComponent,
     RideHistoryComponent,
     SettingsComponent,
     DriverApprovePipe,

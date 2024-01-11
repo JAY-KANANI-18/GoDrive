@@ -1,0 +1,46 @@
+<!-- <h1>this is chat app</h1> -->
+<div class="chat-icon-div" (click)="openChat()">
+  <div class="template" #chatmodel *ngIf="chatToggle"  (click)="$event.stopPropagation()">
+    <header class="text-center pt-2 pb-2">
+
+      <img src="../../../assets/img/godrivePNG.png" alt="" height="100%">
+    </header>
+    <div #messageHistory class="chat-history">
+      <!-- <div *ngFor="let message of messages"><span class="msgspan">{{message}}</span></div> -->
+
+      <div class="message1div" *ngFor="let message of chatService.chatObj"  [ngClass]="{'message-right': message.id == user._id, 'message-left': message.id != user._id}">
+        <span class="message1" *ngIf="message.id == user._id" >
+          <div class="msg-name">me</div>
+
+          {{message.msg}}
+          <div class="msg-time">{{message.time | date:'h:mm a'}}</div>
+        </span>
+
+        <span class="message2" *ngIf="message.id != user._id">
+          <div class="msg-name">{{message.name}}</div>
+
+          {{message.msg}}
+          <div class="msg-name">{{message.time | date:'h:mm a'}}</div>
+
+        </span>
+
+        <span *ngIf="message.event">{{message.event}}</span>
+      </div>
+    </div>
+
+    <footer>
+      <input id="message" class="msg" type="text" placeholder="message..." />
+
+      <!-- <button class="btn btm-info"> -->
+        <img src="../../../assets/img/icons/send.png" alt="" width="10%" (click)="sendMessage()">
+      <!-- </button> -->
+    </footer>
+  </div>
+
+  <img
+    class="img"
+    src="../../../assets/img/icons/chat1.png"
+    alt="icon"
+    width="40rem"
+  />
+</div>

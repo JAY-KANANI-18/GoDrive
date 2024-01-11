@@ -388,6 +388,7 @@ export class RunningRequestComponent {
   getRunningRequest(page: any) {
     this.driverService.getRunningRequest(page).subscribe({
       next: (data: any) => {
+        console.log(data);
         // this.toster.success(data.msg)
         this.allrides = data.rides;
         if (data.pages > 1 && data.rides.length == 0) {

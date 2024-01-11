@@ -11,6 +11,7 @@ import { MapsComponent } from '../../pages/maps/maps.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { VehicleType } from 'src/app/pages/vehical type/vehical-type.component';
 import { BnNgIdleService } from 'bn-ng-idle';
+import { RunningRequestComponent } from 'src/app/pages/running-request/running-request.component';
 
 @NgModule({
   imports: [
@@ -20,12 +21,14 @@ import { BnNgIdleService } from 'bn-ng-idle';
     HttpClientModule,
     NgbModule,
     ClipboardModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
   ],
   declarations: [
     DashboardComponent,
     MapsComponent,
-    VehicleType
+    VehicleType,
+    RunningRequestComponent
   ],
   providers:[BnNgIdleService]
 })

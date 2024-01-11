@@ -37,33 +37,23 @@
                 <td class="nametd">{{ ride.pickup }}</td>
                 <td class="nametd">{{ ride.dropoff }}</td>
                 <td class="nametd">{{ ride.distance }}</td>
-                <td class="nametd">{{ ride.status | rideStatus }}</td>
+                <td class="nametd">{{ ride.status }}</td>
                 <!-- <td class="timer countdown">
                   {{ countDowns$[ride._id] | async }}
                 </td> -->
                 <td>
                   {{ ride.driver[0]?.name || "No Driver"
-                  }}<lord-icon
-                    src="https://cdn.lordicon.com/yhtqafjk.json"
-                    trigger="loop"
-                    colors="primary:#121331,secondary:#08a88a,tertiary:#ebe6ef"
-                    style="width: 20px; height: 20px"
-                  >
+                  }}<lord-icon src="https://cdn.lordicon.com/yhtqafjk.json" trigger="loop"
+                    colors="primary:#121331,secondary:#08a88a,tertiary:#ebe6ef" style="width: 20px; height: 20px">
                   </lord-icon>
                 </td>
                 <td id="b'+ driver._id + '">
-                  <button
-                    class="update-button btn btn-outline-primary"
-                    *ngIf="ride.driver[0]?.name"
-                    (click)="onAccept(ride)"
-                  >
+                  <button class="update-button btn btn-outline-primary" *ngIf="ride.driver[0]?.name"
+                    (click)="onAccept(ride)">
                     Accept
                   </button>
-                  <button
-                    class="delete-button btn btn-outline-danger"
-                    *ngIf="ride.driver[0]?.name"
-                    (click)="onReject(ride)"
-                  >
+                  <button class="delete-button btn btn-outline-danger" *ngIf="ride.driver[0]?.name"
+                    (click)="onReject(ride)">
                     Reject
                   </button>
                 </td>
@@ -81,30 +71,18 @@
         <div class="card-footer py-4" *ngIf="allrides.length>0">
           <nav aria-label="...">
             <ul class="pagination justify-content-end mb-0">
-              <li
-                class="page-item disabled"
-                *ngIf="currentPage !== 1"
-                (click)="onPrevious()"
-              >
+              <li class="page-item disabled" *ngIf="currentPage !== 1" (click)="onPrevious()">
                 <a class="page-link">
                   <i class="fas fa-angle-left"></i>
                   <span class="sr-only">Previous</span>
                 </a>
               </li>
-              <li
-                class="page-item"
-                [ngClass]="{ active: currentPage == i + 1 }"
-                [hidden]="currentPage < i || currentPage - 1 > i + 1"
-                *ngFor="let item of NoOfPages; let i = index"
-              >
+              <li class="page-item" [ngClass]="{ active: currentPage == i + 1 }"
+                [hidden]="currentPage < i || currentPage - 1 > i + 1" *ngFor="let item of NoOfPages; let i = index">
                 <a class="page-link" (click)="onPage(i + 1)">{{ i + 1 }}</a>
               </li>
 
-              <li
-                class="page-item"
-                [ngClass]="{ vh: currentPage == NoOfPages?.length }"
-                (click)="onNext()"
-              >
+              <li class="page-item" [ngClass]="{ vh: currentPage == NoOfPages?.length }" (click)="onNext()">
                 <a class="page-link">
                   <i class="fas fa-angle-right"></i>
                   <span class="sr-only">Next</span>
