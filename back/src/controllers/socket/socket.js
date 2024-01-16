@@ -154,6 +154,12 @@ function initialize(server) {
     socket.on("disconnect", () => {
       console.log("A client has disconnected");
     });
+
+    socket.on("message",(data)=>{
+      console.log(data);
+
+      io.emit("message",data)
+    })
   });
 }
 

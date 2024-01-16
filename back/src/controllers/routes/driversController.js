@@ -16,6 +16,8 @@ async function UpdateSettingsofDriver() {
   stripe = require("stripe")(stripe_secret_key);
 }
 UpdateSettingsofDriver();
+
+
 class driversController {
   static addNewDriver = async (req, res) => {
     if (req.fileValidationError) {
