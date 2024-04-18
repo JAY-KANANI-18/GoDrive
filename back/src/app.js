@@ -10,6 +10,8 @@ const loginRouter = require("../src/router/login");
 const https = require("http");
 const Sockets = require("./controllers/socket/socket");
 const fs = require("fs");
+require('dotenv').config()
+
 
 const app = express();
 
@@ -30,7 +32,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb+srv://jay_kanani:UMqMOaAP8w1MVW4Q@cluster0.fzcunq6.mongodb.net/");
+mongoose.connect(process.env.DB_URL);
 
 const publicDiractoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDiractoryPath));
