@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { AngularFireMessaging } from '@angular/fire/compat/messaging';
+// import { AngularFireMessaging } from '@angular/fire/compat/messaging';
 import { LoadingServiceService } from './services/loading-service.service';
 import { SocketService } from './services/soketio.service';
 
@@ -13,19 +13,21 @@ export class AppComponent {
   loading: any
   title = 'argon-dashboard-angular';
   user: any
-  constructor(private messaging: AngularFireMessaging, public loadingserbice: LoadingServiceService, private socketService: SocketService
+  constructor(
+    // private messaging: AngularFireMessaging, 
+    public loadingserbice: LoadingServiceService, private socketService: SocketService
   ) {
 
     window.onbeforeunload = () => this.handleBeforeUnload();
 
 
-    this.messaging.requestPermission.subscribe({
-      next: (data: any) => {
-        console.log('permission granted!');
-      }, error: (error) => {
-        console.log('permission denied');
-      }
-    })
+    // this.messaging.requestPermission.subscribe({
+    //   next: (data: any) => {
+    //     console.log('permission granted!');
+    //   }, error: (error) => {
+    //     console.log('permission denied');
+    //   }
+    // })
 
   }
   ngOnInit(): void {

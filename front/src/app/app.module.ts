@@ -23,8 +23,8 @@ import { SocketIoModule} from 'ngx-socket-io';
 import { RideHistoryComponent } from './pages/ride-history/ride-history.component'
 import { ToastrModule } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
-import {  AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { AngularFireModule } from '@angular/fire/compat';
+// import {  AngularFireAuthModule } from '@angular/fire/compat/auth';
+// import { AngularFireModule } from '@angular/fire/compat';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { DriverApprovePipe } from './services/pipes/driver-approve.pipe';
 import { DriverStatusPipe } from './services/pipes/driver-status.pipe';
@@ -55,8 +55,8 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     HttpClientModule,
     SocketIoModule,
-    AngularFireAuthModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
+    // AngularFireAuthModule,
+    // AngularFireModule.initializeApp(environment.firebaseConfig),
     ReactiveFormsModule,
     NgbModule,
     NgIdleModule.forRoot(),

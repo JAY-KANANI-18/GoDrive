@@ -9,7 +9,7 @@ import { DriversService } from "src/app/services/drivers.service";
 import { RidesService } from "src/app/services/rides.service";
 import { SocketService } from "src/app/services/soketio.service";
 import io from "socket.io-client/dist/socket.io.js";
-import { AngularFireMessaging } from "@angular/fire/compat/messaging";
+// import { AngularFireMessaging } from "@angular/fire/compat/messaging";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { messageService } from "src/app/services/message.service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
@@ -38,7 +38,7 @@ export class RidesConfirmedRidesComponent implements OnInit {
     this.sockServivce.notificationOn().subscribe({
       next: (data: any) => {
 
-        this.messagingService.getTokenandSend(data.msg);
+        // this.messagingService.getTokenandSend(data.msg);
       },
       error: (error) => {
         console.log(error);
@@ -121,7 +121,7 @@ public feedBackForm :FormGroup
   ngOnInit(): void {
     this.showRides(this.currentPage);
     // this.messagingService.requestPermission()
-    this.messagingService.recieveMessasging();
+    // this.messagingService.recieveMessasging();
     // this.messagingService.currentMessage
     // this.ridesService.getMail().subscribe((data: any) => {
     //   console.log(data);
