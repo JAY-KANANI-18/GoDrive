@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb://127.0.0.1:27017/GoDrive");
+mongoose.connect("mongodb+srv://jay_kanani:UMqMOaAP8w1MVW4Q@cluster0.fzcunq6.mongodb.net/");
 
 const publicDiractoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDiractoryPath));
