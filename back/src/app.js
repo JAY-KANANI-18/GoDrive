@@ -13,15 +13,15 @@ const fs = require("fs");
 
 const app = express();
 
-const privateKey = fs.readFileSync("../localhost.key", "utf8");
-const certificate = fs.readFileSync("../localhost.csr", "utf8");
+// const privateKey = fs.readFileSync("../localhost.key", "utf8");
+// const certificate = fs.readFileSync("../localhost.csr", "utf8");
 
-const credentials = {
-  key: privateKey,
-  cert: certificate,
-};
+// const credentials = {
+//   key: privateKey,
+//   cert: certificate,
+// };
 
-const server = https.createServer(credentials, app);
+const server = https.createServer( app);
 
 Sockets.initialize(server);
 
