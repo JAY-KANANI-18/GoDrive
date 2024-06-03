@@ -19,6 +19,7 @@ email secret
 
  email token:1//04DEh6f1gMuP2CgYIARAAGAQSNwF-L9Ir1n1WVZSb6JJueEoDPH_5GOPeHfNGZ8wWT06qDF40QhaULHWZToHw71kViwTC9ky9e3o
 
+recovery :AQ4GM9KEWPHU6PZCPZHGKGU3
 
 ////----------------- Pipes ---------- ////
 

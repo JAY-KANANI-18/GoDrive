@@ -16,6 +16,7 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    
   }
   onCreatePost(postData: any) {
 
@@ -24,6 +25,8 @@ export class RegisterComponent implements OnInit {
       email: postData.email,
       password: postData.password,
     };
+    console.log(Data);
+    
     this.postService.createAndStorePost(Data).subscribe((response: any) => {
       setTimeout(() => {
         this.router.navigate(["./login"]);
