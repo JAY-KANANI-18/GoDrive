@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  URL : 'https://ec2-15-207-85-28.ap-south-1.compute.amazonaws.com',
+  // URL : 'https://ec2-15-207-85-28.ap-south-1.compute.amazonaws.com',
+  URL : '15.207.85.28',
   // URL : 'http://localhost:3000',
   stripe: {
     // apiKey: 'pk_test_51N45EpSAETG1lrtoGx6ndq4U7XSTTzKA8lZk0RgfHqhqdNql2DMifnExHs47haeBFRSqThvEfU9M2CeOA6vHOquU00LLyJoust'
