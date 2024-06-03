@@ -8,11 +8,11 @@ const auth = require('../middleware/auth');
 
 const storage = multer.diskStorage({
     destination: (req, file, callBack) => {
-        callBack(null, 'public/avatars'); // './public/images/' directory name where save the file
+        callBack(null, '../public/avatars'); // './public/images/' directory name where save the file
     },
     filename: (req, file, callBack) => {
 
-        callBack(null, file.fieldname + '-' + Date.now() + file.originalname);
+        callBack(null, file.fieldname + '-' + new Date().toISOString().replace(/:/g, '-') + file.originalname);
 
     }
 });

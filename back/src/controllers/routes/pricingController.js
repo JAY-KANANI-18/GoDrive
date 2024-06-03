@@ -463,6 +463,7 @@ class pricingController {
         let TimePrice = req.query.time * unitTimePrice
 
         let ServiceFees = +DistancePrice + +TimePrice + +baseprice;
+        console.log(ServiceFees);
 
         if (ServiceFees < minFare) {
           ServiceFees = minFare

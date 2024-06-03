@@ -11,7 +11,7 @@ const usersController = require("../controllers/routes/usersController").usersCo
 
 const storage = multer.diskStorage({
   destination: (req, file, callBack) => {
-    callBack(null, "public/avatars"); // './public/images/' directory name where save the file
+    callBack(null, "../public/avatars"); // './public/images/' directory name where save the file
   },
   filename: (req, file, callBack) => {
     callBack(null, file.fieldname + "-" + Date.now() + file.originalname);
